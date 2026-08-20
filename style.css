@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&display=swap');
+
+:root {
+    --navy: #041E42;
+    --dark-navy: #02152F;
+    --silver: #869397;
+    --light-silver: #D9E0E2;
+    --white: #FFFFFF;
+    --light-gray: #F4F5F6;
+    --text: #17202A;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--light-gray);
+    color: var(--text);
+}
+
+header {
+    background: var(--navy);
+    color: white;
+    padding: 30px 20px 25px;
+    text-align: center;
+    border-bottom: 5px solid var(--silver);
+}
+
+header h1 {
+    margin: 0;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+header p {
+    margin: 6px 0 0;
+    color: var(--light-silver);
+    font-size: 15px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+nav {
+    background: var(--dark-navy);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--silver);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 18px;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+nav a:hover {
+    background: var(--navy);
+    color: var(--light-silver);
+}
+
+main {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.hero {
+    background: var(--navy);
+    color: white;
+    padding: 45px 30px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.hero h2 {
+    margin: 0;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+    font-size: 38px;
+    text-transform: uppercase;
+}
+
+.hero p {
+    color: var(--light-silver);
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+    text-transform: uppercase;
+    font-size: 26px;
+    border-left: 6px solid var(--navy);
+    padding-left: 12px;
+    margin: 30px 0 15px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid var(--light-silver);
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+    margin-top: 0;
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+    text-transform: uppercase;
+    font-size: 22px;
+    color: var(--navy);
+}
+
+.card p {
+    line-height: 1.6;
+}
+
+.standings {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.standings th {
+    background: var(--navy);
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.standings td {
+    padding: 10px;
+    border-bottom: 1px solid var(--light-silver);
+}
+
+.standings tr:hover {
+    background: var(--light-gray);
+}
+
+footer {
+    background: var(--dark-navy);
+    color: var(--light-silver);
+    text-align: center;
+    padding: 25px;
+    margin-top: 50px;
+    font-size: 13px;
+}
+
+@media (max-width: 700px) {
+
+    header h1 {
+        font-size: 32px;
+    }
+
+    nav a {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+}
