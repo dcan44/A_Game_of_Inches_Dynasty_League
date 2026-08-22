@@ -169,10 +169,8 @@ async function loadRecords() {
 
 
         /*
-         * Start with every manager appearing in league history.
-         *
-         * This preserves former managers even if they are
-         * no longer in the current Sleeper league.
+         * Start with every manager appearing
+         * anywhere in league history.
          */
 
         if (historyData.seasons) {
@@ -205,8 +203,8 @@ async function loadRecords() {
 
 
                             /*
-                             * Keep the most recent name
-                             * Sleeper has supplied.
+                             * Keep Sleeper's latest
+                             * available manager name.
                              */
 
                             managerMap[
@@ -358,30 +356,23 @@ async function loadRecords() {
 
 
                         /*
-addRecordCard(
-    recordsGrid,
-    'Highest Score in a Loss',
-    highestLossManager
-        ? highestLossManager
-            .highest_score_in_loss
-            .points
-            .toFixed(2)
-        : '—',
-    highestLossManager
-        ? `
-            ${highestLossManager.owner}
-            vs
-            ${highestLossManager.highest_score_in_loss.opponent}
-            •
-            ${highestLossManager.highest_score_in_loss.points.toFixed(2)}
-            -
-            ${highestLossManager.highest_score_in_loss.opponent_points.toFixed(2)}
-            • Week
-            ${highestLossManager.highest_score_in_loss.week},
-            ${highestLossManager.highest_score_in_loss.season}
-          `
-        : '—'
-);
+                         * Highest score in a loss
+                         */
+
+                        if (
+                            manager.highest_score_in_loss &&
+                            (
+                                !career.highest_score_in_loss ||
+                                manager.highest_score_in_loss.points >
+                                career.highest_score_in_loss.points
+                            )
+                        ) {
+
+                            career.highest_score_in_loss = {
+
+                                ...manager.highest_score_in_loss
+
+                            };
 
                         }
 
@@ -541,16 +532,14 @@ addRecordCard(
          * =====================================================
          * SORT MANAGER TABLE
          * =====================================================
-         *
-         * Current managers first.
-         * Then former managers.
-         *
-         * Within each group:
-         * highest win percentage first.
          */
 
         managers.sort(
             (a, b) => {
+
+                /*
+                 * Current managers first.
+                 */
 
                 if (
                     a.current !==
@@ -564,6 +553,10 @@ addRecordCard(
                 }
 
 
+                /*
+                 * Then by win percentage.
+                 */
+
                 if (
                     b.win_percentage !==
                     a.win_percentage
@@ -576,6 +569,10 @@ addRecordCard(
 
                 }
 
+
+                /*
+                 * Then by total wins.
+                 */
 
                 return (
                     b.regular_wins -
@@ -771,30 +768,20 @@ addRecordCard(
 
 
         /*
-addRecordCard(
-    recordsGrid,
-    'Biggest Blowout',
-    biggestWinManager
-        ? biggestWinManager
-            .biggest_win
-            .margin
-            .toFixed(2)
-        : '—',
-    biggestWinManager
-        ? `
-            ${biggestWinManager.owner}
-            over
-            ${biggestWinManager.biggest_win.opponent}
-            •
-            ${biggestWinManager.biggest_win.score.toFixed(2)}
-            -
-            ${biggestWinManager.biggest_win.opponent_score.toFixed(2)}
-            • Week
-            ${biggestWinManager.biggest_win.week},
-            ${biggestWinManager.biggest_win.season}
-          `
-        : '—'
-);
+         * Biggest blowout
+         */
+
+        const biggestWinManager =
+            managers
+                .filter(
+                    manager =>
+                        manager.biggest_win
+                )
+                .sort(
+                    (a, b) =>
+                        b.biggest_win.margin -
+                        a.biggest_win.margin
+                )[0];
 
 
         /*
@@ -816,37 +803,48 @@ addRecordCard(
 
         /*
          * Most championships
+         *
+         * Supports ties.
          */
 
         const championshipRecord =
-    Math.max(
-        ...managers.map(
-            manager =>
-                manager.championships
-        )
-    );
+            Math.max(
+                ...managers.map(
+                    manager =>
+                        manager.championships
+                )
+            );
 
 
-const championshipLeaders =
-    managers.filter(
-        manager =>
-            manager.championships ===
-                championshipRecord &&
-            championshipRecord > 0
-    );
+        const championshipLeaders =
+            managers.filter(
+                manager =>
+                    manager.championships ===
+                        championshipRecord &&
+                    championshipRecord > 0
+            );
 
 
         /*
          * Most division titles
          */
 
-        const mostDivisionTitles =
-            [...managers]
-                .sort(
-                    (a, b) =>
-                        b.division_titles -
-                        a.division_titles
-                )[0];
+        const divisionTitleRecord =
+            Math.max(
+                ...managers.map(
+                    manager =>
+                        manager.division_titles
+                )
+            );
+
+
+        const divisionTitleLeaders =
+            managers.filter(
+                manager =>
+                    manager.division_titles ===
+                        divisionTitleRecord &&
+                    divisionTitleRecord > 0
+            );
 
 
         /*
@@ -930,6 +928,12 @@ const championshipLeaders =
             biggestWinManager
                 ? `
                     ${biggestWinManager.owner}
+                    over
+                    ${biggestWinManager.biggest_win.opponent || 'Unknown'}
+                    •
+                    ${biggestWinManager.biggest_win.score.toFixed(2)}
+                    -
+                    ${biggestWinManager.biggest_win.opponent_score.toFixed(2)}
                     • Week
                     ${biggestWinManager.biggest_win.week},
                     ${biggestWinManager.biggest_win.season}
@@ -950,6 +954,12 @@ const championshipLeaders =
             highestLossManager
                 ? `
                     ${highestLossManager.owner}
+                    vs
+                    ${highestLossManager.highest_score_in_loss.opponent || 'Unknown'}
+                    •
+                    ${highestLossManager.highest_score_in_loss.points.toFixed(2)}
+                    -
+                    ${highestLossManager.highest_score_in_loss.opponent_points.toFixed(2)}
                     • Week
                     ${highestLossManager.highest_score_in_loss.week},
                     ${highestLossManager.highest_score_in_loss.season}
@@ -959,30 +969,35 @@ const championshipLeaders =
 
 
         addRecordCard(
-    recordsGrid,
-    'Most Championships',
-    championshipRecord > 0
-        ? championshipRecord
-        : '—',
-    championshipLeaders.length > 0
-        ? championshipLeaders
-            .map(
-                manager =>
-                    manager.owner
-            )
-            .join(' • ')
-        : '—'
-);
+            recordsGrid,
+            'Most Championships',
+            championshipRecord > 0
+                ? championshipRecord
+                : '—',
+            championshipLeaders.length > 0
+                ? championshipLeaders
+                    .map(
+                        manager =>
+                            manager.owner
+                    )
+                    .join(' • ')
+                : '—'
+        );
 
 
         addRecordCard(
             recordsGrid,
             'Most Division Titles',
-            mostDivisionTitles
-                ? mostDivisionTitles.division_titles
+            divisionTitleRecord > 0
+                ? divisionTitleRecord
                 : '—',
-            mostDivisionTitles
-                ? mostDivisionTitles.owner
+            divisionTitleLeaders.length > 0
+                ? divisionTitleLeaders
+                    .map(
+                        manager =>
+                            manager.owner
+                    )
+                    .join(' • ')
                 : '—'
         );
 
