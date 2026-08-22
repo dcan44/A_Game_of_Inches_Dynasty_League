@@ -761,10 +761,13 @@ historySeasonSelect.addEventListener(
  * HALL OF SHAME
  * ======================================================
  *
- * In a 12-team league, the losers-bracket game with
- * p === 5 determines 11th and 12th place.
+ * The loser of the lowest placement game in the
+ * consolation bracket finishes last.
  *
- * The LOSER of that game is the final-place finisher.
+ * IMPORTANT:
+ * We use each season's actual Sleeper users + rosters
+ * instead of /api/history so historical roster ownership
+ * remains accurate.
  */
 
 async function loadHallOfShame() {
@@ -785,210 +788,230 @@ async function loadHallOfShame() {
         };
 
 
+        const shameResults = [];
+
+
         /*
-         * Load league history plus each consolation bracket.
+         * Process each historical season separately.
          */
 
-        const [
-            historyResponse,
-            bracket2023Response,
-            bracket2024Response,
-            bracket2025Response
-        ] = await Promise.all([
+        for (
+            const [yearText, leagueId]
+            of Object.entries(leagueIds)
+        ) {
 
-            fetch('/api/history'),
-
-            fetch(
-                `https://api.sleeper.app/v1/league/${leagueIds[2023]}/losers_bracket`
-            ),
-
-            fetch(
-                `https://api.sleeper.app/v1/league/${leagueIds[2024]}/losers_bracket`
-            ),
-
-            fetch(
-                `https://api.sleeper.app/v1/league/${leagueIds[2025]}/losers_bracket`
-            )
-
-        ]);
+            const season =
+                Number(yearText);
 
 
-        if (!historyResponse.ok) {
+            /*
+             * Load the consolation bracket,
+             * historical rosters, and historical users
+             * from this exact season.
+             */
 
-            throw new Error(
-                'Unable to retrieve league history.'
+            const [
+                bracketResponse,
+                rostersResponse,
+                usersResponse
+            ] = await Promise.all([
+
+                fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/losers_bracket`
+                ),
+
+                fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+                ),
+
+                fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/users`
+                )
+
+            ]);
+
+
+            if (
+                !bracketResponse.ok ||
+                !rostersResponse.ok ||
+                !usersResponse.ok
+            ) {
+
+                continue;
+
+            }
+
+
+            const bracket =
+                await bracketResponse.json();
+
+
+            const rosters =
+                await rostersResponse.json();
+
+
+            const users =
+                await usersResponse.json();
+
+
+            /*
+             * =============================================
+             * USER LOOKUP
+             * =============================================
+             */
+
+            const userMap = {};
+
+
+            users.forEach(
+                user => {
+
+                    userMap[
+                        user.user_id
+                    ] = user;
+
+                }
+            );
+
+
+            /*
+             * =============================================
+             * HISTORICAL ROSTER LOOKUP
+             * =============================================
+             */
+
+            const rosterMap = {};
+
+
+            rosters.forEach(
+                roster => {
+
+                    const user =
+                        userMap[
+                            roster.owner_id
+                        ];
+
+
+                    rosterMap[
+                        roster.roster_id
+                    ] = {
+
+                        roster_id:
+                            roster.roster_id,
+
+                        owner_id:
+                            roster.owner_id,
+
+                        owner:
+                            user?.display_name ||
+                            "Unknown Manager",
+
+                        team_name:
+                            user
+                                ?.metadata
+                                ?.team_name
+                                ?.trim() ||
+                            user?.display_name ||
+                            `Team ${roster.roster_id}`
+
+                    };
+
+                }
+            );
+
+
+            /*
+             * =============================================
+             * FIND LAST-PLACE GAME
+             * =============================================
+             *
+             * Sleeper placement values in our
+             * six-team consolation bracket:
+             *
+             * p = 1 -> 7th / 8th
+             * p = 3 -> 9th / 10th
+             * p = 5 -> 11th / 12th
+             *
+             * Therefore the placement game with the
+             * HIGHEST p value determines last place.
+             */
+
+            const placementGames =
+                bracket.filter(
+                    game =>
+                        typeof game.p ===
+                        "number"
+                );
+
+
+            if (
+                placementGames.length === 0
+            ) {
+
+                continue;
+
+            }
+
+
+            const lastPlaceGame =
+                placementGames
+                    .sort(
+                        (a, b) =>
+                            b.p -
+                            a.p
+                    )[0];
+
+
+            /*
+             * The loser of the 11th/12th-place game
+             * finishes 12th.
+             */
+
+            const lastPlaceRosterId =
+                lastPlaceGame.l;
+
+
+            const lastPlaceTeam =
+                rosterMap[
+                    lastPlaceRosterId
+                ];
+
+
+            if (
+                !lastPlaceTeam
+            ) {
+
+                continue;
+
+            }
+
+
+            shameResults.push(
+                {
+
+                    season:
+                        season,
+
+                    roster_id:
+                        lastPlaceRosterId,
+
+                    owner:
+                        lastPlaceTeam.owner,
+
+                    owner_id:
+                        lastPlaceTeam.owner_id,
+
+                    team_name:
+                        lastPlaceTeam.team_name
+
+                }
             );
 
         }
 
 
-        const historyData =
-            await historyResponse.json();
-
-
-        const brackets = {
-
-            2023:
-                bracket2023Response.ok
-                    ? await bracket2023Response.json()
-                    : [],
-
-            2024:
-                bracket2024Response.ok
-                    ? await bracket2024Response.json()
-                    : [],
-
-            2025:
-                bracket2025Response.ok
-                    ? await bracket2025Response.json()
-                    : []
-
-        };
-
-
-        const shameResults =
-            [];
-
-
         /*
-         * Process each completed historical season.
-         */
-
-        Object.entries(
-            brackets
-        ).forEach(
-            ([year, bracket]) => {
-
-                const season =
-                    Number(year);
-
-
-                const seasonData =
-                    historyData.seasons.find(
-                        item =>
-                            Number(
-                                item.season
-                            ) === season
-                    );
-
-
-                if (
-                    !seasonData ||
-                    !Array.isArray(bracket)
-                ) {
-
-                    return;
-
-                }
-
-
-                /*
-                 * Roster lookup for this specific season.
-                 */
-
-                const rosterMap =
-                    {};
-
-
-                seasonData.teams.forEach(
-                    team => {
-
-                        rosterMap[
-                            team.roster_id
-                        ] = team;
-
-                    }
-                );
-
-
-                /*
-                 * p === 5 is the 11th-place matchup.
-                 *
-                 * The loser finishes 12th.
-                 */
-
-/*
- * Find the lowest placement game in the
- * consolation bracket.
- *
- * Sleeper uses:
- *
- * p = 1 -> highest placement game
- * p = 3 -> next placement game
- * p = 5 -> lowest placement game
- *
- * For our 12-team league, the highest p value
- * determines 11th vs 12th place.
- */
-
-const placementGames =
-    bracket.filter(
-        game =>
-            typeof game.p === 'number'
-    );
-
-
-if (
-    placementGames.length === 0
-) {
-
-    return;
-
-}
-
-
-const toiletBowl =
-    placementGames
-        .sort(
-            (a, b) =>
-                b.p - a.p
-        )[0];
-
-
-                if (
-                    !toiletBowl ||
-                    !toiletBowl.l
-                ) {
-
-                    return;
-
-                }
-
-
-                const lastPlaceTeam =
-                    rosterMap[
-                        toiletBowl.l
-                    ];
-
-
-                if (!lastPlaceTeam) {
-
-                    return;
-
-                }
-
-
-                shameResults.push(
-                    {
-
-                        season:
-                            season,
-
-                        owner:
-                            lastPlaceTeam.owner,
-
-                        team_name:
-                            lastPlaceTeam.team_name
-
-                    }
-                );
-
-            }
-        );
-
-
-        /*
-         * Display oldest to newest.
+         * Oldest season first.
          */
 
         shameResults.sort(
@@ -997,6 +1020,12 @@ const toiletBowl =
                 b.season
         );
 
+
+        /*
+         * =============================================
+         * DISPLAY
+         * =============================================
+         */
 
         if (
             shameResults.length === 0
