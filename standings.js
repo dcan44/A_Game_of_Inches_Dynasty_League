@@ -304,11 +304,21 @@ async function loadStandingsPage() {
                          * regular-season only.
                          */
 
-                        if (game.playoff) {
+/*
+ * Count regular-season games AND
+ * championship-bracket playoff games.
+ *
+ * Exclude consolation and placement games.
+ */
 
-                            return;
+if (
+    game.playoff &&
+    !game.championship_playoff
+) {
 
-                        }
+    return;
+
+}
 
 
                         const first =
