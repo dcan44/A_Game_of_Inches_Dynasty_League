@@ -5295,3 +5295,9 @@ footer p {
     }
 
 }
+/* Division Champion — white outline */
+
+.division-badge {
+    border: 1px solid #FFFFFF;
+    border-top: 2px solid #FFFFFF;
+}
