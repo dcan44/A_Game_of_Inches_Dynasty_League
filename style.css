@@ -5296,7 +5296,7 @@ footer p {
 
 }
 /* ======================================================
-   DIVISION CHAMPION — WHITE / COWBOYS BLUE
+   DIVISION CHAMPION — MATTE BLACK
 ====================================================== */
 
 .division-badge {
@@ -5304,14 +5304,14 @@ footer p {
     background:
         linear-gradient(
             180deg,
-            #FFFFFF 0%,
-            #F4F6F8 55%,
-            #E5E9ED 100%
+            #30343A 0%,
+            #1E2227 55%,
+            #111417 100%
         );
 
-    color: #041E42;
+    color: #FFFFFF;
 
-    border-top: 2px solid #7F969F;
+    border-top: 2px solid #697078;
 
     text-shadow: none;
 
@@ -5320,13 +5320,13 @@ footer p {
 
 .division-badge .trophy-text {
 
-    color: #041E42;
+    color: #FFFFFF;
 
 }
 
 
 .division-badge .division-star {
 
-    color: #041E42;
+    color: #FFFFFF;
 
 }
