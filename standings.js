@@ -819,22 +819,7 @@ function formatRecord(
     ties
 ) {
 
-    let record =
-        `${wins}-${losses}`;
-
-
-    if (
-        ties &&
-        ties > 0
-    ) {
-
-        record +=
-            `-${ties}`;
-
-    }
-
-
-    return record;
+    return `${wins}-${losses}`;
 
 }
 
