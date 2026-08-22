@@ -114,154 +114,256 @@ async function loadManagers() {
 
 
         /*
-         * =====================================================
-         * CALCULATE DIVISION CHAMPIONS
-         * =====================================================
-         */
+ * =====================================================
+ * DIVISION CHAMPIONS
+ * =====================================================
+ *
+ * Historical division champions are stored manually
+ * because the league's division structure changed
+ * between seasons.
+ *
+ * Starting in 2026, division champions are calculated
+ * automatically from Sleeper.
+ */
 
-        const divisionTitles = {};
+const divisionTitles = {};
 
 
-        if (historyData.seasons) {
+/*
+ * =====================================================
+ * CONFIRMED HISTORICAL DIVISION CHAMPIONS
+ * =====================================================
+ */
 
-            historyData.seasons.forEach(
-                seasonData => {
+const historicalDivisionChampions = {
 
-                    /*
-                     * Ignore current unfinished season.
-                     */
+    2023: [
+        "978544154789699584",  // dcan44
+        "984495671757611008"   // Brandonwastaken
+    ],
 
-                    if (
-                        seasonData.status !==
-                        'complete'
-                    ) {
+    2024: [
+        "978544154789699584",  // dcan44
+        "978815135223525376"   // RJ196
+    ],
+
+    2025: [
+        "978544154789699584",  // dcan44
+        "1060373241799262208"  // ChefBoySJ
+    ]
+
+};
+
+
+/*
+ * Add confirmed historical titles.
+ */
+
+Object.entries(
+    historicalDivisionChampions
+).forEach(
+    ([year, ownerIds]) => {
+
+        ownerIds.forEach(
+            ownerId => {
+
+                if (
+                    !divisionTitles[
+                        ownerId
+                    ]
+                ) {
+
+                    divisionTitles[
+                        ownerId
+                    ] = [];
+
+                }
+
+
+                divisionTitles[
+                    ownerId
+                ].push(
+                    Number(year)
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/*
+ * =====================================================
+ * AUTOMATIC DIVISION CHAMPIONS — 2026 AND FUTURE
+ * =====================================================
+ */
+
+if (historyData.seasons) {
+
+    historyData.seasons.forEach(
+        seasonData => {
+
+            const season =
+                Number(
+                    seasonData.season
+                );
+
+
+            /*
+             * Historical seasons are handled manually.
+             */
+
+            if (season <= 2025) {
+
+                return;
+
+            }
+
+
+            /*
+             * Do not award a division title for an
+             * unfinished season.
+             */
+
+            if (
+                seasonData.status !==
+                'complete'
+            ) {
+
+                return;
+
+            }
+
+
+            const divisions = {};
+
+
+            /*
+             * Group teams by division.
+             */
+
+            seasonData.teams.forEach(
+                team => {
+
+                    if (!team.division) {
 
                         return;
 
                     }
 
 
-                    const divisions = {};
+                    if (
+                        !divisions[
+                            team.division
+                        ]
+                    ) {
+
+                        divisions[
+                            team.division
+                        ] = [];
+
+                    }
 
 
-                    seasonData.teams.forEach(
-                        team => {
+                    divisions[
+                        team.division
+                    ].push(team);
 
-                            if (!team.division) {
-                                return;
-                            }
-
-
-                            if (
-                                !divisions[
-                                    team.division
-                                ]
-                            ) {
-
-                                divisions[
-                                    team.division
-                                ] = [];
-
-                            }
+                }
+            );
 
 
-                            divisions[
-                                team.division
-                            ].push(team);
+            /*
+             * Determine the winner of each division.
+             *
+             * Tiebreak order:
+             *
+             * 1. Wins
+             * 2. Fewer losses
+             * 3. Points For
+             */
 
-                        }
-                    );
+            Object.values(
+                divisions
+            ).forEach(
+                divisionTeams => {
 
-
-                    /*
-                     * Sort each division by:
-                     *
-                     * 1. Wins
-                     * 2. Fewer losses
-                     * 3. Points For
-                     */
-
-                    Object.values(
-                        divisions
-                    ).forEach(
-                        divisionTeams => {
-
-                            divisionTeams.sort(
-                                (a, b) => {
-
-                                    if (
-                                        b.wins !==
-                                        a.wins
-                                    ) {
-
-                                        return (
-                                            b.wins -
-                                            a.wins
-                                        );
-
-                                    }
-
-
-                                    if (
-                                        a.losses !==
-                                        b.losses
-                                    ) {
-
-                                        return (
-                                            a.losses -
-                                            b.losses
-                                        );
-
-                                    }
-
-
-                                    return (
-                                        b.points_for -
-                                        a.points_for
-                                    );
-
-                                }
-                            );
-
-
-                            const winner =
-                                divisionTeams[0];
-
+                    divisionTeams.sort(
+                        (a, b) => {
 
                             if (
-                                winner &&
-                                winner.owner_id
+                                b.wins !==
+                                a.wins
                             ) {
 
-                                if (
-                                    !divisionTitles[
-                                        winner.owner_id
-                                    ]
-                                ) {
-
-                                    divisionTitles[
-                                        winner.owner_id
-                                    ] = [];
-
-                                }
-
-
-                                divisionTitles[
-                                    winner.owner_id
-                                ].push(
-                                    seasonData.season
+                                return (
+                                    b.wins -
+                                    a.wins
                                 );
 
                             }
 
+
+                            if (
+                                a.losses !==
+                                b.losses
+                            ) {
+
+                                return (
+                                    a.losses -
+                                    b.losses
+                                );
+
+                            }
+
+
+                            return (
+                                b.points_for -
+                                a.points_for
+                            );
+
                         }
                     );
+
+
+                    const winner =
+                        divisionTeams[0];
+
+
+                    if (
+                        winner &&
+                        winner.owner_id
+                    ) {
+
+                        if (
+                            !divisionTitles[
+                                winner.owner_id
+                            ]
+                        ) {
+
+                            divisionTitles[
+                                winner.owner_id
+                            ] = [];
+
+                        }
+
+
+                        divisionTitles[
+                            winner.owner_id
+                        ].push(
+                            season
+                        );
+
+                    }
 
                 }
             );
 
         }
+    );
 
+}
 
         /*
          * =====================================================
