@@ -2544,3 +2544,428 @@ footer p {
     }
 
 }
+/* ======================================================
+   RECORDS PAGE
+====================================================== */
+
+.records-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.records-live {
+
+    padding: 7px 10px;
+
+    background: var(--navy);
+
+    color: var(--light-silver);
+
+}
+
+
+/* ======================================================
+   LEAGUE RECORD CARDS
+====================================================== */
+
+.league-records-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+}
+
+
+.league-record-card {
+
+    min-height: 145px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    border-top:
+        4px solid
+        var(--navy);
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,.06);
+
+}
+
+
+.league-record-label {
+
+    color: var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.league-record-value {
+
+    margin: 7px 0;
+
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 31px;
+
+    line-height: 1;
+
+}
+
+
+.league-record-holder {
+
+    color: #697178;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+}
+
+
+.record-loading {
+
+    grid-column: 1 / -1;
+
+    padding: 40px;
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    color: var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    text-align: center;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   MANAGER RECORD TABLE
+====================================================== */
+
+.records-table-card {
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,.06);
+
+}
+
+
+.records-table-scroll {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.manager-records-table {
+
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse: collapse;
+
+}
+
+
+.manager-records-table th {
+
+    padding:
+        12px
+        11px;
+
+    background:
+        var(--dark-navy);
+
+    color: white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-records-table th:first-child {
+
+    text-align: left;
+
+}
+
+
+.manager-records-table td {
+
+    padding:
+        12px
+        11px;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+    color: #39434A;
+
+    font-size: 12px;
+
+    text-align: center;
+
+}
+
+
+.manager-records-table td:first-child {
+
+    text-align: left;
+
+}
+
+
+.manager-records-table tbody tr:hover {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+.manager-records-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.records-manager-name {
+
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        14px !important;
+
+    font-weight: 700;
+
+}
+
+
+/* ======================================================
+   CURRENT / FORMER MANAGER LABEL
+====================================================== */
+
+.manager-status {
+
+    display: inline-block;
+
+    min-width: 60px;
+
+    padding:
+        4px
+        7px;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-status.current {
+
+    background:
+        var(--navy);
+
+    color: white;
+
+}
+
+
+.manager-status.former {
+
+    background:
+        var(--light-gray);
+
+    color:
+        #6F777D;
+
+    border:
+        1px solid
+        var(--medium-gray);
+
+}
+
+
+/* ======================================================
+   RECORD NOTES
+====================================================== */
+
+.record-notes {
+
+    padding: 22px 25px;
+
+}
+
+
+.record-notes p {
+
+    margin:
+        0
+        0
+        12px;
+
+    color: #697178;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+}
+
+
+.record-notes p:last-child {
+
+    margin-bottom: 0;
+
+}
+
+
+/* ======================================================
+   RECORD ERROR
+====================================================== */
+
+.records-error {
+
+    color:
+        #8B2424 !important;
+
+}
+
+
+/* ======================================================
+   RECORDS TABLET
+====================================================== */
+
+@media (max-width: 1000px) {
+
+    .league-records-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* ======================================================
+   RECORDS MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .league-records-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .records-heading {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        margin-bottom:
+            15px;
+
+    }
+
+}
