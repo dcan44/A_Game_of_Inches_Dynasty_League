@@ -413,83 +413,95 @@ async function loadHistorySeason(
             </div>
 
 
-            <div class="history-podium">
+<div class="history-podium">
 
-                <div class="history-podium-card champion">
+    <div class="history-podium-card history-podium-champion">
 
-                    <span>
-                        Champion
-                    </span>
+        <div class="history-podium-icon">
+            🏆
+        </div>
 
-                    <strong>
-                        ${
-                            champion
-                                ? champion.team_name
-                                : confirmedChampions[season]?.team_name || '—'
-                        }
-                    </strong>
+        <span>
+            Champion
+        </span>
 
-                    <small>
-                        ${
-                            champion
-                                ? champion.owner
-                                : confirmedChampions[season]?.owner_name || '—'
-                        }
-                    </small>
+        <strong>
+            ${
+                champion
+                    ? champion.team_name
+                    : confirmedChampions[season]?.team_name || '—'
+            }
+        </strong>
 
-                </div>
+        <small>
+            ${
+                champion
+                    ? champion.owner
+                    : confirmedChampions[season]?.owner_name || '—'
+            }
+        </small>
 
-
-                <div class="history-podium-card">
-
-                    <span>
-                        Runner-Up
-                    </span>
-
-                    <strong>
-                        ${
-                            runnerUp
-                                ? runnerUp.team_name
-                                : '—'
-                        }
-                    </strong>
-
-                    <small>
-                        ${
-                            runnerUp
-                                ? runnerUp.owner
-                                : '—'
-                        }
-                    </small>
-
-                </div>
+    </div>
 
 
-                <div class="history-podium-card">
+    <div class="history-podium-card history-podium-runnerup">
 
-                    <span>
-                        Third Place
-                    </span>
+        <div class="history-podium-icon">
+            🏆
+        </div>
 
-                    <strong>
-                        ${
-                            thirdPlace
-                                ? thirdPlace.team_name
-                                : '—'
-                        }
-                    </strong>
+        <span>
+            Runner-Up
+        </span>
 
-                    <small>
-                        ${
-                            thirdPlace
-                                ? thirdPlace.owner
-                                : '—'
-                        }
-                    </small>
+        <strong>
+            ${
+                runnerUp
+                    ? runnerUp.team_name
+                    : '—'
+            }
+        </strong>
 
-                </div>
+        <small>
+            ${
+                runnerUp
+                    ? runnerUp.owner
+                    : '—'
+            }
+        </small>
 
-            </div>
+    </div>
+
+
+    <div class="history-podium-card history-podium-third">
+
+        <div class="history-podium-icon">
+            🏆
+        </div>
+
+        <span>
+            Third Place
+        </span>
+
+        <strong>
+            ${
+                thirdPlace
+                    ? thirdPlace.team_name
+                    : '—'
+            }
+        </strong>
+
+        <small>
+            ${
+                thirdPlace
+                    ? thirdPlace.owner
+                    : '—'
+            }
+        </small>
+
+    </div>
+
+</div>
 
 
             <h3 class="history-subtitle">
