@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>History | A Game of Inches</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="page-header">
+
+    <a class="site-name" href="/">
+        A Game of Inches
+    </a>
+
+    <p>Dynasty Fantasy Football League</p>
+
+</header>
+
+
+<nav class="main-nav">
+
+    <a href="/">Home</a>
+    <a href="/managers">Managers</a>
+    <a href="/standings">Standings</a>
+    <a href="/draft">Draft Central</a>
+    <a href="/records">Records</a>
+    <a href="/history" class="active">History</a>
+    <a href="/rules">Rules</a>
+
+</nav>
+
+
+<main>
+
+    <section class="page-title">
+
+        <p class="page-kicker">
+            League Archive
+        </p>
+
+        <h1>History</h1>
+
+        <p>
+            Champions, playoff finishes, season leaders and archived
+            results from every year of A Game of Inches.
+        </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         CHAMPIONS
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            League Champions
+        </h2>
+
+        <div
+            id="history-champions"
+            class="history-champions"
+        >
+            Loading champions...
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         SEASON SELECTOR
+    =================================================== -->
+
+    <section>
+
+        <div class="history-section-heading">
+
+            <h2 class="section-title">
+                Season Archive
+            </h2>
+
+            <select
+                id="history-season-select"
+                class="draft-season-select"
+            >
+                <option value="2025">2025 Season</option>
+                <option value="2024">2024 Season</option>
+                <option value="2023">2023 Season</option>
+            </select>
+
+        </div>
+
+
+        <div
+            id="history-season-content"
+            class="history-season-content"
+        >
+            Loading season history...
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-logo">
+        A Game of Inches
+    </div>
+
+    <p>
+        Dynasty Fantasy Football League
+    </p>
+
+    <p class="footer-season">
+        Established 2023
+    </p>
+
+</footer>
+
+
+<script src="history.js"></script>
+
+</body>
+
+</html>
