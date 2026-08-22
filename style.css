@@ -4020,3 +4020,782 @@ footer p {
     }
 
 }
+/* ======================================================
+   HISTORY PAGE — FINAL VISUAL OVERRIDES
+====================================================== */
+
+
+/* ======================================================
+   CHAMPION PENNANTS
+====================================================== */
+
+.history-champions {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 24px;
+
+    max-width: 760px;
+
+    margin: 0 auto;
+
+}
+
+
+.history-champion-pennant {
+
+    position: relative;
+
+    min-height: 245px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    padding:
+        24px
+        18px
+        48px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #F0C967 0%,
+            #D7A632 45%,
+            #A97818 100%
+        );
+
+    color:
+        var(--dark-navy);
+
+    text-align: center;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 82%,
+        50% 100%,
+        0 82%
+    );
+
+    box-shadow:
+        0 6px 14px
+        rgba(0,0,0,.16);
+
+}
+
+
+.history-champion-pennant::before {
+
+    content: '';
+
+    position: absolute;
+
+    top: 7px;
+
+    left: 8px;
+
+    right: 8px;
+
+    height: 2px;
+
+    background:
+        rgba(255,255,255,.45);
+
+}
+
+
+.history-pennant-year {
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 36px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+
+.history-pennant-trophy {
+
+    margin:
+        8px
+        0
+        4px;
+
+    font-size: 25px;
+
+}
+
+
+.history-pennant-title {
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-pennant-team {
+
+    margin-top: 18px;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-pennant-owner {
+
+    margin-top: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: .5px;
+
+}
+
+
+/* ======================================================
+   SEASON ARCHIVE HEADER
+====================================================== */
+
+.history-section-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin-bottom: 14px;
+
+}
+
+
+.history-season-content {
+
+    overflow: hidden;
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    border-top:
+        4px solid
+        var(--navy);
+
+    box-shadow:
+        0 4px 14px
+        rgba(0,0,0,.08);
+
+}
+
+
+.history-season-header {
+
+    padding:
+        38px
+        30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--navy),
+            var(--dark-navy)
+        );
+
+    color: white;
+
+    text-align: center;
+
+}
+
+
+.history-season-header span {
+
+    display: block;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-season-header h2 {
+
+    margin:
+        9px
+        0
+        5px;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 38px;
+
+    line-height: 1.05;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-season-header p {
+
+    margin: 0;
+
+    color:
+        var(--light-silver);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   PODIUM
+====================================================== */
+
+.history-podium {
+
+    display: grid;
+
+    grid-template-columns:
+        1.15fr 1fr 1fr;
+
+    gap: 0;
+
+    background:
+        var(--light-silver);
+
+}
+
+
+.history-podium-card {
+
+    position: relative;
+
+    min-height: 145px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding:
+        24px
+        20px;
+
+    background: white;
+
+    text-align: center;
+
+}
+
+
+.history-podium-card + .history-podium-card {
+
+    border-left:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.history-podium-card.champion {
+
+    background:
+        linear-gradient(
+            180deg,
+            #FFF6D7,
+            #F2DE9B
+        );
+
+}
+
+
+.history-podium-card.champion::before {
+
+    content: '★';
+
+    position: absolute;
+
+    top: 13px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        #B9891D;
+
+    font-size: 20px;
+
+}
+
+
+.history-podium-card span {
+
+    margin-top: 10px;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-podium-card strong {
+
+    margin-top: 6px;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 18px;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-podium-card small {
+
+    margin-top: 5px;
+
+    color:
+        #747B80;
+
+    font-size: 10px;
+
+}
+
+
+/* ======================================================
+   HISTORY SUBHEADERS
+====================================================== */
+
+.history-subtitle {
+
+    margin:
+        32px
+        24px
+        14px;
+
+    padding-left: 10px;
+
+    border-left:
+        4px solid
+        var(--navy);
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   SEASON LEADER CARDS
+====================================================== */
+
+.history-leaders-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    padding:
+        0
+        24px;
+
+}
+
+
+.history-leaders-grid .league-record-card {
+
+    min-height: 125px;
+
+    justify-content: center;
+
+    border-top:
+        4px solid
+        var(--navy);
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,.05);
+
+}
+
+
+.history-leaders-grid .league-record-label {
+
+    font-size: 10px;
+
+}
+
+
+.history-leaders-grid .league-record-value {
+
+    margin:
+        6px
+        0;
+
+    font-size: 28px;
+
+}
+
+
+.history-leaders-grid .league-record-holder {
+
+    font-size: 10px;
+
+}
+
+
+/* ======================================================
+   HISTORY STANDINGS
+====================================================== */
+
+.history-season-content .records-table-card {
+
+    margin:
+        0
+        24px
+        8px;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    box-shadow: none;
+
+}
+
+
+.history-standings-table {
+
+    width: 100%;
+
+    min-width: 700px;
+
+    border-collapse: collapse;
+
+}
+
+
+.history-standings-table th {
+
+    padding:
+        12px
+        13px;
+
+    background:
+        var(--dark-navy);
+
+    color: white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-standings-table th:nth-child(2),
+.history-standings-table th:nth-child(3) {
+
+    text-align: left;
+
+}
+
+
+.history-standings-table td {
+
+    padding:
+        12px
+        13px;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+    color:
+        #3E474D;
+
+    font-size: 11px;
+
+    text-align: center;
+
+}
+
+
+.history-standings-table td:nth-child(2),
+.history-standings-table td:nth-child(3) {
+
+    text-align: left;
+
+}
+
+
+.history-standings-table tbody tr:hover {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+.history-standings-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.history-team-name {
+
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        13px !important;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   DRAFT ARCHIVE LINK
+====================================================== */
+
+.history-draft-link {
+
+    padding:
+        18px
+        24px
+        26px;
+
+    text-align: right;
+
+}
+
+
+.history-draft-link a {
+
+    display: inline-block;
+
+    padding:
+        9px
+        14px;
+
+    background:
+        var(--navy);
+
+    color: white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: .5px;
+
+    text-decoration: none;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-draft-link a:hover {
+
+    background:
+        var(--dark-navy);
+
+}
+
+
+/* ======================================================
+   HISTORY RESPONSIVE
+====================================================== */
+
+@media (max-width: 850px) {
+
+    .history-champions {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .history-podium {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .history-podium-card + .history-podium-card {
+
+        border-left: none;
+
+        border-top:
+            1px solid
+            var(--light-silver);
+
+    }
+
+
+    .history-leaders-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .history-champions {
+
+        grid-template-columns:
+            1fr;
+
+        max-width: 280px;
+
+    }
+
+
+    .history-section-heading {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .history-season-header h2 {
+
+        font-size: 29px;
+
+    }
+
+}
