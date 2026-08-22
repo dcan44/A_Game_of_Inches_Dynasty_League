@@ -756,6 +756,292 @@ historySeasonSelect.addEventListener(
 );
 
 
+/*
+ * ======================================================
+ * HALL OF SHAME
+ * ======================================================
+ *
+ * In a 12-team league, the losers-bracket game with
+ * p === 5 determines 11th and 12th place.
+ *
+ * The LOSER of that game is the final-place finisher.
+ */
+
+async function loadHallOfShame() {
+
+    try {
+
+        const leagueIds = {
+
+            2023:
+                "978545340355862528",
+
+            2024:
+                "1050836306860957696",
+
+            2025:
+                "1181097603123351552"
+
+        };
+
+
+        /*
+         * Load league history plus each consolation bracket.
+         */
+
+        const [
+            historyResponse,
+            bracket2023Response,
+            bracket2024Response,
+            bracket2025Response
+        ] = await Promise.all([
+
+            fetch('/api/history'),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueIds[2023]}/losers_bracket`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueIds[2024]}/losers_bracket`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueIds[2025]}/losers_bracket`
+            )
+
+        ]);
+
+
+        if (!historyResponse.ok) {
+
+            throw new Error(
+                'Unable to retrieve league history.'
+            );
+
+        }
+
+
+        const historyData =
+            await historyResponse.json();
+
+
+        const brackets = {
+
+            2023:
+                bracket2023Response.ok
+                    ? await bracket2023Response.json()
+                    : [],
+
+            2024:
+                bracket2024Response.ok
+                    ? await bracket2024Response.json()
+                    : [],
+
+            2025:
+                bracket2025Response.ok
+                    ? await bracket2025Response.json()
+                    : []
+
+        };
+
+
+        const shameResults =
+            [];
+
+
+        /*
+         * Process each completed historical season.
+         */
+
+        Object.entries(
+            brackets
+        ).forEach(
+            ([year, bracket]) => {
+
+                const season =
+                    Number(year);
+
+
+                const seasonData =
+                    historyData.seasons.find(
+                        item =>
+                            Number(
+                                item.season
+                            ) === season
+                    );
+
+
+                if (
+                    !seasonData ||
+                    !Array.isArray(bracket)
+                ) {
+
+                    return;
+
+                }
+
+
+                /*
+                 * Roster lookup for this specific season.
+                 */
+
+                const rosterMap =
+                    {};
+
+
+                seasonData.teams.forEach(
+                    team => {
+
+                        rosterMap[
+                            team.roster_id
+                        ] = team;
+
+                    }
+                );
+
+
+                /*
+                 * p === 5 is the 11th-place matchup.
+                 *
+                 * The loser finishes 12th.
+                 */
+
+                const toiletBowl =
+                    bracket.find(
+                        game =>
+                            game.p === 5
+                    );
+
+
+                if (
+                    !toiletBowl ||
+                    !toiletBowl.l
+                ) {
+
+                    return;
+
+                }
+
+
+                const lastPlaceTeam =
+                    rosterMap[
+                        toiletBowl.l
+                    ];
+
+
+                if (!lastPlaceTeam) {
+
+                    return;
+
+                }
+
+
+                shameResults.push(
+                    {
+
+                        season:
+                            season,
+
+                        owner:
+                            lastPlaceTeam.owner,
+
+                        team_name:
+                            lastPlaceTeam.team_name
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * Display oldest to newest.
+         */
+
+        shameResults.sort(
+            (a, b) =>
+                a.season -
+                b.season
+        );
+
+
+        if (
+            shameResults.length === 0
+        ) {
+
+            hallOfShame.innerHTML = `
+
+                <div class="hall-of-shame-empty">
+                    No shame has been recorded... somehow.
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        hallOfShame.innerHTML =
+            shameResults
+                .map(
+                    result => `
+
+                        <div class="shame-card">
+
+                            <div class="shame-year">
+                                ${result.season}
+                            </div>
+
+                            <div class="shame-icon">
+                                🚽
+                            </div>
+
+                            <div class="shame-label">
+                                Toilet Bowl
+                            </div>
+
+                            <div class="shame-team">
+                                ${result.team_name}
+                            </div>
+
+                            <div class="shame-owner">
+                                ${result.owner}
+                            </div>
+
+                            <div class="shame-footer">
+                                12th Place
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join('');
+
+
+    } catch (error) {
+
+        console.error(
+            'Hall of Shame error:',
+            error
+        );
+
+
+        hallOfShame.innerHTML = `
+
+            <div class="hall-of-shame-empty">
+                Unable to load league shame.
+            </div>
+
+        `;
+
+    }
+
+}
+
 
 /*
  * ======================================================
@@ -764,6 +1050,8 @@ historySeasonSelect.addEventListener(
  */
 
 loadChampionPennants();
+
+loadHallOfShame();
 
 loadHistorySeason(
     Number(
