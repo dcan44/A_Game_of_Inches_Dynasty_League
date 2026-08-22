@@ -5295,3 +5295,38 @@ footer p {
     }
 
 }
+/* ======================================================
+   DIVISION CHAMPION — WHITE / COWBOYS BLUE
+====================================================== */
+
+.division-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #FFFFFF 0%,
+            #F4F6F8 55%,
+            #E5E9ED 100%
+        );
+
+    color: #041E42;
+
+    border-top: 2px solid #7F969F;
+
+    text-shadow: none;
+
+}
+
+
+.division-badge .trophy-text {
+
+    color: #041E42;
+
+}
+
+
+.division-badge .division-star {
+
+    color: #041E42;
+
+}
