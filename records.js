@@ -959,15 +959,20 @@ const championshipLeaders =
 
 
         addRecordCard(
-            recordsGrid,
-            'Most Championships',
-            mostChampionships
-                ? mostChampionships.championships
-                : '—',
-            mostChampionships
-                ? mostChampionships.owner
-                : '—'
-        );
+    recordsGrid,
+    'Most Championships',
+    championshipRecord > 0
+        ? championshipRecord
+        : '—',
+    championshipLeaders.length > 0
+        ? championshipLeaders
+            .map(
+                manager =>
+                    manager.owner
+            )
+            .join(' • ')
+        : '—'
+);
 
 
         addRecordCard(
