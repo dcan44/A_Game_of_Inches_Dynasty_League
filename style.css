@@ -5026,3 +5026,174 @@ footer p {
     }
 
 }
+/* ======================================================
+   MANAGER TROPHY CASE — PODIUM COLORS
+====================================================== */
+
+
+/* ======================================================
+   SHARED PODIUM TROPHIES
+====================================================== */
+
+.championship-badge,
+.runnerup-badge,
+.third-place-badge {
+
+    min-width: 112px;
+
+}
+
+
+.championship-badge .trophy-icon,
+.runnerup-badge .trophy-icon,
+.third-place-badge .trophy-icon {
+
+    font-size: 14px;
+
+}
+
+
+/* ======================================================
+   LEAGUE CHAMPION — GOLD
+====================================================== */
+
+.championship-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #F1C95D 0%,
+            #D4A32D 50%,
+            #A87413 100%
+        );
+
+    border-top:
+        2px solid
+        #FFE294;
+
+    color:
+        var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.30);
+
+}
+
+
+/* ======================================================
+   RUNNER-UP — SILVER
+====================================================== */
+
+.runnerup-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #F2F4F5 0%,
+            #C8CDD0 48%,
+            #92999D 100%
+        );
+
+    border-top:
+        2px solid
+        #FFFFFF;
+
+    color:
+        var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.55);
+
+}
+
+
+.runnerup-badge .trophy-icon {
+
+    filter:
+        grayscale(1)
+        brightness(1.25);
+
+}
+
+
+/* ======================================================
+   THIRD PLACE — BRONZE
+====================================================== */
+
+.third-place-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #DFA36E 0%,
+            #B97035 50%,
+            #854718 100%
+        );
+
+    border-top:
+        2px solid
+        #F0C29D;
+
+    color:
+        #FFFFFF;
+
+    text-shadow:
+        0 1px 1px
+        rgba(0,0,0,.25);
+
+}
+
+
+.third-place-badge .trophy-icon {
+
+    filter:
+        sepia(1)
+        saturate(4)
+        hue-rotate(340deg)
+        brightness(.82);
+
+}
+
+
+/* ======================================================
+   DIVISION CHAMPION — COWBOYS BLUE / WHITE
+====================================================== */
+
+.division-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #174A82 0%,
+            #0B315C 55%,
+            #041E42 100%
+        );
+
+    border-top:
+        2px solid
+        #D8DFE5;
+
+    color:
+        #FFFFFF;
+
+    text-shadow:
+        0 1px 1px
+        rgba(0,0,0,.25);
+
+}
+
+
+.division-star {
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        13px;
+
+    line-height:
+        1;
+
+}
