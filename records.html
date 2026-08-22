@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Records | A Game of Inches</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="page-header">
+
+    <a class="site-name" href="/">
+        A Game of Inches
+    </a>
+
+    <p>Dynasty Fantasy Football League</p>
+
+</header>
+
+
+<nav class="main-nav">
+
+    <a href="/">Home</a>
+    <a href="/managers">Managers</a>
+    <a href="/standings">Standings</a>
+    <a href="/draft">Draft Central</a>
+    <a href="/records" class="active">Records</a>
+    <a href="/history">History</a>
+    <a href="/rules">Rules</a>
+
+</nav>
+
+
+<main>
+
+    <section class="page-title">
+
+        <p class="page-kicker">
+            League Record Book
+        </p>
+
+        <h1>Records</h1>
+
+        <p>
+            The all-time statistical history of A Game of Inches,
+            including current managers, former managers, scoring
+            records, playoff performance, and league milestones.
+        </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         LEAGUE RECORDS
+    =================================================== -->
+
+    <section>
+
+        <div class="records-heading">
+
+            <h2 class="section-title">
+                League Leaders
+            </h2>
+
+            <span class="live-indicator records-live">
+                ● HISTORICAL DATA
+            </span>
+
+        </div>
+
+
+        <div
+            id="league-records-grid"
+            class="league-records-grid"
+        >
+
+            <div class="record-loading">
+                Loading league records...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         MANAGER RECORDS
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Manager Records
+        </h2>
+
+
+        <div class="records-table-card">
+
+            <div class="records-table-scroll">
+
+                <table class="manager-records-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Manager</th>
+
+                            <th>Status</th>
+
+                            <th>Seasons</th>
+
+                            <th>Regular Season</th>
+
+                            <th>Win %</th>
+
+                            <th>PPG</th>
+
+                            <th>PAPG</th>
+
+                            <th>Titles</th>
+
+                            <th>Division</th>
+
+                            <th>Playoffs</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="manager-records-body">
+
+                        <tr>
+
+                            <td colspan="10">
+                                Loading manager records...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ABOUT THE RECORD BOOK
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Record Book Notes
+        </h2>
+
+
+        <div class="card record-notes">
+
+            <p>
+                Regular-season records and scoring statistics are
+                calculated from weekly Sleeper matchup results.
+                Playoff records include championship-bracket games
+                only and exclude consolation games and bye weeks.
+            </p>
+
+            <p>
+                Historical championships and division titles are
+                preserved separately so league format changes do not
+                alter past accomplishments.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-logo">
+        A Game of Inches
+    </div>
+
+    <p>
+        Dynasty Fantasy Football League
+    </p>
+
+    <p class="footer-season">
+        Established 2023
+    </p>
+
+</footer>
+
+
+<script src="records.js"></script>
+
+</body>
+
+</html>
