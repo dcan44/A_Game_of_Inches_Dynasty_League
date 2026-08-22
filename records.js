@@ -818,13 +818,22 @@ addRecordCard(
          * Most championships
          */
 
-        const mostChampionships =
-            [...managers]
-                .sort(
-                    (a, b) =>
-                        b.championships -
-                        a.championships
-                )[0];
+        const championshipRecord =
+    Math.max(
+        ...managers.map(
+            manager =>
+                manager.championships
+        )
+    );
+
+
+const championshipLeaders =
+    managers.filter(
+        manager =>
+            manager.championships ===
+                championshipRecord &&
+            championshipRecord > 0
+    );
 
 
         /*
