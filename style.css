@@ -5449,3 +5449,255 @@ footer p {
     color: #FFFFFF;
 
 }
+/* ======================================================
+   HALL OF SHAME
+====================================================== */
+
+.hall-of-shame-title {
+    margin-bottom: 8px;
+}
+
+.hall-of-shame-intro {
+    max-width: 620px;
+
+    margin:
+        0
+        0
+        18px;
+
+    color: #747C82;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.hall-of-shame-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* ======================================================
+   TOILET BOWL BANNERS
+====================================================== */
+
+.shame-card {
+    position: relative;
+
+    min-height: 205px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        22px
+        18px
+        34px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #9A6A3A 0%,
+            #754820 50%,
+            #4E2D13 100%
+        );
+
+    color: #FFFFFF;
+
+    text-align: center;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 84%,
+        50% 100%,
+        0 84%
+    );
+
+    box-shadow:
+        0 5px 12px
+        rgba(0, 0, 0, .18);
+}
+
+
+/* Subtle highlight across top */
+
+.shame-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 6px;
+    left: 8px;
+    right: 8px;
+
+    height: 2px;
+
+    background:
+        rgba(255, 255, 255, .25);
+}
+
+
+/* ======================================================
+   YEAR
+====================================================== */
+
+.shame-year {
+    color: #F4E4D0;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* ======================================================
+   TOILET
+====================================================== */
+
+.shame-icon {
+    margin:
+        8px
+        0
+        5px;
+
+    font-size: 34px;
+
+    line-height: 1;
+}
+
+
+/* ======================================================
+   TOILET BOWL LABEL
+====================================================== */
+
+.shame-label {
+    color: #F4E4D0;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   TEAM
+====================================================== */
+
+.shame-team {
+    margin-top: 12px;
+
+    color: #FFFFFF;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   MANAGER
+====================================================== */
+
+.shame-owner {
+    margin-top: 5px;
+
+    color: #E8D4BE;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/* ======================================================
+   LAST PLACE LABEL
+====================================================== */
+
+.shame-footer {
+    margin-top: 12px;
+
+    padding:
+        4px
+        9px;
+
+    background:
+        rgba(0, 0, 0, .18);
+
+    color: #F4E4D0;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   EMPTY / ERROR
+====================================================== */
+
+.hall-of-shame-empty {
+    grid-column:
+        1 / -1;
+
+    padding: 25px;
+
+    border:
+        1px dashed
+        var(--silver);
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 750px) {
+
+    .hall-of-shame-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
