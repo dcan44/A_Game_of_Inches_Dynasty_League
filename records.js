@@ -764,20 +764,30 @@ async function loadRecords() {
 
 
         /*
-         * Biggest blowout
-         */
-
-        const biggestWinManager =
-            managers
-                .filter(
-                    manager =>
-                        manager.biggest_win
-                )
-                .sort(
-                    (a, b) =>
-                        b.biggest_win.margin -
-                        a.biggest_win.margin
-                )[0];
+addRecordCard(
+    recordsGrid,
+    'Biggest Blowout',
+    biggestWinManager
+        ? biggestWinManager
+            .biggest_win
+            .margin
+            .toFixed(2)
+        : '—',
+    biggestWinManager
+        ? `
+            ${biggestWinManager.owner}
+            over
+            ${biggestWinManager.biggest_win.opponent}
+            •
+            ${biggestWinManager.biggest_win.score.toFixed(2)}
+            -
+            ${biggestWinManager.biggest_win.opponent_score.toFixed(2)}
+            • Week
+            ${biggestWinManager.biggest_win.week},
+            ${biggestWinManager.biggest_win.season}
+          `
+        : '—'
+);
 
 
         /*
