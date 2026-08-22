@@ -7,18 +7,13 @@ async function loadManagers() {
 
         /*
          * =====================================================
-         * LOAD DATA
+         * LOAD CURRENT + HISTORICAL DATA
          * =====================================================
-         *
-         * Current teams come from /api/teams.
-         *
-         * Historical performance is requested one season
-         * at a time. This avoids Cloudflare's Worker
-         * subrequest limits.
          */
 
         const [
             teamsResponse,
+            historyResponse,
             performance2023Response,
             performance2024Response,
             performance2025Response,
@@ -27,32 +22,23 @@ async function loadManagers() {
 
             fetch('/api/teams'),
 
-            fetch(
-                '/api/manager-performance?season=2023'
-            ),
+            fetch('/api/history'),
 
-            fetch(
-                '/api/manager-performance?season=2024'
-            ),
+            fetch('/api/manager-performance?season=2023'),
 
-            fetch(
-                '/api/manager-performance?season=2025'
-            ),
+            fetch('/api/manager-performance?season=2024'),
 
-            fetch(
-                '/api/manager-performance?season=2026'
-            )
+            fetch('/api/manager-performance?season=2025'),
+
+            fetch('/api/manager-performance?season=2026')
 
         ]);
 
 
-        /*
-         * Make sure every request succeeded.
-         */
-
         const responses = [
 
             teamsResponse,
+            historyResponse,
             performance2023Response,
             performance2024Response,
             performance2025Response,
@@ -74,12 +60,12 @@ async function loadManagers() {
         }
 
 
-        /*
-         * Convert responses to JSON.
-         */
-
         const teamsData =
             await teamsResponse.json();
+
+
+        const historyData =
+            await historyResponse.json();
 
 
         const performanceData = [
@@ -106,6 +92,179 @@ async function loadManagers() {
 
         /*
          * =====================================================
+         * CONFIRMED LEAGUE CHAMPIONS
+         * =====================================================
+         *
+         * These are intentionally stored separately from
+         * Sleeper team names because team names change.
+         */
+
+        const champions = {
+
+            2023:
+                "978544154789699584", // Dan
+
+            2024:
+                "978815135223525376", // RJ
+
+            2025:
+                "1060373241799262208" // Seth
+
+        };
+
+
+        /*
+         * =====================================================
+         * CALCULATE DIVISION CHAMPIONS
+         * =====================================================
+         */
+
+        const divisionTitles = {};
+
+
+        if (historyData.seasons) {
+
+            historyData.seasons.forEach(
+                seasonData => {
+
+                    /*
+                     * Ignore current unfinished season.
+                     */
+
+                    if (
+                        seasonData.status !==
+                        'complete'
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const divisions = {};
+
+
+                    seasonData.teams.forEach(
+                        team => {
+
+                            if (!team.division) {
+                                return;
+                            }
+
+
+                            if (
+                                !divisions[
+                                    team.division
+                                ]
+                            ) {
+
+                                divisions[
+                                    team.division
+                                ] = [];
+
+                            }
+
+
+                            divisions[
+                                team.division
+                            ].push(team);
+
+                        }
+                    );
+
+
+                    /*
+                     * Sort each division by:
+                     *
+                     * 1. Wins
+                     * 2. Fewer losses
+                     * 3. Points For
+                     */
+
+                    Object.values(
+                        divisions
+                    ).forEach(
+                        divisionTeams => {
+
+                            divisionTeams.sort(
+                                (a, b) => {
+
+                                    if (
+                                        b.wins !==
+                                        a.wins
+                                    ) {
+
+                                        return (
+                                            b.wins -
+                                            a.wins
+                                        );
+
+                                    }
+
+
+                                    if (
+                                        a.losses !==
+                                        b.losses
+                                    ) {
+
+                                        return (
+                                            a.losses -
+                                            b.losses
+                                        );
+
+                                    }
+
+
+                                    return (
+                                        b.points_for -
+                                        a.points_for
+                                    );
+
+                                }
+                            );
+
+
+                            const winner =
+                                divisionTeams[0];
+
+
+                            if (
+                                winner &&
+                                winner.owner_id
+                            ) {
+
+                                if (
+                                    !divisionTitles[
+                                        winner.owner_id
+                                    ]
+                                ) {
+
+                                    divisionTitles[
+                                        winner.owner_id
+                                    ] = [];
+
+                                }
+
+
+                                divisionTitles[
+                                    winner.owner_id
+                                ].push(
+                                    seasonData.season
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+         * =====================================================
          * BUILD CAREER STATISTICS
          * =====================================================
          */
@@ -124,11 +283,6 @@ async function loadManagers() {
                 seasonData.managers.forEach(
                     manager => {
 
-
-                        /*
-                         * Create manager if this is the
-                         * first season we've encountered.
-                         */
 
                         if (
                             !careerMap[
@@ -191,10 +345,8 @@ async function loadManagers() {
 
 
                         /*
-                         * Count season played.
-                         *
-                         * 2026 will count once actual games
-                         * have been played.
+                         * Count a season once games
+                         * have actually been played.
                          */
 
                         if (
@@ -238,7 +390,7 @@ async function loadManagers() {
 
 
                         /*
-                         * Career regular-season scoring
+                         * Scoring
                          */
 
                         career.points_for +=
@@ -358,7 +510,7 @@ async function loadManagers() {
 
 
             /*
-             * Regular-season career record
+             * Career regular-season record
              */
 
             let regularRecord = '—';
@@ -383,7 +535,7 @@ async function loadManagers() {
 
 
             /*
-             * Playoff record
+             * Career playoff record
              */
 
             let playoffRecord =
@@ -443,7 +595,7 @@ async function loadManagers() {
 
 
             /*
-             * Career PPG
+             * Career points per game
              */
 
             let careerPPG =
@@ -469,7 +621,7 @@ async function loadManagers() {
              */
 
             let highestTeamScore =
-                'Coming Soon';
+                '—';
 
 
             if (
@@ -480,11 +632,145 @@ async function loadManagers() {
                 highestTeamScore =
                     `
                         ${career.highest_team_score.points.toFixed(2)}
+
                         <small>
                             Week ${career.highest_team_score.week},
                             ${career.highest_team_score.season}
                         </small>
                     `;
+
+            }
+
+
+            /*
+             * =================================================
+             * TROPHY CASE
+             * =================================================
+             */
+
+            const championshipYears =
+                Object.entries(champions)
+                    .filter(
+                        ([year, ownerId]) =>
+                            ownerId ===
+                            team.owner_id
+                    )
+                    .map(
+                        ([year]) =>
+                            Number(year)
+                    )
+                    .sort(
+                        (a, b) =>
+                            a - b
+                    );
+
+
+            const managerDivisionTitles =
+                divisionTitles[
+                    team.owner_id
+                ] || [];
+
+
+            let trophyHTML = '';
+
+
+            /*
+             * Championship trophies
+             */
+
+            championshipYears.forEach(
+                year => {
+
+                    trophyHTML += `
+
+                        <div
+                            class="
+                                manager-trophy
+                                championship-trophy
+                            "
+                        >
+
+                            <span
+                                class="trophy-symbol"
+                            >
+                                ★
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    ${year} Champion
+                                </strong>
+
+                                <small>
+                                    League Championship
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            /*
+             * Division trophies
+             */
+
+            managerDivisionTitles.forEach(
+                year => {
+
+                    trophyHTML += `
+
+                        <div
+                            class="
+                                manager-trophy
+                                division-trophy
+                            "
+                        >
+
+                            <span
+                                class="trophy-symbol"
+                            >
+                                ◆
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    ${year} Division
+                                </strong>
+
+                                <small>
+                                    Division Champion
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            /*
+             * Empty trophy case
+             */
+
+            if (!trophyHTML) {
+
+                trophyHTML = `
+
+                    <div class="empty-trophy-case">
+                        No league honors yet
+                    </div>
+
+                `;
 
             }
 
@@ -535,8 +821,10 @@ async function loadManagers() {
                         Trophy Case
                     </div>
 
-                    <div class="trophy-case-content">
-                        Historical honors coming soon
+                    <div class="trophy-case-grid">
+
+                        ${trophyHTML}
+
                     </div>
 
                 </div>
@@ -622,6 +910,32 @@ async function loadManagers() {
 
                         <strong>
                             ${careerPPG}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="manager-stat">
+
+                        <span>
+                            Championships
+                        </span>
+
+                        <strong>
+                            ${championshipYears.length}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="manager-stat">
+
+                        <span>
+                            Division Titles
+                        </span>
+
+                        <strong>
+                            ${managerDivisionTitles.length}
                         </strong>
 
                     </div>
