@@ -5296,7 +5296,7 @@ footer p {
 
 }
 /* ======================================================
-   DIVISION CHAMPION — MATTE BLACK
+   DIVISION CHAMPION — BLUE WITH WHITE OUTLINE
 ====================================================== */
 
 .division-badge {
@@ -5304,19 +5304,28 @@ footer p {
     background:
         linear-gradient(
             180deg,
-            #30343A 0%,
-            #1E2227 55%,
-            #111417 100%
+            #1760A8 0%,
+            #0C4A87 50%,
+            #063568 100%
         );
 
     color: #FFFFFF;
 
-    border-top: 2px solid #697078;
+    border: none;
 
-    text-shadow: none;
+    border-top: none;
+
+    text-shadow:
+        0 1px 1px
+        rgba(0, 0, 0, .35);
+
+    box-shadow:
+        inset 0 0 0 2px #FFFFFF;
 
 }
 
+
+/* Make absolutely sure the text remains white */
 
 .division-badge .trophy-text {
 
@@ -5325,12 +5334,10 @@ footer p {
 }
 
 
+/* White division star */
+
 .division-badge .division-star {
 
     color: #FFFFFF;
 
-}
-.division-badge {
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.20);
 }
