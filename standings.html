@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Standings | A Game of Inches</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="page-header">
+
+    <a class="site-name" href="/">
+        A Game of Inches
+    </a>
+
+    <p>Dynasty Fantasy Football League</p>
+
+</header>
+
+
+<nav class="main-nav">
+
+    <a href="/">Home</a>
+    <a href="/managers">Managers</a>
+    <a href="/standings" class="active">Standings</a>
+    <a href="/draft">Draft Central</a>
+    <a href="/records">Records</a>
+    <a href="/history">History</a>
+    <a href="/rules">Rules</a>
+
+</nav>
+
+
+<main>
+
+    <section class="page-title">
+
+        <p class="page-kicker">
+            Current Season
+        </p>
+
+        <h1>Standings</h1>
+
+        <p>
+            Current league standings and the all-time head-to-head
+            history between A Game of Inches managers.
+        </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         CURRENT STANDINGS
+    =================================================== -->
+
+    <section>
+
+        <div class="records-heading">
+
+            <h2 class="section-title">
+                2026 Standings
+            </h2>
+
+            <span class="live-indicator records-live">
+                ● LIVE FROM SLEEPER
+            </span>
+
+        </div>
+
+
+        <div class="records-table-card">
+
+            <div class="records-table-scroll">
+
+                <table class="standings-page-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Manager</th>
+                            <th>Division</th>
+                            <th>Record</th>
+                            <th>PF</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="standings-page-body">
+
+                        <tr>
+                            <td colspan="6">
+                                Loading standings...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         HEAD TO HEAD
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            All-Time Head-to-Head
+        </h2>
+
+
+        <div class="head-to-head-note">
+
+            Each cell shows the row manager's all-time
+            regular-season record against the column manager.
+
+        </div>
+
+
+        <div class="head-to-head-card">
+
+            <div class="head-to-head-scroll">
+
+                <table
+                    id="head-to-head-table"
+                    class="head-to-head-table"
+                >
+
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                Loading head-to-head history...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         NOTES
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Standings Notes
+        </h2>
+
+
+        <div class="card record-notes">
+
+            <p>
+                Current standings are pulled directly from Sleeper.
+                All-time head-to-head results are calculated from
+                regular-season weekly matchups beginning with the
+                league's 2023 season.
+            </p>
+
+            <p>
+                Championship playoff games are not included in the
+                head-to-head matrix. Those are tracked separately
+                in manager playoff records.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-logo">
+        A Game of Inches
+    </div>
+
+    <p>
+        Dynasty Fantasy Football League
+    </p>
+
+    <p class="footer-season">
+        Established 2023
+    </p>
+
+</footer>
+
+
+<script src="standings.js"></script>
+
+</body>
+
+</html>
