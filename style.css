@@ -4799,3 +4799,230 @@ footer p {
     }
 
 }
+/* ======================================================
+   HISTORY PODIUM - GOLD / SILVER / BRONZE
+====================================================== */
+
+.history-podium {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    padding: 18px 24px 6px;
+
+    background: white;
+
+}
+
+
+.history-podium-card {
+
+    position: relative;
+
+    min-height: 155px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 22px 18px;
+
+    text-align: center;
+
+    border: 1px solid rgba(0,0,0,.08);
+
+    box-shadow:
+        0 3px 8px
+        rgba(0,0,0,.08);
+
+}
+
+
+.history-podium-icon {
+
+    margin-bottom: 7px;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+}
+
+
+.history-podium-card span {
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-podium-card strong {
+
+    margin-top: 6px;
+
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 18px;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+}
+
+
+.history-podium-card small {
+
+    margin-top: 5px;
+
+    color: #60686D;
+
+    font-size: 10px;
+
+}
+
+
+/* ======================================================
+   CHAMPION - GOLD
+====================================================== */
+
+.history-podium-champion {
+
+    background:
+        linear-gradient(
+            180deg,
+            #FFF7DE 0%,
+            #F1D992 100%
+        );
+
+    border-color:
+        #D6A52C;
+
+}
+
+
+.history-podium-champion .history-podium-icon {
+
+    filter:
+        sepia(1)
+        saturate(4)
+        hue-rotate(355deg)
+        brightness(.95);
+
+}
+
+
+.history-podium-champion span {
+
+    color: #9B6A08;
+
+}
+
+
+/* ======================================================
+   RUNNER-UP - SILVER
+====================================================== */
+
+.history-podium-runnerup {
+
+    background:
+        linear-gradient(
+            180deg,
+            #F6F7F8 0%,
+            #D8DDE0 100%
+        );
+
+    border-color:
+        #A5ACAF;
+
+}
+
+
+.history-podium-runnerup .history-podium-icon {
+
+    filter:
+        grayscale(1)
+        brightness(1.35);
+
+}
+
+
+.history-podium-runnerup span {
+
+    color: #687075;
+
+}
+
+
+/* ======================================================
+   THIRD PLACE - BRONZE
+====================================================== */
+
+.history-podium-third {
+
+    background:
+        linear-gradient(
+            180deg,
+            #F7E3D2 0%,
+            #D8A071 100%
+        );
+
+    border-color:
+        #B66A2B;
+
+}
+
+
+.history-podium-third .history-podium-icon {
+
+    filter:
+        sepia(1)
+        saturate(5)
+        hue-rotate(345deg)
+        brightness(.8);
+
+}
+
+
+.history-podium-third span {
+
+    color: #9B531E;
+
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 750px) {
+
+    .history-podium {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
