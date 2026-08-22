@@ -4,22 +4,68 @@ async function loadManagers() {
 
     try {
 
-        const response = await fetch('/api/teams');
+        /*
+         * Load current team information and historical
+         * career statistics at the same time.
+         */
 
-        if (!response.ok) {
-            throw new Error('Unable to retrieve team data.');
+        const [teamsResponse, careerResponse] =
+            await Promise.all([
+                fetch('/api/teams'),
+                fetch('/api/career-stats')
+            ]);
+
+
+        if (!teamsResponse.ok || !careerResponse.ok) {
+            throw new Error(
+                'Unable to retrieve manager data.'
+            );
         }
 
-        const data = await response.json();
 
-        if (!data.teams) {
-            throw new Error('No teams returned.');
+        const teamsData =
+            await teamsResponse.json();
+
+        const careerData =
+            await careerResponse.json();
+
+
+        if (!teamsData.teams) {
+            throw new Error(
+                'No current teams returned.'
+            );
         }
 
 
-        const teams = [...data.teams].sort(
-            (a, b) => a.roster_id - b.roster_id
-        );
+        /*
+         * Create a lookup table using Sleeper owner_id.
+         */
+
+        const careerMap = {};
+
+
+        if (careerData.managers) {
+
+            careerData.managers.forEach(manager => {
+
+                careerMap[manager.owner_id] =
+                    manager;
+
+            });
+
+        }
+
+
+        /*
+         * Keep current franchises in roster order.
+         */
+
+        const teams =
+            [...teamsData.teams].sort(
+                (a, b) =>
+                    a.roster_id -
+                    b.roster_id
+            );
 
 
         grid.innerHTML = '';
@@ -27,29 +73,139 @@ async function loadManagers() {
 
         teams.forEach(team => {
 
-            const card = document.createElement('article');
-
-            card.className = 'manager-card';
-
-
-            const avatar = team.avatar
-                ? `
-                    <img
-                        class="manager-avatar"
-                        src="${team.avatar}"
-                        alt="${team.team_name}"
-                    >
-                  `
-                : `
-                    <div class="manager-avatar manager-avatar-placeholder">
-                        ${team.team_name.charAt(0)}
-                    </div>
-                  `;
+            const career =
+                careerMap[team.owner_id];
 
 
-            const record =
+            const card =
+                document.createElement('article');
+
+
+            card.className =
+                'manager-card';
+
+
+            /*
+             * Team / manager avatar
+             */
+
+            const avatar =
+                team.avatar
+                    ? `
+                        <img
+                            class="manager-avatar"
+                            src="${team.avatar}"
+                            alt="${team.team_name}"
+                        >
+                      `
+                    : `
+                        <div
+                            class="
+                                manager-avatar
+                                manager-avatar-placeholder
+                            "
+                        >
+                            ${team.team_name.charAt(0)}
+                        </div>
+                      `;
+
+
+            /*
+             * Current-season record
+             */
+
+            const currentRecord =
                 `${team.wins}-${team.losses}` +
-                (team.ties ? `-${team.ties}` : '');
+                (
+                    team.ties
+                        ? `-${team.ties}`
+                        : ''
+                );
+
+
+            /*
+             * Career record
+             */
+
+            let careerRecord = '—';
+
+            if (career) {
+
+                careerRecord =
+                    `${career.wins}-${career.losses}`;
+
+                if (career.ties) {
+
+                    careerRecord +=
+                        `-${career.ties}`;
+
+                }
+
+            }
+
+
+            /*
+             * Winning percentage
+             */
+
+            let winningPercentage = '—';
+
+            if (
+                career &&
+                career.games > 0
+            ) {
+
+                winningPercentage =
+                    (
+                        career.winning_percentage *
+                        100
+                    ).toFixed(1) + '%';
+
+            }
+
+
+            /*
+             * Historical team names
+             */
+
+            let historicalNames = '';
+
+            if (
+                career &&
+                career.historical_team_names &&
+                career.historical_team_names.length > 1
+            ) {
+
+                const oldNames =
+                    career.historical_team_names
+                        .filter(
+                            name =>
+                                name !==
+                                team.team_name
+                        );
+
+
+                if (oldNames.length > 0) {
+
+                    historicalNames = `
+
+                        <div class="manager-history">
+
+                            <span>
+                                Former Team Names
+                            </span>
+
+                            <p>
+                                ${oldNames.join(' • ')}
+                            </p>
+
+                        </div>
+
+                    `;
+
+                }
+
+            }
 
 
             card.innerHTML = `
@@ -61,12 +217,18 @@ async function loadManagers() {
                     <div class="manager-identity">
 
                         <span class="manager-number">
-                            FRANCHISE ${String(team.roster_id).padStart(2, '0')}
+                            FRANCHISE ${String(
+                                team.roster_id
+                            ).padStart(2, '0')}
                         </span>
 
-                        <h2>${team.team_name}</h2>
+                        <h2>
+                            ${team.team_name}
+                        </h2>
 
-                        <p>${team.owner}</p>
+                        <p>
+                            ${team.owner}
+                        </p>
 
                     </div>
 
@@ -97,10 +259,12 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>2026 Record</span>
+                        <span>
+                            2026 Record
+                        </span>
 
                         <strong>
-                            ${record}
+                            ${currentRecord}
                         </strong>
 
                     </div>
@@ -108,7 +272,9 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>2026 Points</span>
+                        <span>
+                            2026 Points
+                        </span>
 
                         <strong>
                             ${team.points_for.toFixed(2)}
@@ -119,10 +285,16 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>Seasons</span>
+                        <span>
+                            Seasons
+                        </span>
 
                         <strong>
-                            —
+                            ${
+                                career
+                                    ? career.seasons_played
+                                    : '—'
+                            }
                         </strong>
 
                     </div>
@@ -130,10 +302,12 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>All-Time Record</span>
+                        <span>
+                            All-Time Record
+                        </span>
 
                         <strong>
-                            —
+                            ${careerRecord}
                         </strong>
 
                     </div>
@@ -141,10 +315,12 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>Championships</span>
+                        <span>
+                            Win %
+                        </span>
 
                         <strong>
-                            —
+                            ${winningPercentage}
                         </strong>
 
                     </div>
@@ -152,10 +328,17 @@ async function loadManagers() {
 
                     <div class="manager-stat">
 
-                        <span>Division Titles</span>
+                        <span>
+                            Career PPG
+                        </span>
 
                         <strong>
-                            —
+                            ${
+                                career
+                                    ? career.points_per_game
+                                        .toFixed(2)
+                                    : '—'
+                            }
                         </strong>
 
                     </div>
@@ -192,6 +375,9 @@ async function loadManagers() {
 
                 </div>
 
+
+                ${historicalNames}
+
             `;
 
 
@@ -210,7 +396,12 @@ async function loadManagers() {
 
         grid.innerHTML = `
 
-            <div class="manager-loading manager-error">
+            <div
+                class="
+                    manager-loading
+                    manager-error
+                "
+            >
 
                 Unable to load manager information.
 
