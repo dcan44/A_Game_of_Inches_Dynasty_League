@@ -907,11 +907,42 @@ async function loadHallOfShame() {
                  * The loser finishes 12th.
                  */
 
-                const toiletBowl =
-                    bracket.find(
-                        game =>
-                            game.p === 5
-                    );
+/*
+ * Find the lowest placement game in the
+ * consolation bracket.
+ *
+ * Sleeper uses:
+ *
+ * p = 1 -> highest placement game
+ * p = 3 -> next placement game
+ * p = 5 -> lowest placement game
+ *
+ * For our 12-team league, the highest p value
+ * determines 11th vs 12th place.
+ */
+
+const placementGames =
+    bracket.filter(
+        game =>
+            typeof game.p === 'number'
+    );
+
+
+if (
+    placementGames.length === 0
+) {
+
+    return;
+
+}
+
+
+const toiletBowl =
+    placementGames
+        .sort(
+            (a, b) =>
+                b.p - a.p
+        )[0];
 
 
                 if (
