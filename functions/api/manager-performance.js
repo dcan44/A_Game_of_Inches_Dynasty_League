@@ -647,24 +647,25 @@ function recordGame(
             firstPoints;
 
 
-        updateScoringRecords(
-            first,
-            firstTeam,
-            firstPoints,
-            secondPoints,
-            season,
-            week
-        );
+updateScoringRecords(
+    first,
+    firstTeam,
+    secondTeam,
+    firstPoints,
+    secondPoints,
+    season,
+    week
+);
 
-
-        updateScoringRecords(
-            second,
-            secondTeam,
-            secondPoints,
-            firstPoints,
-            season,
-            week
-        );
+updateScoringRecords(
+    second,
+    secondTeam,
+    firstTeam,
+    secondPoints,
+    firstPoints,
+    season,
+    week
+);
 
     }
 
@@ -815,6 +816,7 @@ function getManager(
 function updateScoringRecords(
     manager,
     team,
+    opponentTeam,
     points,
     opponentPoints,
     season,
@@ -889,28 +891,34 @@ function updateScoringRecords(
             manager.biggest_win.margin
         ) {
 
-            manager.biggest_win = {
+manager.biggest_win = {
 
-                margin:
-                    margin,
+    margin:
+        margin,
 
-                score:
-                    Number(
-                        points.toFixed(2)
-                    ),
+    score:
+        Number(
+            points.toFixed(2)
+        ),
 
-                opponent_score:
-                    Number(
-                        opponentPoints.toFixed(2)
-                    ),
+    opponent_score:
+        Number(
+            opponentPoints.toFixed(2)
+        ),
 
-                season:
-                    season,
+    opponent:
+        opponentTeam.owner,
 
-                week:
-                    week
+    opponent_team:
+        opponentTeam.team_name,
 
-            };
+    season:
+        season,
+
+    week:
+        week
+
+};
 
         }
 
@@ -928,28 +936,31 @@ function updateScoringRecords(
             manager.biggest_loss.margin
         ) {
 
-            manager.biggest_loss = {
+manager.highest_score_in_loss = {
 
-                margin:
-                    margin,
+    points:
+        Number(
+            points.toFixed(2)
+        ),
 
-                score:
-                    Number(
-                        points.toFixed(2)
-                    ),
+    opponent_points:
+        Number(
+            opponentPoints.toFixed(2)
+        ),
 
-                opponent_score:
-                    Number(
-                        opponentPoints.toFixed(2)
-                    ),
+    opponent:
+        opponentTeam.owner,
 
-                season:
-                    season,
+    opponent_team:
+        opponentTeam.team_name,
 
-                week:
-                    week
+    season:
+        season,
 
-            };
+    week:
+        week
+
+};
 
         }
 
