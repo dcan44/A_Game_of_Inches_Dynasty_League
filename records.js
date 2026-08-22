@@ -358,23 +358,30 @@ async function loadRecords() {
 
 
                         /*
-                         * Highest score in a loss
-                         */
-
-                        if (
-                            manager.highest_score_in_loss &&
-                            (
-                                !career.highest_score_in_loss ||
-                                manager.highest_score_in_loss.points >
-                                career.highest_score_in_loss.points
-                            )
-                        ) {
-
-                            career.highest_score_in_loss = {
-
-                                ...manager.highest_score_in_loss
-
-                            };
+addRecordCard(
+    recordsGrid,
+    'Highest Score in a Loss',
+    highestLossManager
+        ? highestLossManager
+            .highest_score_in_loss
+            .points
+            .toFixed(2)
+        : '—',
+    highestLossManager
+        ? `
+            ${highestLossManager.owner}
+            vs
+            ${highestLossManager.highest_score_in_loss.opponent}
+            •
+            ${highestLossManager.highest_score_in_loss.points.toFixed(2)}
+            -
+            ${highestLossManager.highest_score_in_loss.opponent_points.toFixed(2)}
+            • Week
+            ${highestLossManager.highest_score_in_loss.week},
+            ${highestLossManager.highest_score_in_loss.season}
+          `
+        : '—'
+);
 
                         }
 
