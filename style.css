@@ -1,181 +1,1396 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+
+/* ======================================================
+   COLORS
+====================================================== */
 
 :root {
+
     --navy: #041E42;
     --dark-navy: #02152F;
+    --deep-navy: #010D1D;
+
     --silver: #869397;
-    --light-silver: #D9E0E2;
+    --light-silver: #D7DCDE;
+
     --white: #FFFFFF;
-    --light-gray: #F4F5F6;
+    --off-white: #F7F8F9;
+
+    --light-gray: #EEF0F2;
+    --medium-gray: #CCD1D4;
+
     --text: #17202A;
+
 }
+
+
+/* ======================================================
+   GLOBAL
+====================================================== */
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
+
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--light-gray);
+
+    font-family: 'Roboto', Arial, sans-serif;
+
+    background: var(--off-white);
+
     color: var(--text);
+
 }
 
-header {
-    background: var(--navy);
-    color: white;
-    padding: 30px 20px 25px;
+
+/* ======================================================
+   LEAGUE HEADER
+====================================================== */
+
+.league-header {
+
+    background:
+        linear-gradient(
+            rgba(2, 21, 47, 0.96),
+            rgba(4, 30, 66, 0.96)
+        );
+
+    color: var(--white);
+
     text-align: center;
-    border-bottom: 5px solid var(--silver);
+
+    padding:
+
+        55px
+        20px
+        42px;
+
+    border-bottom:
+
+        5px
+        solid
+        var(--silver);
+
 }
 
-header h1 {
+
+.league-title h1 {
+
     margin: 0;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
-    font-size: 42px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 58px;
+
     font-weight: 700;
-    letter-spacing: 2px;
+
+    letter-spacing: 4px;
+
     text-transform: uppercase;
+
 }
 
-header p {
-    margin: 6px 0 0;
+
+.league-title p {
+
+    margin:
+
+        6px
+        0
+        0;
+
     color: var(--light-silver);
-    font-size: 15px;
-    letter-spacing: 3px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 17px;
+
+    letter-spacing: 5px;
+
     text-transform: uppercase;
+
 }
 
-nav {
-    background: var(--dark-navy);
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--silver);
+
+/* ======================================================
+   QUOTE
+====================================================== */
+
+.league-quote {
+
+    max-width: 700px;
+
+    margin:
+
+        32px
+        auto
+        0;
+
+    padding-top: 24px;
+
+    border-top:
+
+        1px
+        solid
+        rgba(255,255,255,.22);
+
 }
 
-nav a {
+
+.league-quote blockquote {
+
+    margin: 0;
+
+    font-family: Georgia, serif;
+
+    font-size: 24px;
+
+    font-style: italic;
+
     color: white;
-    text-decoration: none;
-    padding: 15px 18px;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
+
 }
 
-nav a:hover {
-    background: var(--navy);
-    color: var(--light-silver);
+
+.league-quote span {
+
+    display: block;
+
+    margin-top: 10px;
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    text-transform: uppercase;
+
+    letter-spacing: 2px;
+
+    font-size: 13px;
+
 }
+
+
+/* ======================================================
+   CHAMPIONSHIP SECTION
+====================================================== */
+
+.champions-section {
+
+    background: var(--white);
+
+    text-align: center;
+
+    padding:
+
+        35px
+        20px
+        50px;
+
+    border-bottom:
+
+        1px
+        solid
+        var(--medium-gray);
+
+}
+
+
+.champions-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 20px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.champions-heading h2 {
+
+    margin: 0;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 22px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    color: var(--navy);
+
+}
+
+
+.champion-line {
+
+    width: 80px;
+
+    height: 1px;
+
+    background: var(--silver);
+
+}
+
+
+/* ======================================================
+   CHAMPIONSHIP PENNANTS
+====================================================== */
+
+.champion-banners {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    gap: 34px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.champion-banner {
+
+    width: 175px;
+
+    height: 275px;
+
+    padding:
+
+        22px
+        15px
+        52px;
+
+    color: white;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            var(--navy) 0%,
+            var(--dark-navy) 100%
+        );
+
+    border-top:
+
+        5px
+        solid
+        var(--silver);
+
+    position: relative;
+
+    box-shadow:
+
+        0
+        5px
+        14px
+        rgba(0,0,0,.20);
+
+    clip-path:
+
+        polygon(
+            0 0,
+            100% 0,
+            100% 82%,
+            50% 100%,
+            0 82%
+        );
+
+    transition:
+
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.champion-banner:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+
+        0
+        10px
+        22px
+        rgba(0,0,0,.25);
+
+}
+
+
+.banner-year {
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    color: var(--light-silver);
+
+}
+
+
+.banner-trophy {
+
+    font-size: 32px;
+
+    margin:
+
+        10px
+        0;
+
+    color: white;
+
+}
+
+
+.banner-team {
+
+    min-height: 63px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+}
+
+
+.banner-owner {
+
+    margin-top: 13px;
+
+    font-family: 'Roboto', sans-serif;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    color: var(--light-silver);
+
+}
+
+
+.banner-champion {
+
+    margin-top: 10px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   NAVIGATION
+====================================================== */
+
+.main-nav {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    justify-content: center;
+
+    background: var(--dark-navy);
+
+    border-bottom:
+
+        3px
+        solid
+        var(--silver);
+
+}
+
+
+.main-nav a {
+
+    min-width: 135px;
+
+    padding:
+
+        17px
+        24px;
+
+    color: white;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    border-left:
+
+        1px
+        solid
+        rgba(255,255,255,.08);
+
+}
+
+
+.main-nav a:last-child {
+
+    border-right:
+
+        1px
+        solid
+        rgba(255,255,255,.08);
+
+}
+
+
+.main-nav a:hover {
+
+    background: var(--silver);
+
+    color: var(--dark-navy);
+
+}
+
+
+/* ======================================================
+   MAIN CONTAINER
+====================================================== */
 
 main {
+
     max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
+
+    margin:
+
+        32px
+        auto;
+
+    padding:
+
+        0
+        20px
+        40px;
+
 }
 
-.hero {
-    background: var(--navy);
+
+/* ======================================================
+   SEASON HERO
+====================================================== */
+
+.season-hero {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            var(--navy),
+            var(--dark-navy)
+        );
+
     color: white;
-    padding: 45px 30px;
+
     text-align: center;
-    margin-bottom: 25px;
+
+    padding:
+
+        48px
+        25px;
+
+    border-bottom:
+
+        5px
+        solid
+        var(--silver);
+
+    box-shadow:
+
+        0
+        3px
+        10px
+        rgba(0,0,0,.10);
+
 }
 
-.hero h2 {
+
+.season-hero::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+
+    height: 300px;
+
+    border:
+
+        1px
+        solid
+        rgba(255,255,255,.06);
+
+    border-radius: 50%;
+
+    left: -100px;
+
+    top: -130px;
+
+}
+
+
+.season-label {
+
     margin: 0;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
-    font-size: 38px;
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    letter-spacing: 5px;
+
     text-transform: uppercase;
+
 }
 
-.hero p {
-    color: var(--light-silver);
-    margin-bottom: 0;
+
+.season-hero h2 {
+
+    margin:
+
+        5px
+        0;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 46px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
 }
+
+
+.season-subtitle {
+
+    margin: 0;
+
+    color: var(--light-silver);
+
+    font-size: 15px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   SECTION TITLES
+====================================================== */
 
 .section-title {
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+
+    margin:
+
+        42px
+        0
+        18px;
+
+    padding-left: 14px;
+
+    border-left:
+
+        6px
+        solid
+        var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
     text-transform: uppercase;
-    font-size: 26px;
-    border-left: 6px solid var(--navy);
-    padding-left: 12px;
-    margin: 30px 0 15px;
+
+    color: var(--dark-navy);
+
 }
+
+
+/* ======================================================
+   GRIDS
+====================================================== */
 
 .grid {
+
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+
+    grid-template-columns:
+
+        repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+
 }
+
+
+/* ======================================================
+   STANDARD CARDS
+====================================================== */
 
 .card {
+
     background: white;
-    border: 1px solid var(--light-silver);
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+    border:
+
+        1px
+        solid
+        var(--light-silver);
+
+    box-shadow:
+
+        0
+        2px
+        8px
+        rgba(0,0,0,.06);
+
+    overflow: hidden;
+
 }
 
-.card h3 {
-    margin-top: 0;
-    font-family: 'Roboto Condensed', Arial, sans-serif;
+
+.card-header {
+
+    min-height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+
+        15px
+        20px;
+
+    background: var(--navy);
+
+    color: white;
+
+}
+
+
+.card-header h3 {
+
+    margin: 0;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 20px;
+
+    letter-spacing: 1px;
+
     text-transform: uppercase;
-    font-size: 22px;
-    color: var(--navy);
+
 }
 
-.card p {
-    line-height: 1.6;
+
+.card > h3 {
+
+    padding:
+
+        18px
+        20px
+        0;
+
+    font-family: 'Oswald', sans-serif;
+
+    color: var(--navy);
+
+    text-transform: uppercase;
+
 }
+
+
+/* ======================================================
+   LIVE INDICATOR
+====================================================== */
+
+.live-indicator {
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    color: #A9E9B4;
+
+}
+
+
+/* ======================================================
+   STANDINGS
+====================================================== */
 
 .standings {
+
     width: 100%;
+
     border-collapse: collapse;
+
 }
+
 
 .standings th {
-    background: var(--navy);
-    color: white;
-    padding: 10px;
+
+    padding:
+
+        11px
+        12px;
+
+    background: var(--light-gray);
+
+    color: var(--dark-navy);
+
     text-align: left;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
 }
+
+
+.standings th:not(:first-child),
+.standings td:not(:first-child) {
+
+    text-align: center;
+
+}
+
 
 .standings td {
-    padding: 10px;
-    border-bottom: 1px solid var(--light-silver);
+
+    padding:
+
+        11px
+        12px;
+
+    border-bottom:
+
+        1px
+        solid
+        #E3E6E8;
+
+    font-size: 13px;
+
 }
 
-.standings tr:hover {
-    background: var(--light-gray);
+
+.standings tbody tr:hover {
+
+    background: #F4F6F7;
+
 }
+
+
+.standings tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.standings tbody td:first-child {
+
+    font-weight: 600;
+
+    color: var(--navy);
+
+}
+
+
+.sleeper-note {
+
+    padding:
+
+        11px
+        16px;
+
+    background: #F5F6F7;
+
+    border-top:
+
+        1px
+        solid
+        var(--light-silver);
+
+    color: #70777C;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    text-align: right;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   WEEK / MATCHUPS
+====================================================== */
+
+.week-number {
+
+    padding:
+
+        20px
+        20px
+        8px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    color: var(--navy);
+
+}
+
+
+.matchup-placeholder {
+
+    margin: 8px 20px 20px;
+
+    padding: 25px;
+
+    border:
+
+        1px
+        dashed
+        var(--silver);
+
+    background: var(--off-white);
+
+    text-align: center;
+
+    color: #737A80;
+
+    font-size: 13px;
+
+}
+
+
+/* ======================================================
+   PLACEHOLDER TEXT
+====================================================== */
+
+.placeholder-text {
+
+    margin: 0;
+
+    padding: 25px;
+
+    color: #70777C;
+
+    line-height: 1.6;
+
+}
+
+
+/* ======================================================
+   RULES
+====================================================== */
+
+.feature-card {
+
+    padding-bottom: 20px;
+
+}
+
+
+.feature-card p {
+
+    padding:
+
+        0
+        20px;
+
+    line-height: 1.7;
+
+}
+
+
+.coming-soon {
+
+    display: inline-block;
+
+    margin:
+
+        5px
+        20px;
+
+    padding:
+
+        7px
+        11px;
+
+    background: var(--light-gray);
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   RECORDS
+====================================================== */
+
+.records-grid {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(4, 1fr);
+
+    gap: 16px;
+
+}
+
+
+.record-box {
+
+    min-height: 125px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: white;
+
+    border-top:
+
+        4px
+        solid
+        var(--navy);
+
+    box-shadow:
+
+        0
+        2px
+        8px
+        rgba(0,0,0,.06);
+
+}
+
+
+.record-label {
+
+    margin-bottom: 10px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 12px;
+
+    color: var(--silver);
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.record-box strong {
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 18px;
+
+}
+
+
+/* ======================================================
+   LEAGUE INDEX
+====================================================== */
+
+.index-grid {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(4, 1fr);
+
+    gap: 16px;
+
+}
+
+
+.index-card {
+
+    position: relative;
+
+    min-height: 170px;
+
+    padding: 24px;
+
+    background: white;
+
+    border:
+
+        1px
+        solid
+        var(--light-silver);
+
+    box-shadow:
+
+        0
+        2px
+        8px
+        rgba(0,0,0,.05);
+
+    transition:
+
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.index-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+
+        0
+        7px
+        16px
+        rgba(0,0,0,.10);
+
+}
+
+
+.index-number {
+
+    position: absolute;
+
+    top: 13px;
+
+    right: 15px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    color: #E2E5E7;
+
+}
+
+
+.index-card h3 {
+
+    margin:
+
+        14px
+        0
+        8px;
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 20px;
+
+    text-transform: uppercase;
+
+}
+
+
+.index-card p {
+
+    margin: 0;
+
+    color: #667078;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ======================================================
+   FOOTER
+====================================================== */
 
 footer {
-    background: var(--dark-navy);
+
+    background: var(--deep-navy);
+
     color: var(--light-silver);
+
     text-align: center;
-    padding: 25px;
-    margin-top: 50px;
-    font-size: 13px;
+
+    padding:
+
+        38px
+        20px;
+
+    border-top:
+
+        5px
+        solid
+        var(--silver);
+
 }
+
+
+.footer-logo {
+
+    color: white;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+}
+
+
+footer p {
+
+    margin:
+
+        6px
+        0;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.footer-season {
+
+    color: var(--silver);
+
+}
+
+
+/* ======================================================
+   TABLET
+====================================================== */
+
+@media (max-width: 900px) {
+
+    .records-grid,
+    .index-grid {
+
+        grid-template-columns:
+
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
 
 @media (max-width: 700px) {
 
-    header h1 {
-        font-size: 32px;
+    .league-title h1 {
+
+        font-size: 39px;
+
+        letter-spacing: 2px;
+
     }
 
-    nav a {
-        padding: 12px 10px;
-        font-size: 13px;
+
+    .league-title p {
+
+        font-size: 12px;
+
+        letter-spacing: 3px;
+
     }
+
+
+    .league-quote blockquote {
+
+        font-size: 19px;
+
+    }
+
+
+    .champion-banners {
+
+        gap: 18px;
+
+    }
+
+
+    .champion-banner {
+
+        width: 145px;
+
+        height: 240px;
+
+    }
+
+
+    .banner-team {
+
+        font-size: 17px;
+
+    }
+
+
+    .main-nav {
+
+        position: static;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .main-nav a {
+
+        min-width: 50%;
+
+        flex: 1;
+
+        padding: 14px;
+
+    }
+
 
     .grid {
+
         grid-template-columns: 1fr;
+
     }
 
-    .hero h2 {
-        font-size: 30px;
+
+    .records-grid,
+    .index-grid {
+
+        grid-template-columns: 1fr;
+
     }
+
+
+    .season-hero h2 {
+
+        font-size: 35px;
+
+    }
+
+
+    .champion-line {
+
+        width: 35px;
+
+    }
+
 }
