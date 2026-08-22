@@ -304,13 +304,21 @@ async function loadHistorySeason(
             performanceData.managers || [];
 
 
-        const mostWins =
-            [...managers]
-                .sort(
-                    (a, b) =>
-                        b.regular_season.wins -
-                        a.regular_season.wins
-                )[0];
+const mostWinsRecord =
+    Math.max(
+        ...managers.map(
+            manager =>
+                manager.regular_season.wins
+        )
+    );
+
+
+const mostWinsLeaders =
+    managers.filter(
+        manager =>
+            manager.regular_season.wins ===
+            mostWinsRecord
+    );
 
 
         const highestPPG =
