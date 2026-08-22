@@ -5197,3 +5197,101 @@ footer p {
         1;
 
 }
+/* ======================================================
+   TROPHY CASE — UNIFORM 3-COLUMN LAYOUT
+====================================================== */
+
+.trophy-case-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    width: 100%;
+
+    align-items: start;
+
+}
+
+
+/*
+ * Every accolade occupies exactly one grid cell.
+ * This overrides the old min-width behavior that
+ * caused some rows to fit only two badges.
+ */
+
+.trophy-badge {
+
+    width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    padding:
+        0
+        7px
+        4px;
+
+    justify-content: center;
+
+}
+
+
+/*
+ * Remove the special wider minimum used by
+ * podium trophies.
+ */
+
+.championship-badge,
+.runnerup-badge,
+.third-place-badge,
+.division-badge {
+
+    min-width: 0;
+
+}
+
+
+/*
+ * Keep the text on one line.
+ */
+
+.trophy-text {
+
+    white-space: nowrap;
+
+    font-size: 12px;
+
+}
+
+
+/* ======================================================
+   TROPHY CASE — SMALLER SCREENS
+====================================================== */
+
+@media (max-width: 1150px) {
+
+    .trophy-case-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .trophy-case-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
