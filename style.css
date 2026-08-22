@@ -5371,7 +5371,7 @@ footer p {
 
     background:
         linear-gradient(
-            to bottom right,
+            to top right,
             transparent 47%,
             #FFFFFF 48%,
             #FFFFFF 52%,
@@ -5380,7 +5380,7 @@ footer p {
         left bottom / 50% 100% no-repeat,
 
         linear-gradient(
-            to bottom left,
+            to top left,
             transparent 47%,
             #FFFFFF 48%,
             #FFFFFF 52%,
