@@ -12,37 +12,157 @@
 
 <body>
 
-<header>
-    <h1>A Game of Inches</h1>
-    <p>Dynasty Fantasy Football League</p>
+<!-- ======================================================
+     LEAGUE HEADER
+====================================================== -->
+
+<header class="league-header" id="home">
+
+    <div class="league-title">
+        <h1>A Game of Inches</h1>
+        <p>Dynasty Fantasy Football League</p>
+    </div>
+
+    <div class="league-quote">
+        <blockquote>
+            “If you ain't first, you're last.”
+        </blockquote>
+        <span>— Ricky Bobby</span>
+    </div>
+
 </header>
 
-<nav>
-    <a href="#">Home</a>
-    <a href="#">Teams</a>
-    <a href="#">Schedule</a>
-    <a href="#">Standings</a>
-    <a href="#">History</a>
-    <a href="#">Draft</a>
-    <a href="#">Transactions</a>
-    <a href="#">Waivers</a>
-    <a href="#">Constitution</a>
+
+<!-- ======================================================
+     CHAMPIONSHIP BANNERS
+====================================================== -->
+
+<section class="champions-section">
+
+    <div class="champions-heading">
+        <span class="champion-line"></span>
+        <h2>League Champions</h2>
+        <span class="champion-line"></span>
+    </div>
+
+    <div class="champion-banners">
+
+        <!-- 2023 -->
+        <div class="champion-banner">
+            <div class="banner-year">2023</div>
+
+            <div class="banner-trophy">★</div>
+
+            <div class="banner-team">
+                Rollin with<br>
+                Ma-Homies
+            </div>
+
+            <div class="banner-owner">
+                Dan
+            </div>
+
+            <div class="banner-champion">
+                Champion
+            </div>
+        </div>
+
+
+        <!-- 2024 -->
+        <div class="champion-banner">
+            <div class="banner-year">2024</div>
+
+            <div class="banner-trophy">★</div>
+
+            <div class="banner-team">
+                Goats
+            </div>
+
+            <div class="banner-owner">
+                RJ
+            </div>
+
+            <div class="banner-champion">
+                Champion
+            </div>
+        </div>
+
+
+        <!-- 2025 -->
+        <div class="champion-banner">
+            <div class="banner-year">2025</div>
+
+            <div class="banner-trophy">★</div>
+
+            <div class="banner-team">
+                Big Dog
+            </div>
+
+            <div class="banner-owner">
+                Seth
+            </div>
+
+            <div class="banner-champion">
+                Champion
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     MAIN NAVIGATION
+====================================================== -->
+
+<nav class="main-nav">
+
+    <a href="#home">Home</a>
+    <a href="#rules">Rules</a>
+    <a href="#records">Records</a>
+    <a href="#index">Index</a>
+
 </nav>
+
+
+<!-- ======================================================
+     MAIN CONTENT
+====================================================== -->
 
 <main>
 
-    <section class="hero">
+    <!-- CURRENT SEASON -->
+
+    <section class="season-hero">
+
+        <p class="season-label">A Game of Inches</p>
+
         <h2>2026 Season</h2>
-        <p>The road to the championship starts here.</p>
+
+        <p class="season-subtitle">
+            The Road to the Championship
+        </p>
+
     </section>
 
+
+    <!-- ==================================================
+         LEAGUE OVERVIEW
+    =================================================== -->
 
     <h2 class="section-title">League Overview</h2>
 
     <div class="grid">
 
-        <div class="card">
-            <h3>Current Standings</h3>
+        <!-- LIVE STANDINGS -->
+
+        <div class="card standings-card">
+
+            <div class="card-header">
+                <h3>Current Standings</h3>
+                <span class="live-indicator">● LIVE</span>
+            </div>
 
             <table class="standings">
 
@@ -62,73 +182,219 @@
                 </tbody>
 
             </table>
+
+            <div class="sleeper-note">
+                Updated automatically from Sleeper
+            </div>
+
         </div>
 
 
+        <!-- CURRENT WEEK -->
+
         <div class="card">
-            <h3>This Week</h3>
 
-            <p><strong>Week 1</strong></p>
+            <div class="card-header">
+                <h3>This Week</h3>
+            </div>
 
-            <p>Team 1 vs Team 2</p>
-            <p>Team 3 vs Team 4</p>
-            <p>Team 5 vs Team 6</p>
+            <div class="week-number">
+                Week 1
+            </div>
+
+            <div class="matchup-placeholder">
+                Weekly Sleeper matchups will appear here.
+            </div>
 
         </div>
 
     </div>
 
+
+    <!-- ==================================================
+         LEAGUE ACTIVITY
+    =================================================== -->
 
     <h2 class="section-title">League Activity</h2>
 
     <div class="grid">
 
         <div class="card">
-            <h3>Recent Transactions</h3>
 
-            <p>No transactions yet.</p>
+            <div class="card-header">
+                <h3>Recent Transactions</h3>
+            </div>
+
+            <p class="placeholder-text">
+                Recent trades and transactions will appear here.
+            </p>
 
         </div>
 
 
         <div class="card">
-            <h3>Waiver Wire</h3>
 
-            <p>No waiver activity yet.</p>
+            <div class="card-header">
+                <h3>Waiver Wire</h3>
+            </div>
+
+            <p class="placeholder-text">
+                Recent waiver claims and free-agent additions will appear here.
+            </p>
 
         </div>
 
     </div>
 
 
-    <h2 class="section-title">League History</h2>
+    <!-- ==================================================
+         RULES
+    =================================================== -->
 
-    <div class="grid">
+    <section id="rules">
 
-        <div class="card">
-            <h3>Past Champions</h3>
+        <h2 class="section-title">Rules</h2>
 
-            <p>League history will appear here.</p>
+        <div class="card feature-card">
+
+            <h3>League Constitution</h3>
+
+            <p>
+                The official rules and constitution of A Game of Inches
+                will be available here.
+            </p>
+
+            <span class="coming-soon">
+                Constitution page coming soon
+            </span>
 
         </div>
 
+    </section>
 
-        <div class="card">
-            <h3>League Records</h3>
 
-            <p>Records will appear here.</p>
+    <!-- ==================================================
+         RECORDS
+    =================================================== -->
+
+    <section id="records">
+
+        <h2 class="section-title">Records</h2>
+
+        <div class="records-grid">
+
+            <div class="record-box">
+                <span class="record-label">Most Championships</span>
+                <strong>Coming Soon</strong>
+            </div>
+
+            <div class="record-box">
+                <span class="record-label">Highest Weekly Score</span>
+                <strong>Coming Soon</strong>
+            </div>
+
+            <div class="record-box">
+                <span class="record-label">Best Season</span>
+                <strong>Coming Soon</strong>
+            </div>
+
+            <div class="record-box">
+                <span class="record-label">Most Points — Season</span>
+                <strong>Coming Soon</strong>
+            </div>
 
         </div>
 
-    </div>
+    </section>
+
+
+    <!-- ==================================================
+         LEAGUE INDEX
+    =================================================== -->
+
+    <section id="index">
+
+        <h2 class="section-title">League Index</h2>
+
+        <div class="index-grid">
+
+            <div class="index-card">
+                <span class="index-number">01</span>
+                <h3>Teams</h3>
+                <p>Owners, rosters, records and franchise history.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">02</span>
+                <h3>Schedule</h3>
+                <p>Weekly matchups, results and playoff schedule.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">03</span>
+                <h3>Standings</h3>
+                <p>Current standings and historical finishes.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">04</span>
+                <h3>Draft History</h3>
+                <p>Every pick from every A Game of Inches draft.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">05</span>
+                <h3>Transactions</h3>
+                <p>Trades, additions, drops and league activity.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">06</span>
+                <h3>Waiver Wire</h3>
+                <p>Waiver claims, FAAB spending and free agency.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">07</span>
+                <h3>Champions</h3>
+                <p>Championship history and past title winners.</p>
+            </div>
+
+            <div class="index-card">
+                <span class="index-number">08</span>
+                <h3>League History</h3>
+                <p>Seasons, rivalries, milestones and league lore.</p>
+            </div>
+
+        </div>
+
+    </section>
 
 </main>
 
 
+<!-- ======================================================
+     FOOTER
+====================================================== -->
+
 <footer>
-    A Game of Inches Dynasty Fantasy Football League
+
+    <div class="footer-logo">
+        A Game of Inches
+    </div>
+
+    <p>
+        Dynasty Fantasy Football League
+    </p>
+
+    <p class="footer-season">
+        Established 2023
+    </p>
+
 </footer>
 
+
+<!-- Sleeper standings -->
 <script src="script.js"></script>
 
 </body>
