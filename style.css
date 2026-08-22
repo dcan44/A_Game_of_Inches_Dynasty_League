@@ -23,7 +23,632 @@
     --text: #17202A;
 
 }
+/* ======================================================
+   INTERNAL PAGE HEADER
+====================================================== */
 
+.page-header {
+
+    background:
+        linear-gradient(
+            rgba(2, 21, 47, .97),
+            rgba(4, 30, 66, .97)
+        );
+
+    color: white;
+
+    text-align: center;
+
+    padding: 30px 20px 26px;
+
+    border-bottom:
+        4px solid
+        var(--silver);
+
+}
+
+
+.site-name {
+
+    color: white;
+
+    text-decoration: none;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+}
+
+
+.page-header p {
+
+    margin: 5px 0 0;
+
+    color: var(--light-silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 12px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   ACTIVE NAVIGATION
+====================================================== */
+
+.main-nav a.active {
+
+    background: var(--silver);
+
+    color: var(--dark-navy);
+
+}
+
+
+/* ======================================================
+   PAGE TITLE
+====================================================== */
+
+.page-title {
+
+    margin-bottom: 38px;
+
+    padding: 40px;
+
+    background: var(--navy);
+
+    color: white;
+
+    border-bottom:
+        5px solid
+        var(--silver);
+
+}
+
+
+.page-kicker {
+
+    margin: 0 0 4px;
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+}
+
+
+.page-title h1 {
+
+    margin: 0;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 43px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.page-title > p:last-child {
+
+    max-width: 720px;
+
+    margin: 12px 0 0;
+
+    color: var(--light-silver);
+
+    line-height: 1.7;
+
+}
+
+
+/* ======================================================
+   MANAGERS
+====================================================== */
+
+.managers-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.managers-live {
+
+    padding: 7px 10px;
+
+    background: var(--navy);
+
+    color: #A9E9B4;
+
+}
+
+
+.managers-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 22px;
+
+}
+
+
+.manager-card {
+
+    overflow: hidden;
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    border-top:
+        5px solid
+        var(--navy);
+
+    box-shadow:
+        0 3px 10px
+        rgba(0,0,0,.08);
+
+}
+
+
+.manager-card-top {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    min-height: 115px;
+
+    padding: 20px;
+
+}
+
+
+.manager-avatar {
+
+    width: 72px;
+
+    height: 72px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    border:
+        3px solid
+        var(--light-silver);
+
+    object-fit: cover;
+
+    background: var(--light-gray);
+
+}
+
+
+.manager-avatar-placeholder {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--navy);
+
+    color: white;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+}
+
+
+.manager-identity {
+
+    min-width: 0;
+
+}
+
+
+.manager-number {
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+}
+
+
+.manager-identity h2 {
+
+    margin: 4px 0;
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 21px;
+
+    line-height: 1.15;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-identity p {
+
+    margin: 0;
+
+    color: #697178;
+
+    font-size: 12px;
+
+}
+
+
+.manager-division {
+
+    padding: 9px 20px;
+
+    background: var(--light-gray);
+
+    border-top:
+        1px solid
+        var(--light-silver);
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   TROPHY CASE
+====================================================== */
+
+.trophy-case {
+
+    min-height: 85px;
+
+    padding: 16px 20px;
+
+    background: var(--dark-navy);
+
+    color: white;
+
+}
+
+
+.trophy-case-title {
+
+    margin-bottom: 10px;
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.trophy-case-content {
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 14px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   MANAGER STATS
+====================================================== */
+
+.manager-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+}
+
+
+.manager-stat {
+
+    min-height: 68px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 12px 16px;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-stat:nth-child(odd) {
+
+    border-right:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-stat span {
+
+    margin-bottom: 4px;
+
+    color: #7A8288;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-stat strong {
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 17px;
+
+}
+
+
+/* ======================================================
+   MANAGER RECORDS
+====================================================== */
+
+.manager-records {
+
+    padding: 5px 16px 16px;
+
+}
+
+
+.manager-records > div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 11px 0;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-records > div:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.manager-records span {
+
+    color: #777F85;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-records strong {
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    text-align: right;
+
+}
+
+
+/* ======================================================
+   LOADING / FORMER MANAGERS
+====================================================== */
+
+.manager-loading {
+
+    grid-column: 1 / -1;
+
+    padding: 50px;
+
+    background: white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    text-align: center;
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-error {
+
+    color: #8B2424;
+
+}
+
+
+.former-managers-section {
+
+    margin-top: 50px;
+
+}
+
+
+.former-managers-card {
+
+    padding: 25px;
+
+}
+
+
+.former-managers-card p {
+
+    margin: 0;
+
+    color: #697178;
+
+}
+
+
+/* ======================================================
+   MANAGER TABLET
+====================================================== */
+
+@media (max-width: 1000px) {
+
+    .managers-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* ======================================================
+   MANAGER MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .managers-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .managers-heading {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        margin-bottom: 15px;
+
+    }
+
+
+    .page-title {
+
+        padding: 30px 22px;
+
+    }
+
+
+    .page-title h1 {
+
+        font-size: 34px;
+
+    }
+
+}
 
 /* ======================================================
    GLOBAL
