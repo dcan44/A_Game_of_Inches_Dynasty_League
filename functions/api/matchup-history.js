@@ -4,12 +4,6 @@ export async function onRequestGet(context) {
      * =====================================================
      * LEAGUE IDS BY SEASON
      * =====================================================
-     *
-     * Each Sleeper season has its own league ID.
-     *
-     * Keeping this map here allows us to request
-     * one season at a time without walking through
-     * every historical league during one Worker call.
      */
 
     const leagueIds = {
@@ -165,6 +159,30 @@ export async function onRequestGet(context) {
 
         /*
          * =====================================================
+         * CHAMPIONSHIP PLAYOFF BRACKET
+         * =====================================================
+         *
+         * Sleeper's winners_bracket contains the actual
+         * championship playoff bracket.
+         *
+         * We use this to distinguish real playoff games from
+         * consolation and placement games.
+         */
+
+        const bracketResponse =
+            await fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/winners_bracket`
+            );
+
+
+        const winnersBracket =
+            bracketResponse.ok
+                ? await bracketResponse.json()
+                : [];
+
+
+        /*
+         * =====================================================
          * USER LOOKUP
          * =====================================================
          */
@@ -234,44 +252,96 @@ export async function onRequestGet(context) {
          * PLAYOFF START
          * =====================================================
          *
-         * Sleeper stores the playoff start week
-         * independently for each season.
+         * Confirmed league history:
          *
-         * 2023 -> Week 16
-         * 2024+ -> Week 15
+         * 2023 = Week 16
+         * 2024+ = Week 15
          */
 
         const playoffStart =
-            league
-                .settings
-                ?.playoff_week_start ||
-            15;
+            requestedSeason === 2023
+                ? 16
+                : 15;
 
+
+        /*
+         * =====================================================
+         * CHAMPIONSHIP PLAYOFF GAME LOOKUP
+         * =====================================================
+         *
+         * Each bracket round corresponds to a fantasy week:
+         *
+         * Round 1 = playoff start week
+         * Round 2 = playoff start + 1
+         * Round 3 = playoff start + 2
+         *
+         * Only bracket entries with two actual roster IDs
+         * represent games. Bye weeks are ignored automatically.
+         */
+
+        const championshipPlayoffGames =
+            new Set();
+
+
+        winnersBracket.forEach(
+            bracketGame => {
+
+                if (
+                    typeof bracketGame.t1 !==
+                        "number" ||
+                    typeof bracketGame.t2 !==
+                        "number"
+                ) {
+
+                    return;
+
+                }
+
+
+                const bracketRound =
+                    Number(
+                        bracketGame.r || 1
+                    );
+
+
+                const gameWeek =
+                    playoffStart +
+                    bracketRound -
+                    1;
+
+
+                const rosterPair =
+                    [
+                        bracketGame.t1,
+                        bracketGame.t2
+                    ]
+                        .sort(
+                            (a, b) =>
+                                a - b
+                        )
+                        .join("-");
+
+
+                championshipPlayoffGames.add(
+                    `${gameWeek}-${rosterPair}`
+                );
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * MATCHUP RESULTS
+         * =====================================================
+         */
 
         const games = [];
 
 
-        /*
-         * =====================================================
-         * DETERMINE LAST WEEK TO CHECK
-         * =====================================================
-         *
-         * Completed seasons can safely check through Week 18.
-         *
-         * For the current season we still request the available
-         * weeks, but empty/future matchup shells are removed
-         * below before they can enter the historical data.
-         */
-
         const lastWeek =
             18;
 
-
-        /*
-         * =====================================================
-         * RETRIEVE MATCHUPS
-         * =====================================================
-         */
 
         for (
             let week = 1;
@@ -312,7 +382,7 @@ export async function onRequestGet(context) {
 
             /*
              * =================================================
-             * GROUP ENTRIES BY MATCHUP ID
+             * GROUP TEAMS BY MATCHUP ID
              * =================================================
              */
 
@@ -321,11 +391,6 @@ export async function onRequestGet(context) {
 
             matchups.forEach(
                 entry => {
-
-                    /*
-                     * A null matchup ID does not represent
-                     * a valid head-to-head game.
-                     */
 
                     if (
                         entry.matchup_id ===
@@ -364,7 +429,7 @@ export async function onRequestGet(context) {
 
             /*
              * =================================================
-             * CONVERT EACH TWO-TEAM GROUP INTO ONE GAME
+             * CREATE GAMES
              * =================================================
              */
 
@@ -379,8 +444,8 @@ export async function onRequestGet(context) {
                 ) => {
 
                     /*
-                     * A real head-to-head matchup needs
-                     * exactly two teams.
+                     * A real matchup requires exactly
+                     * two teams.
                      */
 
                     if (
@@ -424,8 +489,7 @@ export async function onRequestGet(context) {
 
 
                     /*
-                     * Both entries must belong to actual
-                     * roster owners.
+                     * Both teams need real owners.
                      */
 
                     if (
@@ -439,7 +503,7 @@ export async function onRequestGet(context) {
 
 
                     /*
-                     * A manager cannot play themselves.
+                     * Prevent impossible self-matchups.
                      */
 
                     if (
@@ -466,24 +530,11 @@ export async function onRequestGet(context) {
 
                     /*
                      * =================================================
-                     * IMPORTANT:
-                     * IGNORE EMPTY / FUTURE MATCHUP PLACEHOLDERS
+                     * IGNORE EMPTY / FUTURE MATCHUPS
                      * =================================================
                      *
-                     * Sleeper may return matchup shells for weeks
-                     * that have not actually been played.
-                     *
-                     * Those commonly appear as:
-                     *
-                     * Team A: 0 points
-                     * Team B: 0 points
-                     *
-                     * Previously these were being interpreted as
-                     * tied games. That created fake records such
-                     * as 0-0-1 and 0-0-2.
-                     *
-                     * A 0-0 matchup is therefore NOT added to
-                     * historical matchup data.
+                     * Sleeper sometimes creates 0-0 matchup shells.
+                     * These are not real games.
                      */
 
                     if (
@@ -494,6 +545,36 @@ export async function onRequestGet(context) {
                         return;
 
                     }
+
+
+                    /*
+                     * =================================================
+                     * IDENTIFY PLAYOFF TYPE
+                     * =================================================
+                     */
+
+                    const isPostseason =
+                        week >=
+                        playoffStart;
+
+
+                    const rosterPair =
+                        [
+                            first.roster_id,
+                            second.roster_id
+                        ]
+                            .sort(
+                                (a, b) =>
+                                    a - b
+                            )
+                            .join("-");
+
+
+                    const championshipPlayoff =
+                        isPostseason &&
+                        championshipPlayoffGames.has(
+                            `${week}-${rosterPair}`
+                        );
 
 
                     /*
@@ -544,14 +625,6 @@ export async function onRequestGet(context) {
 
                     else {
 
-                        /*
-                         * This preserves a genuine tied game
-                         * in the API if one ever occurs.
-                         *
-                         * The standings page can choose not
-                         * to count ties in its W-L matrix.
-                         */
-
                         tie =
                             true;
 
@@ -578,9 +651,22 @@ export async function onRequestGet(context) {
                                     matchupId
                                 ),
 
+                            /*
+                             * True for any postseason game.
+                             */
+
                             playoff:
-                                week >=
-                                playoffStart,
+                                isPostseason,
+
+                            /*
+                             * True ONLY for a game in the
+                             * championship winners bracket.
+                             *
+                             * Consolation games remain false.
+                             */
+
+                            championship_playoff:
+                                championshipPlayoff,
 
 
                             team_1: {
@@ -668,6 +754,13 @@ export async function onRequestGet(context) {
 
                     playoff_start_week:
                         playoffStart,
+
+                    championship_playoff_games_found:
+                        games.filter(
+                            game =>
+                                game
+                                    .championship_playoff
+                        ).length,
 
                     games_found:
                         games.length,
