@@ -370,7 +370,7 @@
 
     min-height: 85px;
 
-    padding: 16px 20px;
+    padding: 14px 16px 18px;
 
     background: var(--dark-navy);
 
@@ -381,13 +381,15 @@
 
 .trophy-case-title {
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 
-    color: var(--silver);
+    color: var(--light-silver);
 
     font-family: 'Oswald', sans-serif;
 
-    font-size: 10px;
+    font-size: 11px;
+
+    font-weight: 600;
 
     letter-spacing: 2px;
 
@@ -396,7 +398,171 @@
 }
 
 
-.trophy-case-content {
+/* ======================================================
+   TROPHY BADGE LAYOUT
+====================================================== */
+
+.trophy-case-grid {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+}
+
+
+/* ======================================================
+   SHARED TROPHY BANNER
+====================================================== */
+
+.trophy-badge {
+
+    position: relative;
+
+    min-width: 105px;
+
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 0 14px 4px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: .5px;
+
+    text-transform: uppercase;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 78%,
+        50% 100%,
+        0 78%
+    );
+
+    box-shadow:
+        0 2px 4px
+        rgba(0,0,0,.30);
+
+}
+
+
+/* ======================================================
+   LEAGUE CHAMPIONSHIP — GOLD
+====================================================== */
+
+.championship-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #E2B64F 0%,
+            #C9972B 50%,
+            #9B6D16 100%
+        );
+
+    border-top:
+        2px solid
+        #F4D477;
+
+    color: var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.25);
+
+}
+
+
+.championship-badge .trophy-icon {
+
+    font-size: 14px;
+
+}
+
+
+/* ======================================================
+   DIVISION CHAMPIONSHIP — SILVER
+====================================================== */
+
+.division-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #E1E4E6 0%,
+            #B0B7BA 50%,
+            #858C90 100%
+        );
+
+    border-top:
+        2px solid
+        #F5F6F7;
+
+    color: var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.45);
+
+}
+
+
+/* ======================================================
+   TROPHY TEXT
+====================================================== */
+
+.trophy-text {
+
+    position: relative;
+
+    top: -1px;
+
+}
+
+
+/* ======================================================
+   EMPTY TROPHY CASE
+====================================================== */
+
+.empty-trophy-case {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,.20);
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
 
     font-family: 'Oswald', sans-serif;
 
@@ -2017,50 +2183,5 @@ footer p {
         width: 35px;
 
     }
-
-}
-/* ======================================================
-   MANAGER NAME HISTORY
-====================================================== */
-
-.manager-history {
-
-    padding: 14px 16px 18px;
-
-    background: var(--light-gray);
-
-    border-top:
-        1px solid
-        var(--light-silver);
-
-}
-
-
-.manager-history span {
-
-    color: var(--silver);
-
-    font-family: 'Oswald', sans-serif;
-
-    font-size: 9px;
-
-    font-weight: 600;
-
-    letter-spacing: 1px;
-
-    text-transform: uppercase;
-
-}
-
-
-.manager-history p {
-
-    margin: 5px 0 0;
-
-    color: var(--navy);
-
-    font-size: 11px;
-
-    line-height: 1.5;
 
 }
