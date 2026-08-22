@@ -1,4 +1,4 @@
-export async function onRequestGet() {
+export async function onRequestGet(context) {
 
     const leagueIds = {
         2023: "978545340355862528",
@@ -10,386 +10,404 @@ export async function onRequestGet() {
 
     try {
 
-        const managerMap = {};
+        const url =
+            new URL(context.request.url);
+
+
+        const season =
+            Number(
+                url.searchParams.get("season")
+            );
+
+
+        if (!leagueIds[season]) {
+
+            return new Response(
+
+                JSON.stringify(
+                    {
+                        error:
+                            "Please provide a valid season.",
+
+                        available_seasons:
+                            Object.keys(leagueIds)
+                    },
+                    null,
+                    2
+                ),
+
+                {
+                    status: 400,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+
+            );
+
+        }
+
+
+        const leagueId =
+            leagueIds[season];
+
 
         /*
-         * Process each season independently so we stay
-         * comfortably below Cloudflare request limits.
+         * League info
          */
 
-        for (const [seasonText, leagueId] of Object.entries(leagueIds)) {
-
-            const season = Number(seasonText);
-
-
-            /*
-             * League information
-             */
-
-            const leagueResponse = await fetch(
+        const leagueResponse =
+            await fetch(
                 `https://api.sleeper.app/v1/league/${leagueId}`
             );
 
-            if (!leagueResponse.ok) {
-                continue;
-            }
 
-            const league = await leagueResponse.json();
+        if (!leagueResponse.ok) {
+
+            throw new Error(
+                "Unable to retrieve league information."
+            );
+
+        }
 
 
-            /*
-             * Users
-             */
+        const league =
+            await leagueResponse.json();
 
-            const usersResponse = await fetch(
+
+        /*
+         * Users
+         */
+
+        const usersResponse =
+            await fetch(
                 `https://api.sleeper.app/v1/league/${leagueId}/users`
             );
 
-            const users = usersResponse.ok
+
+        const users =
+            usersResponse.ok
                 ? await usersResponse.json()
                 : [];
 
 
-            /*
-             * Rosters
-             */
+        /*
+         * Rosters
+         */
 
-            const rostersResponse = await fetch(
+        const rostersResponse =
+            await fetch(
                 `https://api.sleeper.app/v1/league/${leagueId}/rosters`
             );
 
-            const rosters = rostersResponse.ok
+
+        const rosters =
+            rostersResponse.ok
                 ? await rostersResponse.json()
                 : [];
 
 
-            /*
-             * Championship playoff bracket
-             */
+        /*
+         * Winners bracket
+         */
 
-            const bracketResponse = await fetch(
+        const bracketResponse =
+            await fetch(
                 `https://api.sleeper.app/v1/league/${leagueId}/winners_bracket`
             );
 
-            const winnersBracket = bracketResponse.ok
+
+        const winnersBracket =
+            bracketResponse.ok
                 ? await bracketResponse.json()
                 : [];
 
 
-            const userMap = {};
+        /*
+         * User lookup
+         */
 
-            users.forEach(user => {
-                userMap[user.user_id] = user;
-            });
-
-
-            const rosterMap = {};
-
-            rosters.forEach(roster => {
-
-                const user = userMap[roster.owner_id];
-
-                rosterMap[roster.roster_id] = {
-
-                    roster_id: roster.roster_id,
-
-                    owner_id: roster.owner_id,
-
-                    owner:
-                        user?.display_name ||
-                        "Unknown Owner",
-
-                    team_name:
-                        user?.metadata?.team_name?.trim() ||
-                        user?.display_name ||
-                        `Team ${roster.roster_id}`
-
-                };
-
-            });
+        const userMap = {};
 
 
-            /*
-             * Determine which roster IDs actually made
-             * the championship playoff bracket.
-             *
-             * We collect every roster explicitly appearing
-             * as t1 / t2 / winner / loser in the winners bracket.
-             */
+        users.forEach(user => {
 
-            const playoffRosterIds = new Set();
+            userMap[user.user_id] =
+                user;
+
+        });
 
 
-            winnersBracket.forEach(game => {
+        /*
+         * Roster lookup
+         */
 
-                [
-                    game.t1,
-                    game.t2,
-                    game.w,
-                    game.l
-                ].forEach(value => {
-
-                    if (
-                        typeof value === "number"
-                    ) {
-
-                        playoffRosterIds.add(value);
-
-                    }
-
-                });
-
-            });
+        const rosterMap = {};
 
 
-            /*
-             * Determine playoff start week directly
-             * from that year's Sleeper settings.
-             */
+        rosters.forEach(roster => {
 
-            const playoffStartWeek =
-                league.settings?.playoff_week_start || 15;
+            const user =
+                userMap[roster.owner_id];
 
 
-            /*
-             * Track which playoff weeks each roster actually
-             * participated in.
-             *
-             * We use the winners bracket winners/losers to
-             * confirm participation rather than counting every
-             * post-season matchup Sleeper happens to return.
-             */
+            rosterMap[roster.roster_id] = {
 
-            const playoffGamesByRoster = {};
+                roster_id:
+                    roster.roster_id,
 
+                owner_id:
+                    roster.owner_id,
 
-            winnersBracket.forEach(bracketGame => {
+                owner:
+                    user?.display_name ||
+                    "Unknown Owner",
 
-                const rosterIds = new Set();
+                team_name:
+                    user?.metadata?.team_name?.trim() ||
+                    user?.display_name ||
+                    `Team ${roster.roster_id}`
 
+            };
 
-                [
-                    bracketGame.t1,
-                    bracketGame.t2,
-                    bracketGame.w,
-                    bracketGame.l
-                ].forEach(value => {
-
-                    if (
-                        typeof value === "number"
-                    ) {
-
-                        rosterIds.add(value);
-
-                    }
-
-                });
+        });
 
 
-                rosterIds.forEach(rosterId => {
+        /*
+         * Determine playoff teams.
+         */
 
-                    if (!playoffGamesByRoster[rosterId]) {
-
-                        playoffGamesByRoster[rosterId] =
-                            new Set();
-
-                    }
-
-                });
-
-            });
+        const playoffRosterIds =
+            new Set();
 
 
-            /*
-             * Process weekly matchups.
-             */
+        winnersBracket.forEach(game => {
 
-            for (
-                let week = 1;
-                week <= 18;
-                week++
-            ) {
+            [
+                game.t1,
+                game.t2,
+                game.w,
+                game.l
+            ].forEach(value => {
 
-                const matchupResponse =
-                    await fetch(
-                        `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`
-                    );
+                if (
+                    typeof value === "number"
+                ) {
 
+                    playoffRosterIds.add(value);
 
-                if (!matchupResponse.ok) {
-                    continue;
                 }
 
+            });
 
-                const matchups =
-                    await matchupResponse.json();
+        });
+
+
+        const playoffStartWeek =
+            league.settings
+                ?.playoff_week_start || 15;
+
+
+        const managerMap = {};
+
+
+        /*
+         * Process one season's weekly matchups.
+         */
+
+        for (
+            let week = 1;
+            week <= 18;
+            week++
+        ) {
+
+            const matchupResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`
+                );
+
+
+            if (!matchupResponse.ok) {
+
+                continue;
+
+            }
+
+
+            const matchups =
+                await matchupResponse.json();
+
+
+            if (
+                !Array.isArray(matchups) ||
+                matchups.length === 0
+            ) {
+
+                continue;
+
+            }
+
+
+            const matchupGroups = {};
+
+
+            matchups.forEach(entry => {
+
+                if (
+                    entry.matchup_id === null ||
+                    entry.matchup_id === undefined
+                ) {
+
+                    return;
+
+                }
 
 
                 if (
-                    !Array.isArray(matchups) ||
-                    matchups.length === 0
+                    !matchupGroups[
+                        entry.matchup_id
+                    ]
                 ) {
-                    continue;
+
+                    matchupGroups[
+                        entry.matchup_id
+                    ] = [];
+
                 }
 
 
+                matchupGroups[
+                    entry.matchup_id
+                ].push(entry);
+
+            });
+
+
+            Object.values(
+                matchupGroups
+            ).forEach(entries => {
+
+                if (
+                    entries.length !== 2
+                ) {
+
+                    return;
+
+                }
+
+
+                const first =
+                    entries[0];
+
+                const second =
+                    entries[1];
+
+
+                const firstTeam =
+                    rosterMap[
+                        first.roster_id
+                    ];
+
+
+                const secondTeam =
+                    rosterMap[
+                        second.roster_id
+                    ];
+
+
+                if (
+                    !firstTeam ||
+                    !secondTeam
+                ) {
+
+                    return;
+
+                }
+
+
+                const firstPoints =
+                    Number(
+                        first.points || 0
+                    );
+
+
+                const secondPoints =
+                    Number(
+                        second.points || 0
+                    );
+
+
                 /*
-                 * Group teams into actual games.
+                 * Ignore future empty games.
                  */
 
-                const matchupGroups = {};
+                if (
+                    firstPoints === 0 &&
+                    secondPoints === 0 &&
+                    league.status !== "complete"
+                ) {
+
+                    return;
+
+                }
 
 
-                matchups.forEach(entry => {
-
-                    if (
-                        entry.matchup_id === null ||
-                        entry.matchup_id === undefined
-                    ) {
-                        return;
-                    }
+                const playoff =
+                    week >=
+                    playoffStartWeek;
 
 
-                    if (!matchupGroups[entry.matchup_id]) {
+                /*
+                 * Exclude postseason games that are
+                 * not part of the championship bracket.
+                 */
 
-                        matchupGroups[entry.matchup_id] = [];
+                if (playoff) {
 
-                    }
-
-
-                    matchupGroups[entry.matchup_id]
-                        .push(entry);
-
-                });
-
-
-                Object.values(matchupGroups)
-                    .forEach(entries => {
-
-                        if (entries.length !== 2) {
-                            return;
-                        }
-
-
-                        const first = entries[0];
-                        const second = entries[1];
-
-
-                        const firstTeam =
-                            rosterMap[first.roster_id];
-
-                        const secondTeam =
-                            rosterMap[second.roster_id];
-
-
-                        if (!firstTeam || !secondTeam) {
-                            return;
-                        }
-
-
-                        const firstPoints =
-                            Number(first.points || 0);
-
-                        const secondPoints =
-                            Number(second.points || 0);
-
-
-                        /*
-                         * Ignore completely empty future games.
-                         */
-
-                        if (
-                            firstPoints === 0 &&
-                            secondPoints === 0 &&
-                            league.status !== "complete"
-                        ) {
-                            return;
-                        }
-
-
-                        const isPostseason =
-                            week >= playoffStartWeek;
-
-
-                        /*
-                         * Regular season:
-                         * everything before playoff_start_week.
-                         */
-
-                        if (!isPostseason) {
-
-                            recordGame(
-                                firstTeam,
-                                secondTeam,
-                                firstPoints,
-                                secondPoints,
-                                season,
-                                week,
-                                false,
-                                managerMap
-                            );
-
-                            return;
-
-                        }
-
-
-                        /*
-                         * Postseason:
-                         *
-                         * Only count games where BOTH managers
-                         * are championship-playoff teams.
-                         *
-                         * This excludes consolation teams.
-                         */
-
-                        const firstInPlayoffs =
-                            playoffRosterIds.has(
-                                first.roster_id
-                            );
-
-                        const secondInPlayoffs =
-                            playoffRosterIds.has(
-                                second.roster_id
-                            );
-
-
-                        if (
-                            !firstInPlayoffs ||
-                            !secondInPlayoffs
-                        ) {
-                            return;
-                        }
-
-
-                        /*
-                         * Bye-week protection:
-                         *
-                         * Sleeper may return odd postseason
-                         * structures. A legitimate counted game
-                         * must contain two playoff teams.
-                         */
-
-                        recordGame(
-                            firstTeam,
-                            secondTeam,
-                            firstPoints,
-                            secondPoints,
-                            season,
-                            week,
-                            true,
-                            managerMap
+                    const firstInPlayoffs =
+                        playoffRosterIds.has(
+                            first.roster_id
                         );
 
-                    });
 
-            }
+                    const secondInPlayoffs =
+                        playoffRosterIds.has(
+                            second.roster_id
+                        );
+
+
+                    if (
+                        !firstInPlayoffs ||
+                        !secondInPlayoffs
+                    ) {
+
+                        return;
+
+                    }
+
+                }
+
+
+                recordGame(
+                    firstTeam,
+                    secondTeam,
+                    firstPoints,
+                    secondPoints,
+                    season,
+                    week,
+                    playoff,
+                    managerMap
+                );
+
+            });
 
         }
 
 
         /*
-         * Convert managerMap into final statistics.
+         * Format final manager stats.
          */
 
         const managers =
@@ -406,11 +424,6 @@ export async function onRequestGet() {
                         manager.playoff_wins +
                         manager.playoff_losses +
                         manager.playoff_ties;
-
-
-                    const overallGames =
-                        regularGames +
-                        playoffGames;
 
 
                     const winPercentage =
@@ -430,17 +443,6 @@ export async function onRequestGet() {
                         owner:
                             manager.owner,
 
-                        seasons:
-                            Array.from(
-                                manager.seasons
-                            ).sort(
-                                (a, b) => a - b
-                            ),
-
-                        seasons_played:
-                            manager.seasons.size,
-
-
                         regular_season: {
 
                             wins:
@@ -457,11 +459,11 @@ export async function onRequestGet() {
 
                             win_percentage:
                                 Number(
-                                    winPercentage.toFixed(4)
+                                    winPercentage
+                                        .toFixed(4)
                                 )
 
                         },
-
 
                         playoffs: {
 
@@ -478,27 +480,6 @@ export async function onRequestGet() {
                                 playoffGames
 
                         },
-
-
-                        overall: {
-
-                            wins:
-                                manager.regular_wins +
-                                manager.playoff_wins,
-
-                            losses:
-                                manager.regular_losses +
-                                manager.playoff_losses,
-
-                            ties:
-                                manager.regular_ties +
-                                manager.playoff_ties,
-
-                            games:
-                                overallGames
-
-                        },
-
 
                         scoring: {
 
@@ -536,22 +517,17 @@ export async function onRequestGet() {
 
                         },
 
-
                         highest_team_score:
                             manager.highest_team_score,
-
 
                         lowest_team_score:
                             manager.lowest_team_score,
 
-
                         biggest_win:
                             manager.biggest_win,
 
-
                         biggest_loss:
                             manager.biggest_loss,
-
 
                         highest_score_in_loss:
                             manager.highest_score_in_loss
@@ -561,17 +537,19 @@ export async function onRequestGet() {
                 });
 
 
-        managers.sort(
-            (a, b) =>
-                b.regular_season.win_percentage -
-                a.regular_season.win_percentage
-        );
-
-
         return new Response(
 
             JSON.stringify(
                 {
+                    season:
+                        season,
+
+                    league_id:
+                        leagueId,
+
+                    playoff_start_week:
+                        playoffStartWeek,
+
                     managers_found:
                         managers.length,
 
@@ -624,7 +602,7 @@ export async function onRequestGet() {
 
 /*
  * ======================================================
- * RECORD ONE GAME
+ * RECORD GAME
  * ======================================================
  */
 
@@ -652,15 +630,6 @@ function recordGame(
             managerMap
         );
 
-
-    first.seasons.add(season);
-    second.seasons.add(season);
-
-
-    /*
-     * We only use REGULAR-SEASON games for PPG/PAPG
-     * and regular scoring records.
-     */
 
     if (!playoff) {
 
@@ -700,11 +669,10 @@ function recordGame(
     }
 
 
-    /*
-     * Win / loss / tie
-     */
-
-    if (firstPoints > secondPoints) {
+    if (
+        firstPoints >
+        secondPoints
+    ) {
 
         if (playoff) {
 
@@ -720,7 +688,10 @@ function recordGame(
 
     }
 
-    else if (secondPoints > firstPoints) {
+    else if (
+        secondPoints >
+        firstPoints
+    ) {
 
         if (playoff) {
 
@@ -758,7 +729,7 @@ function recordGame(
 
 /*
  * ======================================================
- * CREATE / GET MANAGER
+ * GET / CREATE MANAGER
  * ======================================================
  */
 
@@ -767,18 +738,21 @@ function getManager(
     managerMap
 ) {
 
-    if (!managerMap[team.owner_id]) {
+    if (
+        !managerMap[
+            team.owner_id
+        ]
+    ) {
 
-        managerMap[team.owner_id] = {
+        managerMap[
+            team.owner_id
+        ] = {
 
             owner_id:
                 team.owner_id,
 
             owner:
                 team.owner,
-
-            seasons:
-                new Set(),
 
             regular_wins:
                 0,
@@ -847,10 +821,6 @@ function updateScoringRecords(
     week
 ) {
 
-    /*
-     * Highest team score
-     */
-
     if (
         !manager.highest_team_score ||
         points >
@@ -868,19 +838,12 @@ function updateScoringRecords(
                 season,
 
             week:
-                week,
-
-            team_name:
-                team.team_name
+                week
 
         };
 
     }
 
-
-    /*
-     * Lowest team score
-     */
 
     if (
         !manager.lowest_team_score ||
@@ -899,10 +862,7 @@ function updateScoringRecords(
                 season,
 
             week:
-                week,
-
-            team_name:
-                team.team_name
+                week
 
         };
 
@@ -918,11 +878,10 @@ function updateScoringRecords(
         );
 
 
-    /*
-     * Biggest win
-     */
-
-    if (points > opponentPoints) {
+    if (
+        points >
+        opponentPoints
+    ) {
 
         if (
             !manager.biggest_win ||
@@ -958,11 +917,10 @@ function updateScoringRecords(
     }
 
 
-    /*
-     * Biggest loss
-     */
-
-    if (points < opponentPoints) {
+    if (
+        points <
+        opponentPoints
+    ) {
 
         if (
             !manager.biggest_loss ||
@@ -995,10 +953,6 @@ function updateScoringRecords(
 
         }
 
-
-        /*
-         * Highest score in a loss
-         */
 
         if (
             !manager.highest_score_in_loss ||
