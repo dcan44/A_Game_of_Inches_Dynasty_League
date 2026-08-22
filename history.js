@@ -16,6 +16,11 @@ const historyChampions =
     );
 
 
+const hallOfShame =
+    document.getElementById(
+        'hall-of-shame'
+    );
+
 /*
  * ======================================================
  * CONFIRMED CHAMPIONS
