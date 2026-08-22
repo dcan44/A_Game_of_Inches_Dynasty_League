@@ -1014,19 +1014,6 @@ if (!trophyHTML) {
                     <div>
 
                         <span>
-                            Highest Player Score
-                        </span>
-
-                        <strong>
-                            Coming Soon
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
                             Highest Team Score
                         </span>
 
