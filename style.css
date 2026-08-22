@@ -5370,22 +5370,32 @@ footer p {
     pointer-events: none;
 
     background:
-        linear-gradient(
-            to top right,
-            transparent 47%,
-            #FFFFFF 48%,
-            #FFFFFF 52%,
-            transparent 53%
-        )
-        left bottom / 50% 100% no-repeat,
+.division-badge {
 
+    background:
         linear-gradient(
-            to top left,
-            transparent 47%,
-            #FFFFFF 48%,
-            #FFFFFF 52%,
-            transparent 53%
-        )
-        right bottom / 50% 100% no-repeat;
+            180deg,
+            #1760A8 0%,
+            #0C4A87 50%,
+            #063568 100%
+        );
+
+    color: #FFFFFF;
+
+    border: none;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 78%,
+        50% 100%,
+        0 78%
+    );
+
+    filter:
+        drop-shadow(2px 0 0 #FFFFFF)
+        drop-shadow(-2px 0 0 #FFFFFF)
+        drop-shadow(0 -2px 0 #FFFFFF)
+        drop-shadow(0 2px 0 #FFFFFF);
 
 }
