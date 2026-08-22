@@ -671,108 +671,70 @@ async function loadManagers() {
                 ] || [];
 
 
-            let trophyHTML = '';
+          let trophyHTML = '';
 
 
-            /*
-             * Championship trophies
-             */
+/*
+ * Championship banners
+ */
 
-            championshipYears.forEach(
-                year => {
+championshipYears.forEach(year => {
 
-                    trophyHTML += `
+    trophyHTML += `
 
-                        <div
-                            class="
-                                manager-trophy
-                                championship-trophy
-                            "
-                        >
+        <div class="trophy-badge championship-badge">
 
-                            <span
-                                class="trophy-symbol"
-                            >
-                                ★
-                            </span>
+            <span class="trophy-icon">
+                🏆
+            </span>
 
-                            <div>
+            <span class="trophy-text">
+                ${year}
+            </span>
 
-                                <strong>
-                                    ${year} Champion
-                                </strong>
+        </div>
 
-                                <small>
-                                    League Championship
-                                </small>
+    `;
 
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            );
+});
 
 
-            /*
-             * Division trophies
-             */
+/*
+ * Division championship banners
+ */
 
-            managerDivisionTitles.forEach(
-                year => {
+managerDivisionTitles.forEach(year => {
 
-                    trophyHTML += `
+    trophyHTML += `
 
-                        <div
-                            class="
-                                manager-trophy
-                                division-trophy
-                            "
-                        >
+        <div class="trophy-badge division-badge">
 
-                            <span
-                                class="trophy-symbol"
-                            >
-                                ◆
-                            </span>
+            <span class="trophy-text">
+                DIV ${year}
+            </span>
 
-                            <div>
+        </div>
 
-                                <strong>
-                                    ${year} Division
-                                </strong>
+    `;
 
-                                <small>
-                                    Division Champion
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            );
+});
 
 
-            /*
-             * Empty trophy case
-             */
+/*
+ * Empty trophy case
+ */
 
-            if (!trophyHTML) {
+if (!trophyHTML) {
 
-                trophyHTML = `
+    trophyHTML = `
 
-                    <div class="empty-trophy-case">
-                        No league honors yet
-                    </div>
+        <div class="empty-trophy-case">
+            No league honors yet
+        </div>
 
-                `;
+    `;
 
-            }
+}
 
 
             /*
