@@ -1,22 +1,71 @@
 async function loadManagers() {
 
-    const grid = document.getElementById('managers-grid');
+    const grid =
+        document.getElementById('managers-grid');
 
     try {
 
         /*
-         * Load current team information and historical
-         * career statistics at the same time.
+         * =====================================================
+         * LOAD DATA
+         * =====================================================
+         *
+         * Current teams come from /api/teams.
+         *
+         * Historical performance is requested one season
+         * at a time. This avoids Cloudflare's Worker
+         * subrequest limits.
          */
 
-        const [teamsResponse, careerResponse] =
-            await Promise.all([
-                fetch('/api/teams'),
-                fetch('/api/career-stats')
-            ]);
+        const [
+            teamsResponse,
+            performance2023Response,
+            performance2024Response,
+            performance2025Response,
+            performance2026Response
+        ] = await Promise.all([
+
+            fetch('/api/teams'),
+
+            fetch(
+                '/api/manager-performance?season=2023'
+            ),
+
+            fetch(
+                '/api/manager-performance?season=2024'
+            ),
+
+            fetch(
+                '/api/manager-performance?season=2025'
+            ),
+
+            fetch(
+                '/api/manager-performance?season=2026'
+            )
+
+        ]);
 
 
-        if (!teamsResponse.ok || !careerResponse.ok) {
+        /*
+         * Make sure every request succeeded.
+         */
+
+        const responses = [
+
+            teamsResponse,
+            performance2023Response,
+            performance2024Response,
+            performance2025Response,
+            performance2026Response
+
+        ];
+
+
+        if (
+            responses.some(
+                response => !response.ok
+            )
+        ) {
 
             throw new Error(
                 'Unable to retrieve manager data.'
@@ -25,11 +74,25 @@ async function loadManagers() {
         }
 
 
+        /*
+         * Convert responses to JSON.
+         */
+
         const teamsData =
             await teamsResponse.json();
 
-        const careerData =
-            await careerResponse.json();
+
+        const performanceData = [
+
+            await performance2023Response.json(),
+
+            await performance2024Response.json(),
+
+            await performance2025Response.json(),
+
+            await performance2026Response.json()
+
+        ];
 
 
         if (!teamsData.teams) {
@@ -42,27 +105,183 @@ async function loadManagers() {
 
 
         /*
-         * Create a career-stat lookup table
-         * using each manager's Sleeper owner_id.
+         * =====================================================
+         * BUILD CAREER STATISTICS
+         * =====================================================
          */
 
         const careerMap = {};
 
 
-        if (careerData.managers) {
+        performanceData.forEach(
+            seasonData => {
 
-            careerData.managers.forEach(manager => {
+                if (!seasonData.managers) {
+                    return;
+                }
 
-                careerMap[manager.owner_id] =
-                    manager;
 
-            });
+                seasonData.managers.forEach(
+                    manager => {
 
-        }
+
+                        /*
+                         * Create manager if this is the
+                         * first season we've encountered.
+                         */
+
+                        if (
+                            !careerMap[
+                                manager.owner_id
+                            ]
+                        ) {
+
+                            careerMap[
+                                manager.owner_id
+                            ] = {
+
+                                owner_id:
+                                    manager.owner_id,
+
+                                owner:
+                                    manager.owner,
+
+                                seasons:
+                                    0,
+
+                                regular_wins:
+                                    0,
+
+                                regular_losses:
+                                    0,
+
+                                regular_ties:
+                                    0,
+
+                                playoff_wins:
+                                    0,
+
+                                playoff_losses:
+                                    0,
+
+                                playoff_ties:
+                                    0,
+
+                                points_for:
+                                    0,
+
+                                points_against:
+                                    0,
+
+                                regular_games:
+                                    0,
+
+                                highest_team_score:
+                                    null
+
+                            };
+
+                        }
+
+
+                        const career =
+                            careerMap[
+                                manager.owner_id
+                            ];
+
+
+                        /*
+                         * Count season played.
+                         *
+                         * 2026 will count once actual games
+                         * have been played.
+                         */
+
+                        if (
+                            manager.regular_season.games > 0
+                        ) {
+
+                            career.seasons++;
+
+                        }
+
+
+                        /*
+                         * Regular-season record
+                         */
+
+                        career.regular_wins +=
+                            manager.regular_season.wins;
+
+                        career.regular_losses +=
+                            manager.regular_season.losses;
+
+                        career.regular_ties +=
+                            manager.regular_season.ties;
+
+                        career.regular_games +=
+                            manager.regular_season.games;
+
+
+                        /*
+                         * Championship playoff record
+                         */
+
+                        career.playoff_wins +=
+                            manager.playoffs.wins;
+
+                        career.playoff_losses +=
+                            manager.playoffs.losses;
+
+                        career.playoff_ties +=
+                            manager.playoffs.ties;
+
+
+                        /*
+                         * Career regular-season scoring
+                         */
+
+                        career.points_for +=
+                            manager.scoring.points_for;
+
+                        career.points_against +=
+                            manager.scoring.points_against;
+
+
+                        /*
+                         * Highest single-game team score
+                         */
+
+                        if (
+                            manager.highest_team_score &&
+                            (
+                                !career.highest_team_score ||
+                                manager.highest_team_score.points >
+                                career.highest_team_score.points
+                            )
+                        ) {
+
+                            career.highest_team_score = {
+
+                                ...manager.highest_team_score
+
+                            };
+
+                        }
+
+                    }
+
+                );
+
+            }
+
+        );
 
 
         /*
-         * Keep the current franchises in roster order.
+         * =====================================================
+         * CURRENT TEAMS
+         * =====================================================
          */
 
         const teams =
@@ -76,14 +295,24 @@ async function loadManagers() {
         grid.innerHTML = '';
 
 
+        /*
+         * =====================================================
+         * BUILD EACH MANAGER CARD
+         * =====================================================
+         */
+
         teams.forEach(team => {
 
             const career =
-                careerMap[team.owner_id];
+                careerMap[
+                    team.owner_id
+                ];
 
 
             const card =
-                document.createElement('article');
+                document.createElement(
+                    'article'
+                );
 
 
             card.className =
@@ -91,7 +320,7 @@ async function loadManagers() {
 
 
             /*
-             * Manager / team avatar
+             * Avatar
              */
 
             const avatar =
@@ -129,20 +358,50 @@ async function loadManagers() {
 
 
             /*
-             * Career record
+             * Regular-season career record
              */
 
-            let careerRecord = '—';
+            let regularRecord = '—';
+
 
             if (career) {
 
-                careerRecord =
-                    `${career.wins}-${career.losses}`;
+                regularRecord =
+                    `${career.regular_wins}-${career.regular_losses}`;
 
-                if (career.ties) {
 
-                    careerRecord +=
-                        `-${career.ties}`;
+                if (
+                    career.regular_ties > 0
+                ) {
+
+                    regularRecord +=
+                        `-${career.regular_ties}`;
+
+                }
+
+            }
+
+
+            /*
+             * Playoff record
+             */
+
+            let playoffRecord =
+                '0-0';
+
+
+            if (career) {
+
+                playoffRecord =
+                    `${career.playoff_wins}-${career.playoff_losses}`;
+
+
+                if (
+                    career.playoff_ties > 0
+                ) {
+
+                    playoffRecord +=
+                        `-${career.playoff_ties}`;
 
                 }
 
@@ -153,16 +412,30 @@ async function loadManagers() {
              * Career winning percentage
              */
 
-            let winningPercentage = '—';
+            let winningPercentage =
+                '—';
+
 
             if (
                 career &&
-                career.games > 0
+                career.regular_games > 0
             ) {
+
+                const percentage =
+                    (
+                        career.regular_wins +
+                        (
+                            career.regular_ties *
+                            0.5
+                        )
+                    )
+                    /
+                    career.regular_games;
+
 
                 winningPercentage =
                     (
-                        career.winning_percentage *
+                        percentage *
                         100
                     ).toFixed(1) + '%';
 
@@ -170,26 +443,56 @@ async function loadManagers() {
 
 
             /*
-             * Career points per game
+             * Career PPG
              */
 
-            let careerPPG = '—';
+            let careerPPG =
+                '—';
+
 
             if (
                 career &&
-                career.games > 0
+                career.regular_games > 0
             ) {
 
                 careerPPG =
-                    Number(
-                        career.points_per_game
+                    (
+                        career.points_for /
+                        career.regular_games
                     ).toFixed(2);
 
             }
 
 
             /*
-             * Build manager card
+             * Highest team score
+             */
+
+            let highestTeamScore =
+                'Coming Soon';
+
+
+            if (
+                career &&
+                career.highest_team_score
+            ) {
+
+                highestTeamScore =
+                    `
+                        ${career.highest_team_score.points.toFixed(2)}
+                        <small>
+                            Week ${career.highest_team_score.week},
+                            ${career.highest_team_score.season}
+                        </small>
+                    `;
+
+            }
+
+
+            /*
+             * =================================================
+             * CARD HTML
+             * =================================================
              */
 
             card.innerHTML = `
@@ -241,6 +544,7 @@ async function loadManagers() {
 
                 <div class="manager-stats">
 
+
                     <div class="manager-stat">
 
                         <span>
@@ -257,28 +561,13 @@ async function loadManagers() {
                     <div class="manager-stat">
 
                         <span>
-                            2026 Points
-                        </span>
-
-                        <strong>
-                            ${Number(
-                                team.points_for || 0
-                            ).toFixed(2)}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="manager-stat">
-
-                        <span>
                             Seasons
                         </span>
 
                         <strong>
                             ${
                                 career
-                                    ? career.seasons_played
+                                    ? career.seasons
                                     : '—'
                             }
                         </strong>
@@ -289,11 +578,11 @@ async function loadManagers() {
                     <div class="manager-stat">
 
                         <span>
-                            All-Time Record
+                            Regular Season
                         </span>
 
                         <strong>
-                            ${careerRecord}
+                            ${regularRecord}
                         </strong>
 
                     </div>
@@ -315,6 +604,19 @@ async function loadManagers() {
                     <div class="manager-stat">
 
                         <span>
+                            Playoffs
+                        </span>
+
+                        <strong>
+                            ${playoffRecord}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="manager-stat">
+
+                        <span>
                             Career PPG
                         </span>
 
@@ -324,10 +626,12 @@ async function loadManagers() {
 
                     </div>
 
+
                 </div>
 
 
                 <div class="manager-records">
+
 
                     <div>
 
@@ -349,17 +653,20 @@ async function loadManagers() {
                         </span>
 
                         <strong>
-                            Coming Soon
+                            ${highestTeamScore}
                         </strong>
 
                     </div>
+
 
                 </div>
 
             `;
 
 
-            grid.appendChild(card);
+            grid.appendChild(
+                card
+            );
 
         });
 
