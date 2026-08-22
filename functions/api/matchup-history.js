@@ -1,78 +1,106 @@
 export async function onRequestGet() {
 
-    const currentLeagueId = "1312098239821914112";
+    const currentLeagueId =
+        "1312098239821914112";
 
     try {
 
         const seasons = [];
-        let leagueId = currentLeagueId;
+
+        let leagueId =
+            currentLeagueId;
+
 
         /*
-         * Follow each Sleeper league backward through history.
+         * Follow the Sleeper league chain backward.
          */
 
-        for (let i = 0; i < 10 && leagueId; i++) {
+        for (
+            let seasonIndex = 0;
+            seasonIndex < 10 && leagueId;
+            seasonIndex++
+        ) {
 
-            const leagueResponse = await fetch(
-                `https://api.sleeper.app/v1/league/${leagueId}`
-            );
+            /*
+             * Get league information.
+             */
+
+            const leagueResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}`
+                );
+
 
             if (!leagueResponse.ok) {
+
                 break;
+
             }
 
-            const league = await leagueResponse.json();
 
-            const [
-                usersResponse,
-                rostersResponse
-            ] = await Promise.all([
-
-                fetch(
-                    `https://api.sleeper.app/v1/league/${leagueId}/users`
-                ),
-
-                fetch(
-                    `https://api.sleeper.app/v1/league/${leagueId}/rosters`
-                )
-
-            ]);
-
-
-            const users = usersResponse.ok
-                ? await usersResponse.json()
-                : [];
-
-            const rosters = rostersResponse.ok
-                ? await rostersResponse.json()
-                : [];
+            const league =
+                await leagueResponse.json();
 
 
             /*
-             * Map Sleeper users.
+             * Get users.
+             */
+
+            const usersResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/users`
+                );
+
+
+            const users =
+                usersResponse.ok
+                    ? await usersResponse.json()
+                    : [];
+
+
+            /*
+             * Get rosters.
+             */
+
+            const rostersResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+                );
+
+
+            const rosters =
+                rostersResponse.ok
+                    ? await rostersResponse.json()
+                    : [];
+
+
+            /*
+             * Create user lookup.
              */
 
             const userMap = {};
 
+
             users.forEach(user => {
 
-                userMap[user.user_id] = user;
+                userMap[user.user_id] =
+                    user;
 
             });
 
 
             /*
-             * Map roster IDs to their owner for this particular season.
-             *
-             * This is important because franchises can change owners.
+             * Create roster lookup.
              */
 
             const rosterMap = {};
+
 
             rosters.forEach(roster => {
 
                 const user =
                     userMap[roster.owner_id];
+
 
                 rosterMap[roster.roster_id] = {
 
@@ -97,77 +125,78 @@ export async function onRequestGet() {
 
 
             /*
-             * This automatically handles the change you mentioned:
+             * Read the actual playoff start week
+             * from each season.
              *
-             * 2023 playoffs began Week 16.
-             * Later seasons begin Week 15.
+             * This automatically accounts for:
              *
-             * We read each season's actual Sleeper setting instead
-             * of hard-coding the week.
+             * 2023 = playoffs begin Week 16
+             * Later seasons = playoffs begin Week 15
              */
 
             const playoffStart =
-                league.settings?.playoff_week_start || 15;
-
-
-            /*
-             * Retrieve every possible fantasy week.
-             */
-
-            const weeks =
-                Array.from(
-                    { length: 18 },
-                    (_, index) => index + 1
-                );
-
-
-            const weeklyResponses =
-                await Promise.all(
-
-                    weeks.map(week =>
-                        fetch(
-                            `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`
-                        )
-                    )
-
-                );
+                league.settings
+                    ?.playoff_week_start || 15;
 
 
             const games = [];
 
 
+            /*
+             * IMPORTANT:
+             *
+             * We retrieve each week ONE AT A TIME.
+             *
+             * The previous version attempted to open
+             * many Sleeper connections simultaneously,
+             * which caused Cloudflare's:
+             *
+             * "Response closed due to connection limit"
+             *
+             * error.
+             */
+
             for (
-                let index = 0;
-                index < weeklyResponses.length;
-                index++
+                let week = 1;
+                week <= 18;
+                week++
             ) {
 
-                const response =
-                    weeklyResponses[index];
+                const matchupResponse =
+                    await fetch(
+                        `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`
+                    );
 
-                const week =
-                    weeks[index];
 
+                if (!matchupResponse.ok) {
 
-                if (!response.ok) {
                     continue;
+
                 }
 
 
                 const matchups =
-                    await response.json();
+                    await matchupResponse.json();
 
+
+                /*
+                 * Once we reach weeks with no matchup
+                 * information, there is nothing to process.
+                 */
 
                 if (
                     !Array.isArray(matchups) ||
                     matchups.length === 0
                 ) {
+
                     continue;
+
                 }
 
 
                 /*
-                 * Group entries by Sleeper matchup_id.
+                 * Group Sleeper roster entries by
+                 * matchup_id.
                  */
 
                 const matchupGroups = {};
@@ -179,32 +208,52 @@ export async function onRequestGet() {
                         entry.matchup_id === null ||
                         entry.matchup_id === undefined
                     ) {
+
                         return;
-                    }
-
-
-                    if (!matchupGroups[entry.matchup_id]) {
-
-                        matchupGroups[entry.matchup_id] = [];
 
                     }
 
 
-                    matchupGroups[entry.matchup_id]
-                        .push(entry);
+                    if (
+                        !matchupGroups[
+                            entry.matchup_id
+                        ]
+                    ) {
+
+                        matchupGroups[
+                            entry.matchup_id
+                        ] = [];
+
+                    }
+
+
+                    matchupGroups[
+                        entry.matchup_id
+                    ].push(entry);
 
                 });
 
 
                 /*
-                 * A normal matchup should have exactly two teams.
+                 * Convert each pair into one game.
                  */
 
-                Object.entries(matchupGroups)
-                    .forEach(([matchupId, entries]) => {
+                Object.entries(
+                    matchupGroups
+                ).forEach(
+                    ([matchupId, entries]) => {
 
-                        if (entries.length !== 2) {
+                        /*
+                         * A normal fantasy matchup
+                         * should contain two teams.
+                         */
+
+                        if (
+                            entries.length !== 2
+                        ) {
+
                             return;
+
                         }
 
 
@@ -216,30 +265,53 @@ export async function onRequestGet() {
 
 
                         const firstTeam =
-                            rosterMap[first.roster_id];
+                            rosterMap[
+                                first.roster_id
+                            ];
+
 
                         const secondTeam =
-                            rosterMap[second.roster_id];
+                            rosterMap[
+                                second.roster_id
+                            ];
 
 
-                        if (!firstTeam || !secondTeam) {
+                        if (
+                            !firstTeam ||
+                            !secondTeam
+                        ) {
+
                             return;
+
                         }
 
 
                         const firstPoints =
-                            Number(first.points || 0);
+                            Number(
+                                first.points || 0
+                            );
+
 
                         const secondPoints =
-                            Number(second.points || 0);
+                            Number(
+                                second.points || 0
+                            );
 
 
-                        let winnerRosterId = null;
-                        let loserRosterId = null;
-                        let tie = false;
+                        let winnerRosterId =
+                            null;
+
+                        let loserRosterId =
+                            null;
+
+                        let tie =
+                            false;
 
 
-                        if (firstPoints > secondPoints) {
+                        if (
+                            firstPoints >
+                            secondPoints
+                        ) {
 
                             winnerRosterId =
                                 first.roster_id;
@@ -249,7 +321,10 @@ export async function onRequestGet() {
 
                         }
 
-                        else if (secondPoints > firstPoints) {
+                        else if (
+                            secondPoints >
+                            firstPoints
+                        ) {
 
                             winnerRosterId =
                                 second.roster_id;
@@ -269,16 +344,21 @@ export async function onRequestGet() {
                         games.push({
 
                             season:
-                                Number(league.season),
+                                Number(
+                                    league.season
+                                ),
 
                             week:
                                 week,
 
                             matchup_id:
-                                Number(matchupId),
+                                Number(
+                                    matchupId
+                                ),
 
                             playoff:
-                                week >= playoffStart,
+                                week >=
+                                playoffStart,
 
                             playoff_start_week:
                                 playoffStart,
@@ -287,16 +367,20 @@ export async function onRequestGet() {
                             team_1: {
 
                                 roster_id:
-                                    firstTeam.roster_id,
+                                    firstTeam
+                                        .roster_id,
 
                                 owner_id:
-                                    firstTeam.owner_id,
+                                    firstTeam
+                                        .owner_id,
 
                                 owner:
-                                    firstTeam.owner,
+                                    firstTeam
+                                        .owner,
 
                                 team_name:
-                                    firstTeam.team_name,
+                                    firstTeam
+                                        .team_name,
 
                                 points:
                                     firstPoints
@@ -307,16 +391,20 @@ export async function onRequestGet() {
                             team_2: {
 
                                 roster_id:
-                                    secondTeam.roster_id,
+                                    secondTeam
+                                        .roster_id,
 
                                 owner_id:
-                                    secondTeam.owner_id,
+                                    secondTeam
+                                        .owner_id,
 
                                 owner:
-                                    secondTeam.owner,
+                                    secondTeam
+                                        .owner,
 
                                 team_name:
-                                    secondTeam.team_name,
+                                    secondTeam
+                                        .team_name,
 
                                 points:
                                     secondPoints
@@ -343,15 +431,22 @@ export async function onRequestGet() {
 
                         });
 
-                    });
+                    }
+                );
 
             }
 
 
+            /*
+             * Save this season.
+             */
+
             seasons.push({
 
                 season:
-                    Number(league.season),
+                    Number(
+                        league.season
+                    ),
 
                 league_id:
                     league.league_id,
@@ -368,6 +463,10 @@ export async function onRequestGet() {
             });
 
 
+            /*
+             * Move backward one season.
+             */
+
             leagueId =
                 league.previous_league_id;
 
@@ -375,14 +474,21 @@ export async function onRequestGet() {
 
 
         /*
-         * Flatten every season into one master game list.
+         * Count all games across league history.
          */
 
-        const allGames =
-            seasons.flatMap(
-                season => season.games
+        const totalGames =
+            seasons.reduce(
+                (total, season) =>
+                    total +
+                    season.games_found,
+                0
             );
 
+
+        /*
+         * Return historical matchup information.
+         */
 
         return new Response(
 
@@ -393,13 +499,10 @@ export async function onRequestGet() {
                         seasons.length,
 
                     total_games:
-                        allGames.length,
+                        totalGames,
 
                     seasons:
-                        seasons,
-
-                    games:
-                        allGames
+                        seasons
 
                 },
                 null,
@@ -426,8 +529,10 @@ export async function onRequestGet() {
 
             JSON.stringify(
                 {
+
                     error:
                         error.message
+
                 },
                 null,
                 2
