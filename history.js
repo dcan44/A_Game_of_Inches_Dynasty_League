@@ -519,15 +519,20 @@ const mostWinsLeaders =
 
             <div class="history-leaders-grid">
 
-                ${leaderCard(
-                    'Most Wins',
-                    mostWins
-                        ? mostWins.regular_season.wins
-                        : '—',
-                    mostWins
-                        ? mostWins.owner
-                        : '—'
-                )}
+${leaderCard(
+    'Most Wins',
+    mostWinsRecord >= 0
+        ? mostWinsRecord
+        : '—',
+    mostWinsLeaders.length > 0
+        ? mostWinsLeaders
+            .map(
+                manager =>
+                    manager.owner
+            )
+            .join(' • ')
+        : '—'
+)}
 
 
                 ${leaderCard(
