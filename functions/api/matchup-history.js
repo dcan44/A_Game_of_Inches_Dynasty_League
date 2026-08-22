@@ -333,7 +333,32 @@ export async function onRequestGet(context) {
                         Number(
                             second.points || 0
                         );
+/*
+ * Ignore empty Sleeper matchup placeholders.
+ *
+ * These are not real games and should not count
+ * toward head-to-head history.
+ */
 
+if (
+    firstPoints === 0 &&
+    secondPoints === 0
+) {
+
+    return;
+
+}
+
+
+let winnerOwnerId =
+    null;
+
+let loserOwnerId =
+    null;
+
+let tie =
+    false;
+                    
 
                     let winnerOwnerId =
                         null;
