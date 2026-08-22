@@ -5342,35 +5342,12 @@ footer p {
 
 }
 /* ======================================================
-   DIVISION BANNER — COMPLETE WHITE PENNANT OUTLINE
+   DIVISION CHAMPION — BLUE WITH TRUE WHITE OUTLINE
 ====================================================== */
 
 .division-badge {
+
     position: relative;
-}
-
-
-/*
- * Draw the white border along the angled
- * bottom edge of the pennant.
- */
-
-.division-badge::after {
-
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    height: 16px;
-
-    pointer-events: none;
-
-    background:
-.division-badge {
 
     background:
         linear-gradient(
@@ -5384,6 +5361,10 @@ footer p {
 
     border: none;
 
+    text-shadow:
+        0 1px 1px
+        rgba(0, 0, 0, .35);
+
     clip-path: polygon(
         0 0,
         100% 0,
@@ -5392,10 +5373,79 @@ footer p {
         0 78%
     );
 
-    filter:
-        drop-shadow(2px 0 0 #FFFFFF)
-        drop-shadow(-2px 0 0 #FFFFFF)
-        drop-shadow(0 -2px 0 #FFFFFF)
-        drop-shadow(0 2px 0 #FFFFFF);
+    overflow: visible;
+
+}
+
+
+/* White outline layer */
+
+.division-badge::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: #FFFFFF;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 78%,
+        50% 100%,
+        0 78%
+    );
+
+    z-index: -2;
+
+}
+
+
+/* Slightly smaller blue interior */
+
+.division-badge::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #1760A8 0%,
+            #0C4A87 50%,
+            #063568 100%
+        );
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 78%,
+        50% 100%,
+        0 78%
+    );
+
+    z-index: -1;
+
+}
+
+
+/* Keep text and star above both layers */
+
+.division-badge .trophy-text,
+.division-badge .division-star {
+
+    position: relative;
+
+    z-index: 1;
+
+    color: #FFFFFF;
 
 }
