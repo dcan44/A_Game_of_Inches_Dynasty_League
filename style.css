@@ -2185,3 +2185,362 @@ footer p {
     }
 
 }
+/* ======================================================
+   MANAGER CARD LAYOUT REPAIR
+====================================================== */
+
+.manager-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    width: 100%;
+
+}
+
+
+.manager-stat {
+
+    min-height: 68px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 12px 16px;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-stat:nth-child(odd) {
+
+    border-right:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-stat span {
+
+    margin-bottom: 4px;
+
+    color: #7A8288;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-stat strong {
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 17px;
+
+}
+
+
+/* ======================================================
+   TROPHY CASE — FINAL VERSION
+====================================================== */
+
+.trophy-case {
+
+    min-height: 85px;
+
+    padding: 14px 16px 18px;
+
+    background: var(--dark-navy);
+
+    color: white;
+
+}
+
+
+.trophy-case-title {
+
+    margin-bottom: 12px;
+
+    color: var(--light-silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.trophy-case-grid {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+}
+
+
+/* ======================================================
+   TROPHY BANNERS
+====================================================== */
+
+.trophy-badge {
+
+    position: relative;
+
+    min-width: 105px;
+
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 0 14px 4px;
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: .5px;
+
+    text-transform: uppercase;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 78%,
+        50% 100%,
+        0 78%
+    );
+
+}
+
+
+/* ======================================================
+   LEAGUE CHAMPIONSHIP — GOLD
+====================================================== */
+
+.championship-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #E2B64F 0%,
+            #C9972B 50%,
+            #9B6D16 100%
+        );
+
+    border-top:
+        2px solid
+        #F4D477;
+
+    color: var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.25);
+
+}
+
+
+.championship-badge .trophy-icon {
+
+    font-size: 14px;
+
+}
+
+
+/* ======================================================
+   DIVISION CHAMPIONSHIP — SILVER
+====================================================== */
+
+.division-badge {
+
+    background:
+        linear-gradient(
+            180deg,
+            #E1E4E6 0%,
+            #B0B7BA 50%,
+            #858C90 100%
+        );
+
+    border-top:
+        2px solid
+        #F5F6F7;
+
+    color: var(--dark-navy);
+
+    text-shadow:
+        0 1px 0
+        rgba(255,255,255,.45);
+
+}
+
+
+.trophy-text {
+
+    position: relative;
+
+    top: -1px;
+
+}
+
+
+/* ======================================================
+   EMPTY TROPHY CASE
+====================================================== */
+
+.empty-trophy-case {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border:
+        1px dashed
+        rgba(255,255,255,.20);
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ======================================================
+   CAREER RECORDS
+====================================================== */
+
+.manager-records {
+
+    padding: 5px 16px 16px;
+
+}
+
+
+.manager-records > div {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 11px 0;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-records > div:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.manager-records span {
+
+    color: #777F85;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-records strong {
+
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 11px;
+
+    text-align: right;
+
+}
+
+
+.manager-records strong small {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #777F85;
+
+    font-size: 8px;
+
+    font-weight: 400;
+
+}
+
+
+/* ======================================================
+   MOBILE MANAGER STATS
+====================================================== */
+
+@media (max-width: 450px) {
+
+    .manager-stats {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .manager-stat:nth-child(odd) {
+
+        border-right: none;
+
+    }
+
+}
