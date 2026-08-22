@@ -2969,3 +2969,442 @@ footer p {
     }
 
 }
+/* ======================================================
+   STANDINGS PAGE
+====================================================== */
+
+.standings-page-table {
+
+    width: 100%;
+
+    min-width: 760px;
+
+    border-collapse: collapse;
+
+}
+
+
+.standings-page-table th {
+
+    padding:
+        12px
+        13px;
+
+    background:
+        var(--dark-navy);
+
+    color: white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+}
+
+
+.standings-page-table th:nth-child(2),
+.standings-page-table th:nth-child(3),
+.standings-page-table th:nth-child(4) {
+
+    text-align: left;
+
+}
+
+
+.standings-page-table td {
+
+    padding:
+        13px;
+
+    border-bottom:
+        1px solid
+        var(--light-silver);
+
+    color:
+        #39434A;
+
+    font-size:
+        12px;
+
+    text-align:
+        center;
+
+}
+
+
+.standings-page-table td:nth-child(2),
+.standings-page-table td:nth-child(3),
+.standings-page-table td:nth-child(4) {
+
+    text-align: left;
+
+}
+
+
+.standings-page-table tbody tr:hover {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+.standings-page-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.standing-rank {
+
+    width: 65px;
+
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        18px !important;
+
+    font-weight:
+        700;
+
+}
+
+
+.standings-team-name {
+
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        14px !important;
+
+    font-weight:
+        700;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+/* ======================================================
+   HEAD TO HEAD
+====================================================== */
+
+.head-to-head-note {
+
+    margin:
+        -6px
+        0
+        14px;
+
+    color:
+        #697178;
+
+    font-size:
+        12px;
+
+}
+
+
+.head-to-head-card {
+
+    background:
+        white;
+
+    border:
+        1px solid
+        var(--light-silver);
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,.06);
+
+}
+
+
+.head-to-head-scroll {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.head-to-head-table {
+
+    width: 100%;
+
+    min-width: 1200px;
+
+    border-collapse:
+        collapse;
+
+}
+
+
+.head-to-head-table th,
+.head-to-head-table td {
+
+    border:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+/* ======================================================
+   HEAD TO HEAD COLUMN HEADERS
+====================================================== */
+
+.h2h-corner {
+
+    min-width:
+        175px;
+
+    padding:
+        10px;
+
+    background:
+        var(--dark-navy);
+
+    color:
+        white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        10px;
+
+    letter-spacing:
+        1px;
+
+    text-align:
+        left;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.h2h-manager-header {
+
+    width:
+        78px;
+
+    min-width:
+        78px;
+
+    padding:
+        8px
+        4px;
+
+    background:
+        var(--dark-navy);
+
+    color:
+        white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        9px;
+
+    letter-spacing:
+        .5px;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+/* ======================================================
+   HEAD TO HEAD ROW HEADERS
+====================================================== */
+
+.h2h-row-header {
+
+    min-width:
+        175px;
+
+    padding:
+        10px
+        12px;
+
+    background:
+        #F5F6F7;
+
+    text-align:
+        left;
+
+}
+
+
+.h2h-owner {
+
+    display:
+        block;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+}
+
+
+.h2h-row-header small {
+
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        #777F85;
+
+    font-size:
+        9px;
+
+    font-weight:
+        400;
+
+}
+
+
+/* ======================================================
+   HEAD TO HEAD CELLS
+====================================================== */
+
+.head-to-head-table td {
+
+    width:
+        78px;
+
+    height:
+        52px;
+
+    padding:
+        5px;
+
+    text-align:
+        center;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        11px;
+
+}
+
+
+.h2h-self {
+
+    background:
+        var(--dark-navy);
+
+    color:
+        var(--silver);
+
+}
+
+
+.h2h-no-games {
+
+    background:
+        #F3F4F5;
+
+    color:
+        #A0A5A8;
+
+}
+
+
+.h2h-winning {
+
+    background:
+        #E6EEE8;
+
+    color:
+        #264D31;
+
+}
+
+
+.h2h-losing {
+
+    background:
+        #F3E6E6;
+
+    color:
+        #7A3030;
+
+}
+
+
+.h2h-even {
+
+    background:
+        #F2F0E7;
+
+    color:
+        #665D34;
+
+}
+
+
+/* ======================================================
+   STANDINGS MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .head-to-head-note {
+
+        line-height:
+            1.6;
+
+    }
+
+}
