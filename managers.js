@@ -17,9 +17,11 @@ async function loadManagers() {
 
 
         if (!teamsResponse.ok || !careerResponse.ok) {
+
             throw new Error(
                 'Unable to retrieve manager data.'
             );
+
         }
 
 
@@ -31,14 +33,17 @@ async function loadManagers() {
 
 
         if (!teamsData.teams) {
+
             throw new Error(
                 'No current teams returned.'
             );
+
         }
 
 
         /*
-         * Create a lookup table using Sleeper owner_id.
+         * Create a career-stat lookup table
+         * using each manager's Sleeper owner_id.
          */
 
         const careerMap = {};
@@ -57,7 +62,7 @@ async function loadManagers() {
 
 
         /*
-         * Keep current franchises in roster order.
+         * Keep the current franchises in roster order.
          */
 
         const teams =
@@ -86,7 +91,7 @@ async function loadManagers() {
 
 
             /*
-             * Team / manager avatar
+             * Manager / team avatar
              */
 
             const avatar =
@@ -145,7 +150,7 @@ async function loadManagers() {
 
 
             /*
-             * Winning percentage
+             * Career winning percentage
              */
 
             let winningPercentage = '—';
@@ -165,48 +170,27 @@ async function loadManagers() {
 
 
             /*
-             * Historical team names
+             * Career points per game
              */
 
-            let historicalNames = '';
+            let careerPPG = '—';
 
             if (
                 career &&
-                career.historical_team_names &&
-                career.historical_team_names.length > 1
+                career.games > 0
             ) {
 
-                const oldNames =
-                    career.historical_team_names
-                        .filter(
-                            name =>
-                                name !==
-                                team.team_name
-                        );
-
-
-                if (oldNames.length > 0) {
-
-                    historicalNames = `
-
-                        <div class="manager-history">
-
-                            <span>
-                                Former Team Names
-                            </span>
-
-                            <p>
-                                ${oldNames.join(' • ')}
-                            </p>
-
-                        </div>
-
-                    `;
-
-                }
+                careerPPG =
+                    Number(
+                        career.points_per_game
+                    ).toFixed(2);
 
             }
 
+
+            /*
+             * Build manager card
+             */
 
             card.innerHTML = `
 
@@ -237,7 +221,7 @@ async function loadManagers() {
 
                 <div class="manager-division">
 
-                    ${team.division}
+                    ${team.division || 'Division'}
 
                 </div>
 
@@ -277,7 +261,9 @@ async function loadManagers() {
                         </span>
 
                         <strong>
-                            ${team.points_for.toFixed(2)}
+                            ${Number(
+                                team.points_for || 0
+                            ).toFixed(2)}
                         </strong>
 
                     </div>
@@ -333,12 +319,7 @@ async function loadManagers() {
                         </span>
 
                         <strong>
-                            ${
-                                career
-                                    ? career.points_per_game
-                                        .toFixed(2)
-                                    : '—'
-                            }
+                            ${careerPPG}
                         </strong>
 
                     </div>
@@ -374,9 +355,6 @@ async function loadManagers() {
                     </div>
 
                 </div>
-
-
-                ${historicalNames}
 
             `;
 
