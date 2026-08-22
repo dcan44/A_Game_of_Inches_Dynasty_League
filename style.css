@@ -5341,3 +5341,51 @@ footer p {
     color: #FFFFFF;
 
 }
+/* ======================================================
+   DIVISION BANNER — COMPLETE WHITE PENNANT OUTLINE
+====================================================== */
+
+.division-badge {
+    position: relative;
+}
+
+
+/*
+ * Draw the white border along the angled
+ * bottom edge of the pennant.
+ */
+
+.division-badge::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 16px;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom right,
+            transparent 47%,
+            #FFFFFF 48%,
+            #FFFFFF 52%,
+            transparent 53%
+        )
+        left bottom / 50% 100% no-repeat,
+
+        linear-gradient(
+            to bottom left,
+            transparent 47%,
+            #FFFFFF 48%,
+            #FFFFFF 52%,
+            transparent 53%
+        )
+        right bottom / 50% 100% no-repeat;
+
+}
