@@ -2019,3 +2019,48 @@ footer p {
     }
 
 }
+/* ======================================================
+   MANAGER NAME HISTORY
+====================================================== */
+
+.manager-history {
+
+    padding: 14px 16px 18px;
+
+    background: var(--light-gray);
+
+    border-top:
+        1px solid
+        var(--light-silver);
+
+}
+
+
+.manager-history span {
+
+    color: var(--silver);
+
+    font-family: 'Oswald', sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+.manager-history p {
+
+    margin: 5px 0 0;
+
+    color: var(--navy);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+}
