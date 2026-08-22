@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Draft Central | A Game of Inches</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="page-header">
+
+    <a class="site-name" href="/">
+        A Game of Inches
+    </a>
+
+    <p>Dynasty Fantasy Football League</p>
+
+</header>
+
+
+<nav class="main-nav">
+
+    <a href="/">Home</a>
+    <a href="/managers">Managers</a>
+    <a href="/standings">Standings</a>
+    <a href="/draft" class="active">Draft Central</a>
+    <a href="/records">Records</a>
+    <a href="/history">History</a>
+    <a href="/rules">Rules</a>
+
+</nav>
+
+
+<main>
+
+    <section class="page-title">
+
+        <p class="page-kicker">
+            Rookie Draft Headquarters
+        </p>
+
+        <h1>Draft Central</h1>
+
+        <p>
+            Draft order, completed draft boards, traded selections
+            and future live draft coverage for A Game of Inches.
+        </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         NEXT DRAFT
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Next Draft
+        </h2>
+
+
+        <div class="next-draft-card">
+
+            <p class="next-draft-label">
+                2027 Rookie Draft
+            </p>
+
+            <h2>
+                Draft Not Yet Scheduled
+            </h2>
+
+            <p>
+                Once the 2027 league and draft are created in Sleeper,
+                this section will become the draft countdown and
+                official draft order.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         DRAFT ARCHIVE SELECTOR
+    =================================================== -->
+
+    <section>
+
+        <div class="draft-section-heading">
+
+            <h2 class="section-title">
+                Draft Archive
+            </h2>
+
+            <select
+                id="draft-season-select"
+                class="draft-season-select"
+            >
+                <option value="2026">
+                    2026 Draft
+                </option>
+
+                <option value="2025">
+                    2025 Draft
+                </option>
+
+                <option value="2024">
+                    2024 Draft
+                </option>
+
+                <option value="2023">
+                    2023 Draft
+                </option>
+            </select>
+
+        </div>
+
+
+        <div
+            id="draft-summary"
+            class="draft-summary"
+        >
+
+            Loading draft...
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ORIGINAL DRAFT ORDER
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Original Draft Order
+        </h2>
+
+
+        <div
+            id="draft-order-grid"
+            class="draft-order-grid"
+        >
+
+            Loading draft order...
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         DRAFT BOARD
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Draft Board
+        </h2>
+
+
+        <div class="draft-board-card">
+
+            <div class="draft-board-scroll">
+
+                <div
+                    id="draft-board"
+                    class="draft-board"
+                >
+
+                    Loading draft board...
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         NOTES
+    =================================================== -->
+
+    <section>
+
+        <h2 class="section-title">
+            Draft Notes
+        </h2>
+
+
+        <div class="card record-notes">
+
+            <p>
+                The Original Draft Order shows the slots assigned
+                when the draft was created. The Draft Board shows
+                the manager who actually made each selection, so
+                traded draft picks are reflected automatically.
+            </p>
+
+            <p>
+                Completed drafts are preserved as part of the league
+                archive. Future drafts can use the same board for
+                live results as selections are made in Sleeper.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-logo">
+        A Game of Inches
+    </div>
+
+    <p>
+        Dynasty Fantasy Football League
+    </p>
+
+    <p class="footer-season">
+        Established 2023
+    </p>
+
+</footer>
+
+
+<script src="draft.js"></script>
+
+</body>
+
+</html>
