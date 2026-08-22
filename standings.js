@@ -422,13 +422,16 @@ async function loadStandingsPage() {
 
                         }
 
-                        else {
+else {
 
-                            firstSeries.ties++;
+    /*
+     * Do not count tied scores in the all-time
+     * head-to-head table.
+     */
 
-                            secondSeries.ties++;
+    return;
 
-                        }
+}
 
 
                         /*
