@@ -5701,3 +5701,54 @@ footer p {
     }
 
 }
+/* ======================================================
+   HISTORY HONOR SIZE HIERARCHY
+====================================================== */
+
+
+/* League Champions — primary banners */
+
+.history-champions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 24px;
+
+}
+
+
+.history-champion-pennant {
+
+    width: 185px;
+
+    min-height: 250px;
+}
+
+
+/* Hall of Shame — intentionally secondary */
+
+.hall-of-shame-grid {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 22px;
+
+}
+
+
+.shame-card {
+
+    width: 165px;
+
+    min-height: 220px;
+
+    box-sizing: border-box;
+}
