@@ -761,13 +761,16 @@ historySeasonSelect.addEventListener(
  * HALL OF SHAME
  * ======================================================
  *
- * The loser of the lowest placement game in the
- * consolation bracket finishes last.
+ * In our consolation bracket:
  *
- * IMPORTANT:
- * We use each season's actual Sleeper users + rosters
- * instead of /api/history so historical roster ownership
- * remains accurate.
+ * - Winning moves a team toward a better finish.
+ * - Losing moves a team deeper into the bracket.
+ * - The worst two regular-season teams receive byes.
+ *
+ * Therefore the p === 1 game is the final
+ * Toilet Bowl matchup.
+ *
+ * The LOSER of that game finishes 12th.
  */
 
 async function loadHallOfShame() {
@@ -792,7 +795,8 @@ async function loadHallOfShame() {
 
 
         /*
-         * Process each historical season separately.
+         * Process each historical season separately
+         * so roster ownership stays season-specific.
          */
 
         for (
@@ -803,12 +807,6 @@ async function loadHallOfShame() {
             const season =
                 Number(yearText);
 
-
-            /*
-             * Load the consolation bracket,
-             * historical rosters, and historical users
-             * from this exact season.
-             */
 
             const [
                 bracketResponse,
@@ -876,7 +874,7 @@ async function loadHallOfShame() {
 
             /*
              * =============================================
-             * HISTORICAL ROSTER LOOKUP
+             * ROSTER LOOKUP
              * =============================================
              */
 
@@ -922,30 +920,27 @@ async function loadHallOfShame() {
 
             /*
              * =============================================
-             * FIND LAST-PLACE GAME
+             * TOILET BOWL FINAL
              * =============================================
              *
-             * Sleeper placement values in our
-             * six-team consolation bracket:
+             * Unlike the championship bracket, the
+             * consolation bracket advances teams toward
+             * last place through losses.
              *
-             * p = 1 -> 7th / 8th
-             * p = 3 -> 9th / 10th
-             * p = 5 -> 11th / 12th
-             *
-             * Therefore the placement game with the
-             * HIGHEST p value determines last place.
+             * The p === 1 matchup is therefore the final
+             * Toilet Bowl game.
              */
 
-            const placementGames =
-                bracket.filter(
+            const toiletBowlFinal =
+                bracket.find(
                     game =>
-                        typeof game.p ===
-                        "number"
+                        game.p === 1
                 );
 
 
             if (
-                placementGames.length === 0
+                !toiletBowlFinal ||
+                !toiletBowlFinal.l
             ) {
 
                 continue;
@@ -953,22 +948,13 @@ async function loadHallOfShame() {
             }
 
 
-            const lastPlaceGame =
-                placementGames
-                    .sort(
-                        (a, b) =>
-                            b.p -
-                            a.p
-                    )[0];
-
-
             /*
-             * The loser of the 11th/12th-place game
+             * The loser of the Toilet Bowl final
              * finishes 12th.
              */
 
             const lastPlaceRosterId =
-                lastPlaceGame.l;
+                toiletBowlFinal.l;
 
 
             const lastPlaceTeam =
@@ -995,11 +981,11 @@ async function loadHallOfShame() {
                     roster_id:
                         lastPlaceRosterId,
 
-                    owner:
-                        lastPlaceTeam.owner,
-
                     owner_id:
                         lastPlaceTeam.owner_id,
+
+                    owner:
+                        lastPlaceTeam.owner,
 
                     team_name:
                         lastPlaceTeam.team_name
