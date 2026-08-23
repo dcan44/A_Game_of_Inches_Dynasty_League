@@ -126,7 +126,35 @@ const performanceData = [
 
 ];
 
+const matchupData = [
 
+    {
+        season: 2023,
+        data:
+            await matchups2023Response.json()
+    },
+
+    {
+        season: 2024,
+        data:
+            await matchups2024Response.json()
+    },
+
+    {
+        season: 2025,
+        data:
+            await matchups2025Response.json()
+    },
+
+    {
+        season: 2026,
+        data:
+            await matchups2026Response.json()
+    }
+
+];
+
+        
         /*
          * =====================================================
          * CURRENT MANAGERS
