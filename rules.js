@@ -334,11 +334,11 @@ function renderRosterSettings(
         ).length;
 
 
-    const irSlots =
-        rosterPositions.filter(
-            position =>
-                position === 'IR'
-        ).length;
+const irSlots =
+    Number(
+        settings.reserve_slots ||
+        0
+    );
 
 
     /*
