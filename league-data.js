@@ -13,11 +13,6 @@
  *
  * To update a manager's real name, only change the
  * name inside the quotation marks on the right.
- *
- * Example:
- *
- * "978544154789699584": "Dan"
- *
  * ======================================================
  */
 
@@ -30,14 +25,18 @@ window.LEAGUE_DATA = {
      * OWNER NAMES
      * ==================================================
      *
-     * User ID : Owner Name
-     *
-     * For now, Sleeper usernames are being used as
-     * placeholders. Replace each username with the
-     * manager's actual name.
+     * Includes both current and former managers.
      */
 
     ownerNames: {
+
+
+        /*
+         * ==================================================
+         * CURRENT MANAGERS
+         * ==================================================
+         */
+
 
         /*
          * zmoore13
@@ -132,7 +131,47 @@ window.LEAGUE_DATA = {
          */
 
         "1131371199969431552":
-            "AJ"
+            "AJ",
+
+
+
+        /*
+         * ==================================================
+         * FORMER MANAGERS
+         * ==================================================
+         */
+
+
+        /*
+         * Caiden19
+         */
+
+        "980232082209161216":
+            "Caiden",
+
+
+        /*
+         * Ridge5
+         */
+
+        "980385402664067072":
+            "Ridge",
+
+
+        /*
+         * mitchnixon23
+         */
+
+        "984274697955102720":
+            "Mitch",
+
+
+        /*
+         * Brandonwastaken
+         */
+
+        "984495671757611008":
+            "Brandon"
 
     },
 
@@ -142,11 +181,11 @@ window.LEAGUE_DATA = {
      * GET OWNER NAME
      * ==================================================
      *
-     * Pages can use this helper instead of accessing
-     * ownerNames directly.
+     * If an owner ID exists above, return their real
+     * name.
      *
-     * If an owner has not been entered into this file,
-     * the supplied fallback name will be displayed.
+     * Otherwise return the fallback supplied by the
+     * page, usually their Sleeper username.
      */
 
     getOwnerName(
@@ -165,39 +204,22 @@ window.LEAGUE_DATA = {
 
 };
 
-/*
- * ==================================================
- * FORMER MANAGERS
- * ==================================================
- */
 
 /*
- * Caiden19
+ * ======================================================
+ * GLOBAL COMPATIBILITY
+ * ======================================================
+ *
+ * This allows both:
+ *
+ * window.LEAGUE_DATA
+ *
+ * and:
+ *
+ * LEAGUE_DATA
+ *
+ * to work throughout the website.
  */
 
-"980232082209161216":
-    "Caiden",
-
-
-/*
- * Ridge5
- */
-
-"980385402664067072":
-    "Ridge",
-
-
-/*
- * mitchnixon23
- */
-
-"984274697955102720":
-    "Mitch",
-
-
-/*
- * Brandonwastaken
- */
-
-"984495671757611008":
-    "Brandon"
+var LEAGUE_DATA =
+    window.LEAGUE_DATA;
