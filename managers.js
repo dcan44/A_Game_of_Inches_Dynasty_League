@@ -1453,6 +1453,729 @@ const formerManagersContainer =
                     card
                 );
 
+        /*
+         * =====================================================
+         * FORMER MANAGERS
+         * =====================================================
+         *
+         * Anyone found in historical manager-performance data
+         * who is NOT on a current 2026 roster is considered a
+         * former manager.
+         */
+
+
+        const currentOwnerIds =
+            new Set(
+                teams.map(
+                    team =>
+                        String(
+                            team.owner_id
+                        )
+                )
+            );
+
+
+        const formerManagers =
+            Object.values(
+                careerMap
+            )
+                .filter(
+                    career =>
+                        !currentOwnerIds.has(
+                            String(
+                                career.owner_id
+                            )
+                        )
+                );
+
+
+        /*
+         * Find the most recent historical franchise/team
+         * information for each former manager.
+         */
+
+        formerManagers.forEach(
+            career => {
+
+                let mostRecentTeam =
+                    null;
+
+
+                let mostRecentSeason =
+                    null;
+
+
+                const seasonsNewestFirst =
+                    [
+                        ...(
+                            historyData.seasons ||
+                            []
+                        )
+                    ]
+                        .sort(
+                            (a, b) =>
+                                Number(
+                                    b.season
+                                ) -
+                                Number(
+                                    a.season
+                                )
+                        );
+
+
+                for (
+                    const seasonData
+                    of seasonsNewestFirst
+                ) {
+
+                    const historicalTeam =
+                        seasonData.teams.find(
+                            team =>
+                                String(
+                                    team.owner_id
+                                ) ===
+                                String(
+                                    career.owner_id
+                                )
+                        );
+
+
+                    if (
+                        historicalTeam
+                    ) {
+
+                        mostRecentTeam =
+                            historicalTeam;
+
+
+                        mostRecentSeason =
+                            Number(
+                                seasonData.season
+                            );
+
+
+                        break;
+
+                    }
+
+                }
+
+
+                career.last_team =
+                    mostRecentTeam;
+
+
+                career.last_season =
+                    mostRecentSeason;
+
+            }
+        );
+
+
+        /*
+         * Sort former managers alphabetically by real name.
+         */
+
+        formerManagers.sort(
+            (a, b) => {
+
+                const firstName =
+                    getLeagueOwnerName(
+                        a.owner_id,
+                        a.owner
+                    );
+
+
+                const secondName =
+                    getLeagueOwnerName(
+                        b.owner_id,
+                        b.owner
+                    );
+
+
+                return firstName.localeCompare(
+                    secondName
+                );
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * DISPLAY FORMER MANAGERS
+         * =====================================================
+         */
+
+        if (
+            formerManagers.length === 0
+        ) {
+
+            formerManagersContainer.innerHTML = `
+
+                <div class="former-managers-empty">
+
+                    No former managers yet.
+
+                </div>
+
+            `;
+
+        }
+
+        else {
+
+            formerManagersContainer.innerHTML = `
+
+                <div
+                    id="former-managers-grid"
+                    class="former-managers-grid"
+                ></div>
+
+            `;
+
+
+            const formerGrid =
+                document.getElementById(
+                    'former-managers-grid'
+                );
+
+
+            formerManagers.forEach(
+                career => {
+
+                    const ownerName =
+                        getLeagueOwnerName(
+                            career.owner_id,
+                            career.owner
+                        );
+
+
+                    /*
+                     * =========================================
+                     * CAREER RECORD
+                     * =========================================
+                     */
+
+                    let regularRecord =
+                        `${career.regular_wins}-${career.regular_losses}`;
+
+
+                    if (
+                        career.regular_ties > 0
+                    ) {
+
+                        regularRecord +=
+                            `-${career.regular_ties}`;
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * PLAYOFF RECORD
+                     * =========================================
+                     */
+
+                    let playoffRecord =
+                        `${career.playoff_wins}-${career.playoff_losses}`;
+
+
+                    if (
+                        career.playoff_ties > 0
+                    ) {
+
+                        playoffRecord +=
+                            `-${career.playoff_ties}`;
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * WIN PERCENTAGE
+                     * =========================================
+                     */
+
+                    let winningPercentage =
+                        '—';
+
+
+                    if (
+                        career.regular_games > 0
+                    ) {
+
+                        winningPercentage =
+                            (
+                                (
+                                    (
+                                        career.regular_wins +
+                                        (
+                                            career.regular_ties *
+                                            0.5
+                                        )
+                                    )
+                                    /
+                                    career.regular_games
+                                )
+                                *
+                                100
+                            ).toFixed(1) +
+                            '%';
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * CAREER PPG
+                     * =========================================
+                     */
+
+                    let careerPPG =
+                        '—';
+
+
+                    if (
+                        career.regular_games > 0
+                    ) {
+
+                        careerPPG =
+                            (
+                                career.points_for /
+                                career.regular_games
+                            ).toFixed(2);
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * HIGHEST SCORE
+                     * =========================================
+                     */
+
+                    let highestTeamScore =
+                        '—';
+
+
+                    if (
+                        career.highest_team_score
+                    ) {
+
+                        highestTeamScore = `
+
+                            ${career.highest_team_score.points.toFixed(2)}
+
+                            <small>
+                                Week ${career.highest_team_score.week},
+                                ${career.highest_team_score.season}
+                            </small>
+
+                        `;
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * HISTORICAL HONORS
+                     * =========================================
+                     */
+
+                    const championshipYears =
+                        getYearsForOwner(
+                            podiumFinishes.champions,
+                            career.owner_id
+                        );
+
+
+                    const runnerUpYears =
+                        getYearsForOwner(
+                            podiumFinishes.runnersUp,
+                            career.owner_id
+                        );
+
+
+                    const thirdPlaceYears =
+                        getYearsForOwner(
+                            podiumFinishes.thirdPlace,
+                            career.owner_id
+                        );
+
+
+                    const managerDivisionTitles =
+                        (
+                            divisionTitles[
+                                career.owner_id
+                            ] ||
+                            []
+                        )
+                            .sort(
+                                (a, b) =>
+                                    a - b
+                            );
+
+
+                    /*
+                     * =========================================
+                     * TROPHY CASE
+                     * =========================================
+                     */
+
+                    let trophyHTML =
+                        '';
+
+
+                    championshipYears.forEach(
+                        year => {
+
+                            trophyHTML += `
+
+                                <div
+                                    class="
+                                        trophy-badge
+                                        championship-badge
+                                    "
+                                    title="${year} League Champion"
+                                >
+
+                                    <span class="trophy-icon">
+                                        🏆
+                                    </span>
+
+                                    <span class="trophy-text">
+                                        ${year}
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    );
+
+
+                    runnerUpYears.forEach(
+                        year => {
+
+                            trophyHTML += `
+
+                                <div
+                                    class="
+                                        trophy-badge
+                                        runnerup-badge
+                                    "
+                                    title="${year} League Runner-Up"
+                                >
+
+                                    <span class="trophy-icon">
+                                        🏆
+                                    </span>
+
+                                    <span class="trophy-text">
+                                        2ND ${year}
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    );
+
+
+                    thirdPlaceYears.forEach(
+                        year => {
+
+                            trophyHTML += `
+
+                                <div
+                                    class="
+                                        trophy-badge
+                                        third-place-badge
+                                    "
+                                    title="${year} Third Place"
+                                >
+
+                                    <span class="trophy-icon">
+                                        🏆
+                                    </span>
+
+                                    <span class="trophy-text">
+                                        3RD ${year}
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    );
+
+
+                    managerDivisionTitles.forEach(
+                        year => {
+
+                            trophyHTML += `
+
+                                <div
+                                    class="
+                                        trophy-badge
+                                        division-badge
+                                    "
+                                    title="${year} Division Champion"
+                                >
+
+                                    <span class="division-star">
+                                        ★
+                                    </span>
+
+                                    <span class="trophy-text">
+                                        DIV ${year}
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+                    );
+
+
+                    if (
+                        !trophyHTML
+                    ) {
+
+                        trophyHTML = `
+
+                            <div class="empty-trophy-case">
+                                No league honors
+                            </div>
+
+                        `;
+
+                    }
+
+
+                    /*
+                     * =========================================
+                     * LAST FRANCHISE
+                     * =========================================
+                     */
+
+                    const lastTeamName =
+                        career.last_team
+                            ?.team_name ||
+                        'Former Franchise';
+
+
+                    /*
+                     * =========================================
+                     * CARD
+                     * =========================================
+                     */
+
+                    const card =
+                        document.createElement(
+                            'article'
+                        );
+
+
+                    card.className =
+                        'manager-card former-manager-card';
+
+
+                    card.innerHTML = `
+
+                        <div class="manager-card-top">
+
+                            <div
+                                class="
+                                    manager-avatar
+                                    manager-avatar-placeholder
+                                    former-manager-avatar
+                                "
+                            >
+                                ${ownerName.charAt(0)}
+                            </div>
+
+
+                            <div class="manager-identity">
+
+                                <span class="manager-number">
+                                    FORMER MANAGER
+                                </span>
+
+                                <h2>
+                                    ${ownerName}
+                                </h2>
+
+                                <p class="manager-owner-name">
+                                    ${lastTeamName}
+                                </p>
+
+                                <small class="manager-sleeper-username">
+                                    ${career.owner}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="former-manager-tenure">
+
+                            Last Active:
+                            ${
+                                career.last_season ||
+                                '—'
+                            }
+
+                        </div>
+
+
+                        <div class="trophy-case">
+
+                            <div class="trophy-case-title">
+                                Trophy Case
+                            </div>
+
+                            <div class="trophy-case-grid">
+
+                                ${trophyHTML}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="manager-stats">
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Seasons
+                                </span>
+
+                                <strong>
+                                    ${career.seasons}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Regular Season
+                                </span>
+
+                                <strong>
+                                    ${regularRecord}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Win %
+                                </span>
+
+                                <strong>
+                                    ${winningPercentage}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Playoffs
+                                </span>
+
+                                <strong>
+                                    ${playoffRecord}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Career PPG
+                                </span>
+
+                                <strong>
+                                    ${careerPPG}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Championships
+                                </span>
+
+                                <strong>
+                                    ${championshipYears.length}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="manager-stat">
+
+                                <span>
+                                    Division Titles
+                                </span>
+
+                                <strong>
+                                    ${managerDivisionTitles.length}
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="manager-records">
+
+                            <div>
+
+                                <span>
+                                    Highest Team Score
+                                </span>
+
+                                <strong>
+                                    ${highestTeamScore}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    formerGrid.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+                
             }
         );
 
