@@ -5787,3 +5787,105 @@ footer p {
     }
 
 }
+/* ======================================================
+   FORMER MANAGERS
+====================================================== */
+
+.former-managers-card {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+
+.former-managers-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+
+.former-manager-card {
+    opacity: .94;
+}
+
+
+.former-manager-card .manager-card-top {
+    background:
+        linear-gradient(
+            135deg,
+            #333B43,
+            #161B20
+        );
+}
+
+
+.former-manager-avatar {
+    background:
+        #545D64;
+
+    color:
+        #FFFFFF;
+}
+
+
+.former-manager-tenure {
+    padding:
+        8px
+        16px;
+
+    background:
+        #E7EAEC;
+
+    color:
+        #5C646A;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        9px;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        1px;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+}
+
+
+.former-managers-empty {
+    padding: 30px;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+@media (max-width: 850px) {
+
+    .former-managers-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
