@@ -1,14 +1,14 @@
 async function loadRecords() {
 
-    const tableBody =
-        document.getElementById(
-            'manager-records-body'
-        );
-
-
     const recordsGrid =
         document.getElementById(
             'league-records-grid'
+        );
+
+
+    const managerRecordsBody =
+        document.getElementById(
+            'manager-records-body'
         );
 
 
@@ -20,88 +20,93 @@ async function loadRecords() {
          * =====================================================
          */
 
-       const [
-    teamsResponse,
-    historyResponse,
+        const [
+            teamsResponse,
+            historyResponse,
 
-    performance2023Response,
-    performance2024Response,
-    performance2025Response,
-    performance2026Response,
+            performance2023Response,
+            performance2024Response,
+            performance2025Response,
+            performance2026Response,
 
-    matchups2023Response,
-    matchups2024Response,
-    matchups2025Response,
-    matchups2026Response
+            matchups2023Response,
+            matchups2024Response,
+            matchups2025Response,
+            matchups2026Response
 
-] = await Promise.all([
+        ] = await Promise.all([
 
-    fetch('/api/teams'),
+            fetch('/api/teams'),
 
-    fetch('/api/history'),
+            fetch('/api/history'),
 
-    fetch(
-        '/api/manager-performance?season=2023'
-    ),
+            fetch(
+                '/api/manager-performance?season=2023'
+            ),
 
-    fetch(
-        '/api/manager-performance?season=2024'
-    ),
+            fetch(
+                '/api/manager-performance?season=2024'
+            ),
 
-    fetch(
-        '/api/manager-performance?season=2025'
-    ),
+            fetch(
+                '/api/manager-performance?season=2025'
+            ),
 
-    fetch(
-        '/api/manager-performance?season=2026'
-    ),
+            fetch(
+                '/api/manager-performance?season=2026'
+            ),
 
-    fetch(
-        '/api/matchup-history?season=2023'
-    ),
+            fetch(
+                '/api/matchup-history?season=2023'
+            ),
 
-    fetch(
-        '/api/matchup-history?season=2024'
-    ),
+            fetch(
+                '/api/matchup-history?season=2024'
+            ),
 
-    fetch(
-        '/api/matchup-history?season=2025'
-    ),
+            fetch(
+                '/api/matchup-history?season=2025'
+            ),
 
-    fetch(
-        '/api/matchup-history?season=2026'
-    )
-
-]);
-
-
-const responses = [
-
-    teamsResponse,
-    historyResponse,
-
-    performance2023Response,
-    performance2024Response,
-    performance2025Response,
-    performance2026Response,
-
-    matchups2023Response,
-    matchups2024Response,
-    matchups2025Response,
-    matchups2026Response
-
-];
-
-
-        if (
-            responses.some(
-                response => !response.ok
+            fetch(
+                '/api/matchup-history?season=2026'
             )
+
+        ]);
+
+
+        const responses = [
+
+            teamsResponse,
+            historyResponse,
+
+            performance2023Response,
+            performance2024Response,
+            performance2025Response,
+            performance2026Response,
+
+            matchups2023Response,
+            matchups2024Response,
+            matchups2025Response,
+            matchups2026Response
+
+        ];
+
+
+        for (
+            const response
+            of responses
         ) {
 
-            throw new Error(
-                'Unable to retrieve record data.'
-            );
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    'Unable to retrieve league records.'
+                );
+
+            }
 
         }
 
@@ -114,69 +119,841 @@ const responses = [
             await historyResponse.json();
 
 
-const performanceData = [
+        const performanceData = [
 
-    await performance2023Response.json(),
+            await performance2023Response.json(),
 
-    await performance2024Response.json(),
+            await performance2024Response.json(),
 
-    await performance2025Response.json(),
+            await performance2025Response.json(),
 
-    await performance2026Response.json()
+            await performance2026Response.json()
 
-];
+        ];
 
-const matchupData = [
 
-    {
-        season: 2023,
-        data:
-            await matchups2023Response.json()
-    },
+        const matchupData = [
 
-    {
-        season: 2024,
-        data:
-            await matchups2024Response.json()
-    },
+            {
+                season: 2023,
 
-    {
-        season: 2025,
-        data:
-            await matchups2025Response.json()
-    },
+                data:
+                    await matchups2023Response.json()
+            },
 
-    {
-        season: 2026,
-        data:
-            await matchups2026Response.json()
-    }
+            {
+                season: 2024,
 
-];
+                data:
+                    await matchups2024Response.json()
+            },
 
-        
+            {
+                season: 2025,
+
+                data:
+                    await matchups2025Response.json()
+            },
+
+            {
+                season: 2026,
+
+                data:
+                    await matchups2026Response.json()
+            }
+
+        ];
+
+
         /*
          * =====================================================
-         * CURRENT MANAGERS
+         * MANAGER MAP
          * =====================================================
          */
 
-        const currentOwnerIds =
-            new Set(
-                (teamsData.teams || [])
-                    .map(
-                        team => team.owner_id
+        const managerMap =
+            {};
+
+
+        /*
+         * Add current managers first.
+         */
+
+        (
+            teamsData.teams ||
+            []
+        ).forEach(
+            team => {
+
+                const ownerId =
+                    String(
+                        team.owner_id
+                    );
+
+
+                if (
+                    !managerMap[
+                        ownerId
+                    ]
+                ) {
+
+                    managerMap[
+                        ownerId
+                    ] =
+                        createManager(
+                            team.owner_id,
+                            team.owner
+                        );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Add historical managers.
+         *
+         * This makes sure former managers remain in
+         * the all-time Records page.
+         */
+
+        (
+            historyData.seasons ||
+            []
+        ).forEach(
+            seasonData => {
+
+                (
+                    seasonData.teams ||
+                    []
+                ).forEach(
+                    team => {
+
+                        const ownerId =
+                            String(
+                                team.owner_id
+                            );
+
+
+                        if (
+                            !managerMap[
+                                ownerId
+                            ]
+                        ) {
+
+                            managerMap[
+                                ownerId
+                            ] =
+                                createManager(
+                                    team.owner_id,
+                                    team.owner
+                                );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * PROCESS MANAGER PERFORMANCE
+         * =====================================================
+         */
+
+        performanceData.forEach(
+            seasonData => {
+
+                const season =
+                    Number(
+                        seasonData.season
+                    );
+
+
+                (
+                    seasonData.managers ||
+                    []
+                ).forEach(
+                    manager => {
+
+                        const ownerId =
+                            String(
+                                manager.owner_id
+                            );
+
+
+                        if (
+                            !managerMap[
+                                ownerId
+                            ]
+                        ) {
+
+                            managerMap[
+                                ownerId
+                            ] =
+                                createManager(
+                                    manager.owner_id,
+                                    manager.owner
+                                );
+
+                        }
+
+
+                        const career =
+                            managerMap[
+                                ownerId
+                            ];
+
+
+                        /*
+                         * =====================================
+                         * SEASONS PLAYED
+                         * =====================================
+                         */
+
+                        career.seasons.add(
+                            season
+                        );
+
+
+                        /*
+                         * =====================================
+                         * REGULAR-SEASON RECORD
+                         * =====================================
+                         */
+
+                        const regularSeason =
+                            manager.regular_season ||
+                            {};
+
+
+                        career.regular_wins +=
+                            Number(
+                                regularSeason.wins ||
+                                0
+                            );
+
+
+                        career.regular_losses +=
+                            Number(
+                                regularSeason.losses ||
+                                0
+                            );
+
+
+                        career.regular_ties +=
+                            Number(
+                                regularSeason.ties ||
+                                0
+                            );
+
+
+                        career.regular_games +=
+                            Number(
+                                regularSeason.games ||
+                                0
+                            );
+
+
+                        /*
+                         * =====================================
+                         * PLAYOFF RECORD
+                         * =====================================
+                         */
+
+                        const playoffs =
+                            manager.playoffs ||
+                            {};
+
+
+                        career.playoff_wins +=
+                            Number(
+                                playoffs.wins ||
+                                0
+                            );
+
+
+                        career.playoff_losses +=
+                            Number(
+                                playoffs.losses ||
+                                0
+                            );
+
+
+                        career.playoff_ties +=
+                            Number(
+                                playoffs.ties ||
+                                0
+                            );
+
+
+                        career.playoff_games +=
+                            Number(
+                                playoffs.games ||
+                                0
+                            );
+
+
+                        /*
+                         * =====================================
+                         * SCORING
+                         * =====================================
+                         */
+
+                        const scoring =
+                            manager.scoring ||
+                            {};
+
+
+                        career.points_for +=
+                            Number(
+                                scoring.points_for ||
+                                0
+                            );
+
+
+                        career.points_against +=
+                            Number(
+                                scoring.points_against ||
+                                0
+                            );
+
+
+                        /*
+                         * =====================================
+                         * HIGHEST TEAM SCORE
+                         * =====================================
+                         */
+
+                        if (
+                            manager.highest_team_score
+                        ) {
+
+                            const score =
+                                Number(
+                                    manager
+                                        .highest_team_score
+                                        .points ||
+                                    0
+                                );
+
+
+                            if (
+                                !career.highest_team_score ||
+                                score >
+                                career
+                                    .highest_team_score
+                                    .points
+                            ) {
+
+                                career.highest_team_score = {
+
+                                    points:
+                                        score,
+
+                                    week:
+                                        Number(
+                                            manager
+                                                .highest_team_score
+                                                .week
+                                        ),
+
+                                    season:
+                                        season
+
+                                };
+
+                            }
+
+                        }
+
+
+                        /*
+                         * =====================================
+                         * BIGGEST WIN
+                         * =====================================
+                         */
+
+                        if (
+                            manager.biggest_win
+                        ) {
+
+                            const margin =
+                                Number(
+                                    manager
+                                        .biggest_win
+                                        .margin ||
+                                    0
+                                );
+
+
+                            if (
+                                !career.biggest_win ||
+                                margin >
+                                career.biggest_win.margin
+                            ) {
+
+                                career.biggest_win = {
+
+                                    margin:
+                                        margin,
+
+                                    points:
+                                        Number(
+                                            manager
+                                                .biggest_win
+                                                .points ||
+                                            0
+                                        ),
+
+                                    opponent_points:
+                                        Number(
+                                            manager
+                                                .biggest_win
+                                                .opponent_points ||
+                                            0
+                                        ),
+
+                                    opponent:
+                                        manager
+                                            .biggest_win
+                                            .opponent,
+
+                                    week:
+                                        Number(
+                                            manager
+                                                .biggest_win
+                                                .week
+                                        ),
+
+                                    season:
+                                        season
+
+                                };
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * LONGEST REGULAR-SEASON WINNING STREAK
+         * =====================================================
+         *
+         * IMPORTANT:
+         *
+         * This is intentionally OUTSIDE the performanceData
+         * loop above. It therefore runs only once.
+         *
+         * Each season is evaluated independently.
+         * Playoff games are excluded.
+         * A loss or tie ends the streak.
+         * =====================================================
+         */
+
+        const winningStreaks =
+            [];
+
+
+        matchupData.forEach(
+            seasonEntry => {
+
+                const season =
+                    seasonEntry.season;
+
+
+                const games =
+                    (
+                        seasonEntry.data.games ||
+                        []
                     )
+                        .filter(
+                            game =>
+                                !game.playoff
+                        )
+                        .sort(
+                            (a, b) =>
+                                Number(
+                                    a.week
+                                ) -
+                                Number(
+                                    b.week
+                                )
+                        );
+
+
+                const managerResults =
+                    {};
+
+
+                games.forEach(
+                    game => {
+
+                        const team1 =
+                            game.team_1;
+
+
+                        const team2 =
+                            game.team_2;
+
+
+                        if (
+                            !team1 ||
+                            !team2
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const team1OwnerId =
+                            String(
+                                team1.owner_id
+                            );
+
+
+                        const team2OwnerId =
+                            String(
+                                team2.owner_id
+                            );
+
+
+                        if (
+                            !managerResults[
+                                team1OwnerId
+                            ]
+                        ) {
+
+                            managerResults[
+                                team1OwnerId
+                            ] = {
+
+                                owner_id:
+                                    team1.owner_id,
+
+                                owner:
+                                    team1.owner,
+
+                                results:
+                                    []
+
+                            };
+
+                        }
+
+
+                        if (
+                            !managerResults[
+                                team2OwnerId
+                            ]
+                        ) {
+
+                            managerResults[
+                                team2OwnerId
+                            ] = {
+
+                                owner_id:
+                                    team2.owner_id,
+
+                                owner:
+                                    team2.owner,
+
+                                results:
+                                    []
+
+                            };
+
+                        }
+
+
+                        const team1Points =
+                            Number(
+                                team1.points ||
+                                0
+                            );
+
+
+                        const team2Points =
+                            Number(
+                                team2.points ||
+                                0
+                            );
+
+
+                        if (
+                            team1Points >
+                            team2Points
+                        ) {
+
+                            managerResults[
+                                team1OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'W'
+                                }
+                            );
+
+
+                            managerResults[
+                                team2OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'L'
+                                }
+                            );
+
+                        }
+
+                        else if (
+                            team2Points >
+                            team1Points
+                        ) {
+
+                            managerResults[
+                                team1OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'L'
+                                }
+                            );
+
+
+                            managerResults[
+                                team2OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'W'
+                                }
+                            );
+
+                        }
+
+                        else {
+
+                            managerResults[
+                                team1OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'T'
+                                }
+                            );
+
+
+                            managerResults[
+                                team2OwnerId
+                            ].results.push(
+                                {
+                                    week:
+                                        Number(
+                                            game.week
+                                        ),
+
+                                    result:
+                                        'T'
+                                }
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                Object.values(
+                    managerResults
+                ).forEach(
+                    manager => {
+
+                        manager.results.sort(
+                            (a, b) =>
+                                a.week -
+                                b.week
+                        );
+
+
+                        let currentStreak =
+                            0;
+
+
+                        let currentStartWeek =
+                            null;
+
+
+                        let bestStreak =
+                            0;
+
+
+                        let bestStartWeek =
+                            null;
+
+
+                        let bestEndWeek =
+                            null;
+
+
+                        manager.results.forEach(
+                            result => {
+
+                                if (
+                                    result.result ===
+                                    'W'
+                                ) {
+
+                                    if (
+                                        currentStreak ===
+                                        0
+                                    ) {
+
+                                        currentStartWeek =
+                                            result.week;
+
+                                    }
+
+
+                                    currentStreak++;
+
+
+                                    if (
+                                        currentStreak >
+                                        bestStreak
+                                    ) {
+
+                                        bestStreak =
+                                            currentStreak;
+
+
+                                        bestStartWeek =
+                                            currentStartWeek;
+
+
+                                        bestEndWeek =
+                                            result.week;
+
+                                    }
+
+                                }
+
+                                else {
+
+                                    currentStreak =
+                                        0;
+
+
+                                    currentStartWeek =
+                                        null;
+
+                                }
+
+                            }
+                        );
+
+
+                        if (
+                            bestStreak >
+                            0
+                        ) {
+
+                            winningStreaks.push(
+                                {
+
+                                    owner_id:
+                                        manager.owner_id,
+
+                                    owner:
+                                        manager.owner,
+
+                                    season:
+                                        season,
+
+                                    streak:
+                                        bestStreak,
+
+                                    start_week:
+                                        bestStartWeek,
+
+                                    end_week:
+                                        bestEndWeek
+
+                                }
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        const longestWinningStreak =
+            winningStreaks.length > 0
+                ? Math.max(
+                    ...winningStreaks.map(
+                        streak =>
+                            streak.streak
+                    )
+                )
+                : 0;
+
+
+        const longestWinningStreakLeaders =
+            winningStreaks.filter(
+                streak =>
+                    streak.streak ===
+                    longestWinningStreak
             );
 
 
         /*
          * =====================================================
-         * CONFIRMED CHAMPIONS
+         * CHAMPIONSHIP COUNTS
          * =====================================================
          */
 
-        const champions = {
+            const champions = {
 
             2023:
                 "978544154789699584",
@@ -190,9 +967,45 @@ const matchupData = [
         };
 
 
+        Object.entries(
+            champions
+        ).forEach(
+            ([year, ownerId]) => {
+
+                const key =
+                    String(
+                        ownerId
+                    );
+
+
+                if (
+                    managerMap[
+                        key
+                    ]
+                ) {
+
+                    managerMap[
+                        key
+                    ].championships++;
+
+
+                    managerMap[
+                        key
+                    ].championship_years.push(
+                        Number(
+                            year
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
         /*
          * =====================================================
-         * CONFIRMED HISTORICAL DIVISION CHAMPIONS
+         * DIVISION TITLE COUNTS
          * =====================================================
          */
 
@@ -216,640 +1029,38 @@ const matchupData = [
         };
 
 
-        /*
-         * =====================================================
-         * MANAGER MAP
-         * =====================================================
-         */
-
-        const managerMap = {};
-
-
-        /*
-         * Start with every manager appearing
-         * anywhere in league history.
-         */
-
-        if (historyData.seasons) {
-
-            historyData.seasons.forEach(
-                season => {
-
-                    season.teams.forEach(
-                        team => {
-
-                            if (!team.owner_id) {
-                                return;
-                            }
-
-
-                            if (
-                                !managerMap[
-                                    team.owner_id
-                                ]
-                            ) {
-
-                                managerMap[
-                                    team.owner_id
-                                ] = createManager(
-                                    team.owner_id,
-                                    team.owner
-                                );
-
-                            }
-
-
-                            /*
-                             * Keep Sleeper's latest
-                             * available manager name.
-                             */
-
-                            managerMap[
-                                team.owner_id
-                            ].owner =
-                                team.owner;
-
-
-                            managerMap[
-                                team.owner_id
-                            ].seasonYears.add(
-                                Number(
-                                    season.season
-                                )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-        }
-
-
-        /*
-         * =====================================================
-         * PERFORMANCE DATA
-         * =====================================================
-         */
-
-        performanceData.forEach(
-            seasonData => {
-
-                if (!seasonData.managers) {
-                    return;
-                }
-
-
-                seasonData.managers.forEach(
-                    manager => {
-
-                        if (
-                            !managerMap[
-                                manager.owner_id
-                            ]
-                        ) {
-
-                            managerMap[
-                                manager.owner_id
-                            ] = createManager(
-                                manager.owner_id,
-                                manager.owner
-                            );
-
-                        }
-
-
-                        const career =
-                            managerMap[
-                                manager.owner_id
-                            ];
-
-
-                        /*
-                         * Regular season
-                         */
-
-                        career.regular_wins +=
-                            manager.regular_season.wins;
-
-                        career.regular_losses +=
-                            manager.regular_season.losses;
-
-                        career.regular_ties +=
-                            manager.regular_season.ties;
-
-                        career.regular_games +=
-                            manager.regular_season.games;
-
-
-                        /*
-                         * Playoffs
-                         */
-
-                        career.playoff_wins +=
-                            manager.playoffs.wins;
-
-                        career.playoff_losses +=
-                            manager.playoffs.losses;
-
-                        career.playoff_ties +=
-                            manager.playoffs.ties;
-
-
-                        /*
-                         * Scoring
-                         */
-
-                        career.points_for +=
-                            manager.scoring.points_for;
-
-                        career.points_against +=
-                            manager.scoring.points_against;
-
-
-                        /*
-                         * Highest single-game team score
-                         */
-
-                        if (
-                            manager.highest_team_score &&
-                            (
-                                !career.highest_team_score ||
-                                manager.highest_team_score.points >
-                                career.highest_team_score.points
-                            )
-                        ) {
-
-                            career.highest_team_score = {
-
-                                ...manager.highest_team_score
-
-                            };
-
-                        }
-
-
-                        /*
-                         * Biggest win
-                         */
-
-                        if (
-                            manager.biggest_win &&
-                            (
-                                !career.biggest_win ||
-                                manager.biggest_win.margin >
-                                career.biggest_win.margin
-                            )
-                        ) {
-
-                            career.biggest_win = {
-
-                                ...manager.biggest_win
-
-                            };
-
-                        }
-
-
-                       /*
- * =====================================================
- * LONGEST REGULAR-SEASON WINNING STREAK
- * =====================================================
- *
- * Supports ties.
- *
- * Each season is evaluated independently, so a streak
- * cannot carry from the end of one season into the next.
- */
-
-const winningStreaks = [];
-
-
-matchupData.forEach(
-    seasonEntry => {
-
-        const season =
-            seasonEntry.season;
-
-
-        const games =
-            (
-                seasonEntry.data.games ||
-                []
-            )
-                .filter(
-                    game =>
-                        !game.playoff
-                )
-                .sort(
-                    (a, b) =>
-                        Number(a.week) -
-                        Number(b.week)
-                );
-
-
-        const managerResults =
-            {};
-
-
-        games.forEach(
-            game => {
-
-                const team1 =
-                    game.team_1;
-
-
-                const team2 =
-                    game.team_2;
-
-
-                if (
-                    !team1 ||
-                    !team2
-                ) {
-
-                    return;
-
-                }
-
-
-                if (
-                    !managerResults[
-                        team1.owner_id
-                    ]
-                ) {
-
-                    managerResults[
-                        team1.owner_id
-                    ] = {
-
-                        owner_id:
-                            team1.owner_id,
-
-                        owner:
-                            team1.owner,
-
-                        results:
-                            []
-
-                    };
-
-                }
-
-
-                if (
-                    !managerResults[
-                        team2.owner_id
-                    ]
-                ) {
-
-                    managerResults[
-                        team2.owner_id
-                    ] = {
-
-                        owner_id:
-                            team2.owner_id,
-
-                        owner:
-                            team2.owner,
-
-                        results:
-                            []
-
-                    };
-
-                }
-
-
-                const team1Points =
-                    Number(
-                        team1.points ||
-                        0
-                    );
-
-
-                const team2Points =
-                    Number(
-                        team2.points ||
-                        0
-                    );
-
-
-                if (
-                    team1Points >
-                    team2Points
-                ) {
-
-                    managerResults[
-                        team1.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'W'
-                        }
-                    );
-
-
-                    managerResults[
-                        team2.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'L'
-                        }
-                    );
-
-                }
-
-                else if (
-                    team2Points >
-                    team1Points
-                ) {
-
-                    managerResults[
-                        team1.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'L'
-                        }
-                    );
-
-
-                    managerResults[
-                        team2.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'W'
-                        }
-                    );
-
-                }
-
-                else {
-
-                    managerResults[
-                        team1.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'T'
-                        }
-                    );
-
-
-                    managerResults[
-                        team2.owner_id
-                    ].results.push(
-                        {
-                            week:
-                                Number(
-                                    game.week
-                                ),
-
-                            result:
-                                'T'
-                        }
-                    );
-
-                }
-
-            }
-        );
-
-
-        Object.values(
-            managerResults
-        ).forEach(
-            manager => {
-
-                manager.results.sort(
-                    (a, b) =>
-                        a.week -
-                        b.week
-                );
-
-
-                let currentStreak =
-                    0;
-
-
-                let currentStartWeek =
-                    null;
-
-
-                let bestStreak =
-                    0;
-
-
-                let bestStartWeek =
-                    null;
-
-
-                let bestEndWeek =
-                    null;
-
-
-                manager.results.forEach(
-                    result => {
-
-                        if (
-                            result.result ===
-                            'W'
-                        ) {
-
-                            if (
-                                currentStreak ===
-                                0
-                            ) {
-
-                                currentStartWeek =
-                                    result.week;
-
-                            }
-
-
-                            currentStreak++;
-
-
-                            if (
-                                currentStreak >
-                                bestStreak
-                            ) {
-
-                                bestStreak =
-                                    currentStreak;
-
-
-                                bestStartWeek =
-                                    currentStartWeek;
-
-
-                                bestEndWeek =
-                                    result.week;
-
-                            }
-
-                        }
-
-                        else {
-
-                            currentStreak =
-                                0;
-
-
-                            currentStartWeek =
-                                null;
-
-                        }
-
-                    }
-                );
-
-
-                if (
-                    bestStreak >
-                    0
-                ) {
-
-                    winningStreaks.push(
-                        {
-
-                            owner_id:
-                                manager.owner_id,
-
-                            owner:
-                                manager.owner,
-
-                            season:
-                                season,
-
-                            streak:
-                                bestStreak,
-
-                            start_week:
-                                bestStartWeek,
-
-                            end_week:
-                                bestEndWeek
-
-                        }
-                    );
-
-                }
-
-            }
-        );
-
-    }
-);
-
-
-const longestWinningStreak =
-    winningStreaks.length > 0
-        ? Math.max(
-            ...winningStreaks.map(
-                streak =>
-                    streak.streak
-            )
-          )
-        : 0;
-
-
-const longestWinningStreakLeaders =
-    winningStreaks.filter(
-        streak =>
-            streak.streak ===
-            longestWinningStreak
-    );
-
-                        }
-
-                    }
-
-                );
-
-            }
-        );
-
-
-        /*
-         * =====================================================
-         * CHAMPIONSHIP COUNTS
-         * =====================================================
-         */
-
         Object.entries(
-            champions
-        ).forEach(
-            ([year, ownerId]) => {
-
-                if (
-                    managerMap[
-                        ownerId
-                    ]
-                ) {
-
-                    managerMap[
-                        ownerId
-                    ].championships++;
-
-                }
-
-            }
-        );
-
-
-        /*
-         * =====================================================
-         * DIVISION TITLE COUNTS
-         * =====================================================
-         */
-
-        Object.values(
             historicalDivisionChampions
         ).forEach(
-            ownerIds => {
+            ([year, ownerIds]) => {
 
                 ownerIds.forEach(
                     ownerId => {
 
+                        const key =
+                            String(
+                                ownerId
+                            );
+
+
                         if (
                             managerMap[
-                                ownerId
+                                key
                             ]
                         ) {
 
                             managerMap[
-                                ownerId
+                                key
                             ].division_titles++;
+
+
+                            managerMap[
+                                key
+                            ].division_title_years.push(
+                                Number(
+                                    year
+                                )
+                            );
 
                         }
 
@@ -858,6 +1069,26 @@ const longestWinningStreakLeaders =
 
             }
         );
+
+
+        /*
+         * =====================================================
+         * CURRENT MANAGER IDS
+         * =====================================================
+         */
+
+        const currentOwnerIds =
+            new Set(
+                (
+                    teamsData.teams ||
+                    []
+                ).map(
+                    team =>
+                        String(
+                            team.owner_id
+                        )
+                )
+            );
 
 
         /*
@@ -869,79 +1100,60 @@ const longestWinningStreakLeaders =
         const managers =
             Object.values(
                 managerMap
-            ).map(
-                manager => {
+            )
+                .map(
+                    manager => {
 
-
-                    manager.current =
-                        currentOwnerIds.has(
-                            manager.owner_id
-                        );
-
-
-                    manager.seasons =
-                        manager.seasonYears.size;
-
-
-                    /*
-                     * Win percentage
-                     */
-
-                    if (
-                        manager.regular_games > 0
-                    ) {
-
-                        manager.win_percentage =
-                            (
-                                (
-                                    manager.regular_wins +
-                                    (
-                                        manager.regular_ties *
-                                        0.5
-                                    )
+                        manager.current =
+                            currentOwnerIds.has(
+                                String(
+                                    manager.owner_id
                                 )
-                                /
-                                manager.regular_games
                             );
 
-                    } else {
+
+                        manager.season_count =
+                            manager.seasons.size;
+
 
                         manager.win_percentage =
-                            0;
+                            manager.regular_games > 0
+                                ? (
+                                    (
+                                        manager.regular_wins +
+                                        (
+                                            manager.regular_ties *
+                                            0.5
+                                        )
+                                    )
+                                    /
+                                    manager.regular_games
+                                  )
+                                : 0;
+
+
+                        manager.ppg =
+                            manager.regular_games > 0
+                                ? (
+                                    manager.points_for /
+                                    manager.regular_games
+                                  )
+                                : 0;
+
+
+                        manager.papg =
+                            manager.regular_games > 0
+                                ? (
+                                    manager.points_against /
+                                    manager.regular_games
+                                  )
+                                : 0;
+
+
+                        return manager;
 
                     }
-
-
-                    /*
-                     * Points per game
-                     */
-
-                    manager.ppg =
-                        manager.regular_games > 0
-                            ? (
-                                manager.points_for /
-                                manager.regular_games
-                            )
-                            : 0;
-
-
-                    /*
-                     * Points allowed per game
-                     */
-
-                    manager.papg =
-                        manager.regular_games > 0
-                            ? (
-                                manager.points_against /
-                                manager.regular_games
-                            )
-                            : 0;
-
-
-                    return manager;
-
-                }
-            );
+                );
 
 
         /*
@@ -987,7 +1199,7 @@ const longestWinningStreakLeaders =
 
 
                 /*
-                 * Then by total wins.
+                 * Then by wins.
                  */
 
                 return (
@@ -1005,34 +1217,26 @@ const longestWinningStreakLeaders =
          * =====================================================
          */
 
-        tableBody.innerHTML = '';
+        managerRecordsBody.innerHTML =
+            '';
 
 
         managers.forEach(
             manager => {
 
-
                 const regularRecord =
                     formatRecord(
-
                         manager.regular_wins,
-
                         manager.regular_losses,
-
                         manager.regular_ties
-
                     );
 
 
                 const playoffRecord =
                     formatRecord(
-
                         manager.playoff_wins,
-
                         manager.playoff_losses,
-
                         manager.playoff_ties
-
                     );
 
 
@@ -1067,7 +1271,7 @@ const longestWinningStreakLeaders =
                     </td>
 
                     <td>
-                        ${manager.seasons}
+                        ${manager.season_count}
                     </td>
 
                     <td>
@@ -1106,7 +1310,7 @@ const longestWinningStreakLeaders =
                 `;
 
 
-                tableBody.appendChild(
+                managerRecordsBody.appendChild(
                     row
                 );
 
@@ -1131,112 +1335,171 @@ const longestWinningStreakLeaders =
          * Most regular-season wins
          */
 
-        const mostWins =
-            [...managersWithGames]
-                .sort(
-                    (a, b) =>
-                        b.regular_wins -
-                        a.regular_wins
-                )[0];
+        const mostWinsRecord =
+            managersWithGames.length > 0
+                ? Math.max(
+                    ...managersWithGames.map(
+                        manager =>
+                            manager.regular_wins
+                    )
+                  )
+                : 0;
+
+
+        const mostWinsLeaders =
+            managersWithGames.filter(
+                manager =>
+                    manager.regular_wins ===
+                    mostWinsRecord
+            );
 
 
         /*
          * Best winning percentage
          */
 
-        const bestWinningPercentage =
-            [...managersWithGames]
-                .sort(
-                    (a, b) =>
-                        b.win_percentage -
-                        a.win_percentage
-                )[0];
+        const bestWinPercentageRecord =
+            managersWithGames.length > 0
+                ? Math.max(
+                    ...managersWithGames.map(
+                        manager =>
+                            manager.win_percentage
+                    )
+                  )
+                : 0;
+
+
+        const bestWinPercentageLeaders =
+            managersWithGames.filter(
+                manager =>
+                    Math.abs(
+                        manager.win_percentage -
+                        bestWinPercentageRecord
+                    ) <
+                    0.000001
+            );
 
 
         /*
          * Highest career PPG
          */
 
-        const highestPPG =
-            [...managersWithGames]
-                .sort(
-                    (a, b) =>
-                        b.ppg -
-                        a.ppg
-                )[0];
+        const highestPPGRecord =
+            managersWithGames.length > 0
+                ? Math.max(
+                    ...managersWithGames.map(
+                        manager =>
+                            manager.ppg
+                    )
+                  )
+                : 0;
+
+
+        const highestPPGLeaders =
+            managersWithGames.filter(
+                manager =>
+                    Math.abs(
+                        manager.ppg -
+                        highestPPGRecord
+                    ) <
+                    0.000001
+            );
 
 
         /*
          * Highest team score ever
          */
 
-        const highestTeamScoreManager =
-            managers
-                .filter(
-                    manager =>
-                        manager.highest_team_score
-                )
-                .sort(
-                    (a, b) =>
-                        b.highest_team_score.points -
-                        a.highest_team_score.points
-                )[0];
+        const managersWithHighScore =
+            managers.filter(
+                manager =>
+                    manager.highest_team_score
+            );
+
+
+        const highestTeamScoreRecord =
+            managersWithHighScore.length > 0
+                ? Math.max(
+                    ...managersWithHighScore.map(
+                        manager =>
+                            manager
+                                .highest_team_score
+                                .points
+                    )
+                  )
+                : 0;
+
+
+        const highestTeamScoreLeaders =
+            managersWithHighScore.filter(
+                manager =>
+                    Math.abs(
+                        manager
+                            .highest_team_score
+                            .points -
+                        highestTeamScoreRecord
+                    ) <
+                    0.000001
+            );
 
 
         /*
          * Biggest blowout
          */
 
-        const biggestWinManager =
-            managers
-                .filter(
-                    manager =>
-                        manager.biggest_win
-                )
-                .sort(
-                    (a, b) =>
-                        b.biggest_win.margin -
-                        a.biggest_win.margin
-                )[0];
+        const managersWithBiggestWin =
+            managers.filter(
+                manager =>
+                    manager.biggest_win
+            );
 
 
-        /*
-         * Highest score in a loss
-         */
+        const biggestBlowoutRecord =
+            managersWithBiggestWin.length > 0
+                ? Math.max(
+                    ...managersWithBiggestWin.map(
+                        manager =>
+                            manager
+                                .biggest_win
+                                .margin
+                    )
+                  )
+                : 0;
 
-        const highestLossManager =
-            managers
-                .filter(
-                    manager =>
-                        manager.highest_score_in_loss
-                )
-                .sort(
-                    (a, b) =>
-                        b.highest_score_in_loss.points -
-                        a.highest_score_in_loss.points
-                )[0];
+
+        const biggestBlowoutLeaders =
+            managersWithBiggestWin.filter(
+                manager =>
+                    Math.abs(
+                        manager
+                            .biggest_win
+                            .margin -
+                        biggestBlowoutRecord
+                    ) <
+                    0.000001
+            );
 
 
         /*
          * Most championships
-         *
-         * Supports ties.
          */
 
         const championshipRecord =
-            Math.max(
-                ...managers.map(
-                    manager =>
-                        manager.championships
-                )
-            );
+            managers.length > 0
+                ? Math.max(
+                    ...managers.map(
+                        manager =>
+                            manager.championships
+                    )
+                  )
+                : 0;
 
 
         const championshipLeaders =
             managers.filter(
                 manager =>
                     manager.championships ===
-                        championshipRecord &&
+                    championshipRecord &&
                     championshipRecord > 0
             );
 
@@ -1246,19 +1509,21 @@ const longestWinningStreakLeaders =
          */
 
         const divisionTitleRecord =
-            Math.max(
-                ...managers.map(
-                    manager =>
-                        manager.division_titles
-                )
-            );
+            managers.length > 0
+                ? Math.max(
+                    ...managers.map(
+                        manager =>
+                            manager.division_titles
+                    )
+                  )
+                : 0;
 
 
         const divisionTitleLeaders =
             managers.filter(
                 manager =>
                     manager.division_titles ===
-                        divisionTitleRecord &&
+                    divisionTitleRecord &&
                     divisionTitleRecord > 0
             );
 
@@ -1269,178 +1534,263 @@ const longestWinningStreakLeaders =
          * =====================================================
          */
 
-        recordsGrid.innerHTML = '';
+        recordsGrid.innerHTML =
+            '';
 
 
         addRecordCard(
             recordsGrid,
+
             'Most Wins',
-            mostWins
-                ? mostWins.regular_wins
+
+            mostWinsRecord > 0
+                ? mostWinsRecord
                 : '—',
-            mostWins
-                ? mostWins.owner
+
+            mostWinsLeaders.length > 0
+                ? mostWinsLeaders
+                    .map(
+                        manager =>
+                            manager.owner
+                    )
+                    .join(
+                        ' • '
+                    )
                 : '—'
         );
 
 
         addRecordCard(
             recordsGrid,
+
             'Best Win %',
-            bestWinningPercentage
+
+            bestWinPercentageLeaders.length > 0
                 ? (
-                    bestWinningPercentage
-                        .win_percentage *
+                    bestWinPercentageRecord *
                     100
-                  ).toFixed(1) + '%'
+                  ).toFixed(1) +
+                  '%'
                 : '—',
-            bestWinningPercentage
-                ? bestWinningPercentage.owner
+
+            bestWinPercentageLeaders.length > 0
+                ? bestWinPercentageLeaders
+                    .map(
+                        manager =>
+                            manager.owner
+                    )
+                    .join(
+                        ' • '
+                    )
                 : '—'
         );
 
 
         addRecordCard(
             recordsGrid,
+
             'Highest Career PPG',
-            highestPPG
-                ? highestPPG.ppg.toFixed(2)
+
+            highestPPGLeaders.length > 0
+                ? highestPPGRecord.toFixed(2)
                 : '—',
-            highestPPG
-                ? highestPPG.owner
+
+            highestPPGLeaders.length > 0
+                ? highestPPGLeaders
+                    .map(
+                        manager =>
+                            manager.owner
+                    )
+                    .join(
+                        ' • '
+                    )
                 : '—'
         );
 
 
-        addRecordCard(
+        /*
+         * Part 3 continues with:
+         *
+         * Highest Team Score
+         * Biggest Blowout
+         * Longest Winning Streak
+         * Most Championships
+         * Most Division Titles
+         */
+
+            addRecordCard(
             recordsGrid,
+
             'Highest Team Score',
-            highestTeamScoreManager
-                ? highestTeamScoreManager
-                    .highest_team_score
-                    .points
-                    .toFixed(2)
+
+            highestTeamScoreLeaders.length > 0
+                ? highestTeamScoreRecord.toFixed(2)
                 : '—',
-            highestTeamScoreManager
-                ? `
-                    ${highestTeamScoreManager.owner}
-                    • Week
-                    ${highestTeamScoreManager.highest_team_score.week},
-                    ${highestTeamScoreManager.highest_team_score.season}
-                  `
+
+            highestTeamScoreLeaders.length > 0
+                ? highestTeamScoreLeaders
+                    .map(
+                        manager => {
+
+                            return `
+                                ${manager.owner}
+                                • Week
+                                ${manager.highest_team_score.week},
+                                ${manager.highest_team_score.season}
+                            `;
+
+                        }
+                    )
+                    .join(
+                        '<br>'
+                    )
                 : '—'
         );
 
 
         addRecordCard(
             recordsGrid,
+
             'Biggest Blowout',
-            biggestWinManager
-                ? biggestWinManager
-                    .biggest_win
-                    .margin
-                    .toFixed(2)
+
+            biggestBlowoutLeaders.length > 0
+                ? biggestBlowoutRecord.toFixed(2)
                 : '—',
-            biggestWinManager
-                ? `
-                    ${biggestWinManager.owner}
-                    over
-                    ${biggestWinManager.biggest_win.opponent || 'Unknown'}
-                    •
-                    ${biggestWinManager.biggest_win.score.toFixed(2)}
-                    -
-                    ${biggestWinManager.biggest_win.opponent_score.toFixed(2)}
-                    • Week
-                    ${biggestWinManager.biggest_win.week},
-                    ${biggestWinManager.biggest_win.season}
-                  `
+
+            biggestBlowoutLeaders.length > 0
+                ? biggestBlowoutLeaders
+                    .map(
+                        manager => {
+
+                            const win =
+                                manager.biggest_win;
+
+
+                            return `
+                                ${manager.owner}
+                                over
+                                ${win.opponent || 'Unknown'}
+                                •
+                                ${win.points.toFixed(2)}
+                                -
+                                ${win.opponent_points.toFixed(2)}
+                                • Week
+                                ${win.week},
+                                ${win.season}
+                            `;
+
+                        }
+                    )
+                    .join(
+                        '<br>'
+                    )
                 : '—'
         );
 
 
-addRecordCard(
-    recordsGrid,
+        /*
+         * =====================================================
+         * LONGEST WINNING STREAK
+         * =====================================================
+         */
 
-    'Longest Winning Streak',
+        addRecordCard(
+            recordsGrid,
 
-    longestWinningStreak > 0
-        ? `${longestWinningStreak} Games`
-        : '—',
+            'Longest Winning Streak',
 
-    longestWinningStreakLeaders.length > 0
-        ? longestWinningStreakLeaders
-            .map(
-                streak => {
+            longestWinningStreak > 0
+                ? `${longestWinningStreak} Games`
+                : '—',
 
-                    const manager =
-                        managerMap[
-                            streak.owner_id
-                        ];
+            longestWinningStreakLeaders.length > 0
+                ? longestWinningStreakLeaders
+                    .map(
+                        streak => {
 
-
-                    const owner =
-                        manager
-                            ? manager.owner
-                            : streak.owner;
-
-
-                    const weeks =
-                        streak.start_week ===
-                        streak.end_week
-                            ? `Week ${streak.start_week}`
-                            : `Weeks ${streak.start_week}-${streak.end_week}`;
+                            const manager =
+                                managerMap[
+                                    String(
+                                        streak.owner_id
+                                    )
+                                ];
 
 
-                    return `
-                        ${owner}
-                        • ${streak.season}
-                        • ${weeks}
-                    `;
+                            const owner =
+                                manager
+                                    ? manager.owner
+                                    : streak.owner;
 
-                }
-            )
-            .join(
-                '<br>'
-            )
-        : '—'
-);
+
+                            const weeks =
+                                streak.start_week ===
+                                streak.end_week
+                                    ? `Week ${streak.start_week}`
+                                    : `Weeks ${streak.start_week}-${streak.end_week}`;
+
+
+                            return `
+                                ${owner}
+                                • ${streak.season}
+                                • ${weeks}
+                            `;
+
+                        }
+                    )
+                    .join(
+                        '<br>'
+                    )
+                : '—'
+        );
 
 
         addRecordCard(
             recordsGrid,
+
             'Most Championships',
+
             championshipRecord > 0
                 ? championshipRecord
                 : '—',
+
             championshipLeaders.length > 0
                 ? championshipLeaders
                     .map(
                         manager =>
                             manager.owner
                     )
-                    .join(' • ')
+                    .join(
+                        ' • '
+                    )
                 : '—'
         );
 
 
         addRecordCard(
             recordsGrid,
+
             'Most Division Titles',
+
             divisionTitleRecord > 0
                 ? divisionTitleRecord
                 : '—',
+
             divisionTitleLeaders.length > 0
                 ? divisionTitleLeaders
                     .map(
                         manager =>
                             manager.owner
                     )
-                    .join(' • ')
+                    .join(
+                        ' • '
+                    )
                 : '—'
         );
 
 
-    } catch (error) {
+    } catch (
+        error
+    ) {
 
         console.error(
             'Error loading records:',
@@ -1448,40 +1798,50 @@ addRecordCard(
         );
 
 
-        tableBody.innerHTML = `
+        if (
+            managerRecordsBody
+        ) {
 
-            <tr>
+            managerRecordsBody.innerHTML = `
 
-                <td
-                    colspan="10"
-                    class="records-error"
+                <tr>
+
+                    <td
+                        colspan="10"
+                        class="records-error"
+                    >
+                        Unable to load manager records.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        if (
+            recordsGrid
+        ) {
+
+            recordsGrid.innerHTML = `
+
+                <div
+                    class="
+                        record-loading
+                        records-error
+                    "
                 >
-                    Unable to load manager records.
-                </td>
+                    Unable to load league records.
+                </div>
 
-            </tr>
+            `;
 
-        `;
-
-
-        recordsGrid.innerHTML = `
-
-            <div
-                class="
-                    record-loading
-                    records-error
-                "
-            >
-                Unable to load league records.
-            </div>
-
-        `;
+        }
 
     }
 
 }
-
-
 
 /*
  * ======================================================
@@ -1505,10 +1865,10 @@ function createManager(
         current:
             false,
 
-        seasonYears:
+        seasons:
             new Set(),
 
-        seasons:
+        season_count:
             0,
 
         regular_wins:
@@ -1532,6 +1892,9 @@ function createManager(
         playoff_ties:
             0,
 
+        playoff_games:
+            0,
+
         points_for:
             0,
 
@@ -1550,16 +1913,19 @@ function createManager(
         championships:
             0,
 
+        championship_years:
+            [],
+
         division_titles:
             0,
+
+        division_title_years:
+            [],
 
         highest_team_score:
             null,
 
         biggest_win:
-            null,
-
-        highest_score_in_loss:
             null
 
     };
@@ -1584,7 +1950,10 @@ function formatRecord(
         `${wins}-${losses}`;
 
 
-    if (ties > 0) {
+    if (
+        ties >
+        0
+    ) {
 
         record +=
             `-${ties}`;
@@ -1644,5 +2013,12 @@ function addRecordCard(
 
 }
 
+
+
+/*
+ * ======================================================
+ * INITIAL LOAD
+ * ======================================================
+ */
 
 loadRecords();
