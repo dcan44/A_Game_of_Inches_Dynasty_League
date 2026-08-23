@@ -50,7 +50,6 @@ async function loadManagers() {
                 '/api/manager-performance?season=2026'
             ),
 
-
             fetch(
                 'https://api.sleeper.app/v1/league/978545340355862528/winners_bracket'
             ),
@@ -72,9 +71,6 @@ async function loadManagers() {
 
         /*
          * Core responses must work.
-         *
-         * An unavailable playoff bracket should NOT
-         * prevent the entire Managers page from loading.
          */
 
         const requiredResponses = [
@@ -171,18 +167,6 @@ async function loadManagers() {
          * =====================================================
          * PLAYOFF PODIUM FINISHES
          * =====================================================
-         *
-         * Sleeper winners_bracket:
-         *
-         * p = 1  -> Championship game
-         *           winner = Champion
-         *           loser  = Runner-Up
-         *
-         * p = 3  -> Third-place game
-         *           winner = Third Place
-         *
-         * We convert roster IDs into owner IDs using
-         * that season's historical roster information.
          */
 
         const podiumFinishes = {
@@ -229,7 +213,6 @@ async function loadManagers() {
 
                     /*
                      * Roster -> Owner lookup
-                     * for this specific season.
                      */
 
                     const rosterOwnerMap =
@@ -348,9 +331,6 @@ async function loadManagers() {
          * =====================================================
          * CONFIRMED CHAMPIONSHIP FALLBACKS
          * =====================================================
-         *
-         * These preserve the known historical champions
-         * even if Sleeper ever fails to return an old bracket.
          */
 
         const confirmedChampions = {
@@ -395,12 +375,6 @@ async function loadManagers() {
          * =====================================================
          * DIVISION CHAMPIONS
          * =====================================================
-         *
-         * 2023-2025 are stored manually because the
-         * division configuration changed historically.
-         *
-         * Beginning in 2026, division winners can be
-         * calculated automatically from Sleeper.
          */
 
         const divisionTitles =
@@ -493,10 +467,6 @@ async function loadManagers() {
                         );
 
 
-                    /*
-                     * Historical years are manually preserved.
-                     */
-
                     if (
                         season <= 2025
                     ) {
@@ -505,11 +475,6 @@ async function loadManagers() {
 
                     }
 
-
-                    /*
-                     * Do not award division championships
-                     * until the season is complete.
-                     */
 
                     if (
                         seasonData.status !==
@@ -524,10 +489,6 @@ async function loadManagers() {
                     const divisions =
                         {};
 
-
-                    /*
-                     * Group teams by division.
-                     */
 
                     seasonData.teams.forEach(
                         team => {
@@ -563,16 +524,6 @@ async function loadManagers() {
                         }
                     );
 
-
-                    /*
-                     * Determine each division winner.
-                     *
-                     * Tiebreak:
-                     *
-                     * 1. Wins
-                     * 2. Fewer losses
-                     * 3. Points For
-                     */
 
                     Object.values(
                         divisions
@@ -746,11 +697,6 @@ async function loadManagers() {
                             ];
 
 
-                        /*
-                         * Count a season once regular-season
-                         * games have actually been played.
-                         */
-
                         if (
                             manager
                                 .regular_season
@@ -763,7 +709,7 @@ async function loadManagers() {
 
 
                         /*
-                         * Regular season.
+                         * Regular season
                          */
 
                         career.regular_wins +=
@@ -791,7 +737,7 @@ async function loadManagers() {
 
 
                         /*
-                         * Championship playoffs.
+                         * Playoffs
                          */
 
                         career.playoff_wins +=
@@ -813,7 +759,7 @@ async function loadManagers() {
 
 
                         /*
-                         * Scoring.
+                         * Scoring
                          */
 
                         career.points_for +=
@@ -829,7 +775,7 @@ async function loadManagers() {
 
 
                         /*
-                         * Highest single-game score.
+                         * Highest single-game score
                          */
 
                         if (
@@ -895,6 +841,24 @@ async function loadManagers() {
                     careerMap[
                         team.owner_id
                     ];
+
+
+                /*
+                 * =================================================
+                 * REAL OWNER NAME
+                 * =================================================
+                 *
+                 * Pull from league-data.js.
+                 *
+                 * If the owner isn't listed there for some reason,
+                 * fall back to their Sleeper username.
+                 */
+
+                const ownerName =
+                    getLeagueOwnerName(
+                        team.owner_id,
+                        team.owner
+                    );
 
 
                 const card =
@@ -1139,17 +1103,13 @@ async function loadManagers() {
 
                 /*
                  * =============================================
-                 * TROPHY CASE HTML
+                 * TROPHY CASE
                  * =============================================
                  */
 
                 let trophyHTML =
                     '';
 
-
-                /*
-                 * LEAGUE CHAMPION
-                 */
 
                 championshipYears.forEach(
                     year => {
@@ -1180,10 +1140,6 @@ async function loadManagers() {
                 );
 
 
-                /*
-                 * RUNNER-UP
-                 */
-
                 runnerUpYears.forEach(
                     year => {
 
@@ -1212,10 +1168,6 @@ async function loadManagers() {
                     }
                 );
 
-
-                /*
-                 * THIRD PLACE
-                 */
 
                 thirdPlaceYears.forEach(
                     year => {
@@ -1246,10 +1198,6 @@ async function loadManagers() {
                 );
 
 
-                /*
-                 * DIVISION CHAMPION
-                 */
-
                 managerDivisionTitles.forEach(
                     year => {
 
@@ -1278,10 +1226,6 @@ async function loadManagers() {
                     }
                 );
 
-
-                /*
-                 * Empty case.
-                 */
 
                 if (
                     !trophyHTML
@@ -1327,9 +1271,13 @@ async function loadManagers() {
                                 ${team.team_name}
                             </h2>
 
-                            <p>
-                                ${team.owner}
+                            <p class="manager-owner-name">
+                                ${ownerName}
                             </p>
+
+                            <small class="manager-sleeper-username">
+                                ${team.owner}
+                            </small>
 
                         </div>
 
@@ -1479,7 +1427,6 @@ async function loadManagers() {
 
                     <div class="manager-records">
 
-
                         <div>
 
                             <span>
@@ -1491,7 +1438,6 @@ async function loadManagers() {
                             </strong>
 
                         </div>
-
 
                     </div>
 
@@ -1566,6 +1512,44 @@ function getYearsForOwner(
             (a, b) =>
                 a - b
         );
+
+}
+
+
+
+/*
+ * ======================================================
+ * GET REAL OWNER NAME
+ * ======================================================
+ *
+ * Uses league-data.js.
+ *
+ * If league-data.js is missing or the manager has not
+ * been entered, the Sleeper username is used instead.
+ */
+
+function getLeagueOwnerName(
+    ownerId,
+    fallback
+) {
+
+    if (
+        typeof LEAGUE_DATA !==
+            'undefined' &&
+        typeof LEAGUE_DATA.getOwnerName ===
+            'function'
+    ) {
+
+        return LEAGUE_DATA.getOwnerName(
+            ownerId,
+            fallback
+        );
+
+    }
+
+
+    return fallback ||
+        'Unknown Manager';
 
 }
 
