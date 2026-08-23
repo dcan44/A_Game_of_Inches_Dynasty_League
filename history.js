@@ -22,63 +22,42 @@ const hallOfShame =
     );
 
 
-
 /*
  * ======================================================
  * CONFIRMED CHAMPIONS
  * ======================================================
- *
- * Team names are preserved historically because team
- * names change over time.
- *
- * Owner names are pulled from league-data.js.
  */
 
 const confirmedChampions = {
 
     2023: {
-
         owner_id:
             "978544154789699584",
-
         team_name:
             "Rollin with Ma-Homies"
-
     },
 
     2024: {
-
         owner_id:
             "978815135223525376",
-
         team_name:
             "Goats"
-
     },
 
     2025: {
-
         owner_id:
             "1060373241799262208",
-
         team_name:
             "Big Dog"
-
     }
 
 };
 
 
-
 /*
  * ======================================================
- * GET REAL OWNER NAME
+ * OWNER NAME HELPER
  * ======================================================
- *
- * Uses league-data.js.
- *
- * If the manager has not been entered there, the
- * supplied Sleeper username is used as a fallback.
  */
 
 function getLeagueOwnerName(
@@ -99,11 +78,9 @@ function getLeagueOwnerName(
 
     }
 
-
     return fallback;
 
 }
-
 
 
 /*
@@ -114,15 +91,13 @@ function getLeagueOwnerName(
 
 function loadChampionPennants() {
 
-    historyChampions.innerHTML =
-        '';
+    historyChampions.innerHTML = '';
 
 
     Object.entries(
         confirmedChampions
     ).forEach(
         ([year, champion]) => {
-
 
             const ownerName =
                 getLeagueOwnerName(
@@ -176,7 +151,6 @@ function loadChampionPennants() {
 }
 
 
-
 /*
  * ======================================================
  * LOAD ONE SEASON
@@ -216,7 +190,9 @@ async function loadHistorySeason(
         const [
             historyResponse,
             performanceResponse,
-            bracketResponse
+            bracketResponse,
+            rostersResponse,
+            matchupHistoryResponse
         ] = await Promise.all([
 
             fetch(
@@ -229,6 +205,14 @@ async function loadHistorySeason(
 
             fetch(
                 `https://api.sleeper.app/v1/league/${leagueId}/winners_bracket`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+            ),
+
+            fetch(
+                `/api/matchup-history?season=${season}`
             )
 
         ]);
@@ -237,7 +221,9 @@ async function loadHistorySeason(
         if (
             !historyResponse.ok ||
             !performanceResponse.ok ||
-            !bracketResponse.ok
+            !bracketResponse.ok ||
+            !rostersResponse.ok ||
+            !matchupHistoryResponse.ok
         ) {
 
             throw new Error(
@@ -258,6 +244,13 @@ async function loadHistorySeason(
         const bracketData =
             await bracketResponse.json();
 
+
+        const sleeperRosters =
+            await rostersResponse.json();
+
+
+        const matchupHistoryData =
+            await matchupHistoryResponse.json();
 
 
         /*
@@ -289,15 +282,13 @@ async function loadHistorySeason(
         }
 
 
-
         /*
          * =====================================================
          * ROSTER LOOKUP
          * =====================================================
          */
 
-        const rosterMap =
-            {};
+        const rosterMap = {};
 
 
         seasonData.teams.forEach(
@@ -305,12 +296,10 @@ async function loadHistorySeason(
 
                 rosterMap[
                     team.roster_id
-                ] =
-                    team;
+                ] = team;
 
             }
         );
-
 
 
         /*
@@ -357,13 +346,6 @@ async function loadHistorySeason(
                 : null;
 
 
-
-        /*
-         * =====================================================
-         * REAL PODIUM OWNER NAMES
-         * =====================================================
-         */
-
         const championOwnerName =
             champion
                 ? getLeagueOwnerName(
@@ -396,105 +378,965 @@ async function loadHistorySeason(
                 : '—';
 
 
-
         /*
          * =====================================================
-         * REGULAR-SEASON LEADERS
+         * MANAGER PERFORMANCE LOOKUP
          * =====================================================
          */
 
         const managers =
-            performanceData.managers ||
-            [];
+            performanceData.managers || [];
+
+
+        const managerMap = {};
+
+
+        managers.forEach(
+            manager => {
+
+                managerMap[
+                    manager.owner_id
+                ] = manager;
+
+            }
+        );
 
 
         /*
-         * Most Wins
-         *
-         * Supports any number of ties.
+         * =====================================================
+         * SLEEPER PF / MAX PF / EFFICIENCY
+         * =====================================================
          */
 
-        const mostWinsRecord =
-            managers.length > 0
-                ? Math.max(
-                    ...managers.map(
-                        manager =>
-                            manager
-                                .regular_season
-                                .wins
-                    )
-                  )
-                : 0;
+        const efficiencyData = [];
 
 
-        const mostWinsLeaders =
-            managers.filter(
-                manager =>
-                    manager
-                        .regular_season
-                        .wins ===
-                    mostWinsRecord
-            );
+        sleeperRosters.forEach(
+            roster => {
+
+                if (
+                    !roster.owner_id ||
+                    !roster.settings
+                ) {
+
+                    return;
+
+                }
 
 
-        const mostWinsNames =
-            mostWinsLeaders
-                .map(
-                    manager =>
-                        getLeagueOwnerName(
-                            manager.owner_id,
-                            manager.owner
-                        )
+                const actualPF =
+                    sleeperPoints(
+                        roster.settings.fpts,
+                        roster.settings.fpts_decimal
+                    );
+
+
+                const maxPF =
+                    sleeperPoints(
+                        roster.settings.ppts,
+                        roster.settings.ppts_decimal
+                    );
+
+
+                if (
+                    maxPF <= 0
+                ) {
+
+                    return;
+
+                }
+
+
+                efficiencyData.push(
+                    {
+                        owner_id:
+                            roster.owner_id,
+
+                        owner:
+                            managerMap[
+                                roster.owner_id
+                            ]?.owner ||
+                            rosterMap[
+                                roster.roster_id
+                            ]?.owner ||
+                            'Unknown Manager',
+
+                        actual_pf:
+                            actualPF,
+
+                        max_pf:
+                            maxPF,
+
+                        efficiency:
+                            roundTo(
+                                (
+                                    actualPF /
+                                    maxPF
+                                ) * 100,
+                                2
+                            )
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * REGULAR-SEASON GAME DATA
+         * =====================================================
+         *
+         * Season Leaders / Losers are regular-season awards.
+         * Playoff and consolation games are excluded here.
+         */
+
+        const regularSeasonGames =
+            (
+                matchupHistoryData.games || []
+            )
+                .filter(
+                    game =>
+                        !game.playoff
                 )
-                .join(
-                    ' • '
+                .sort(
+                    (a, b) =>
+                        Number(a.week) -
+                        Number(b.week)
                 );
 
 
-        /*
-         * Highest PPG
+        const gameStats = {};
+
+
+        function ensureGameStats(
+            team
+        ) {
+
+            if (
+                !team ||
+                !team.owner_id
+            ) {
+
+                return null;
+
+            }
+
+
+            if (
+                !gameStats[
+                    team.owner_id
+                ]
+            ) {
+
+                gameStats[
+                    team.owner_id
+                ] = {
+
+                    owner_id:
+                        team.owner_id,
+
+                    owner:
+                        team.owner ||
+                        managerMap[
+                            team.owner_id
+                        ]?.owner ||
+                        'Unknown Manager',
+
+                    scores:
+                        [],
+
+                    wins:
+                        [],
+
+                    losses:
+                        [],
+
+                    weekly_results:
+                        []
+
+                };
+
+            }
+
+
+            return gameStats[
+                team.owner_id
+            ];
+
+        }
+
+
+        regularSeasonGames.forEach(
+            game => {
+
+                const first =
+                    game.team_1;
+
+                const second =
+                    game.team_2;
+
+
+                if (
+                    !first ||
+                    !second
+                ) {
+
+                    return;
+
+                }
+
+
+                const firstStats =
+                    ensureGameStats(
+                        first
+                    );
+
+
+                const secondStats =
+                    ensureGameStats(
+                        second
+                    );
+
+
+                if (
+                    !firstStats ||
+                    !secondStats
+                ) {
+
+                    return;
+
+                }
+
+
+                const firstPoints =
+                    Number(
+                        first.points || 0
+                    );
+
+
+                const secondPoints =
+                    Number(
+                        second.points || 0
+                    );
+
+
+                firstStats.scores.push(
+                    {
+                        points:
+                            firstPoints,
+                        opponent_points:
+                            secondPoints,
+                        opponent_owner_id:
+                            second.owner_id,
+                        opponent:
+                            second.owner,
+                        week:
+                            Number(game.week)
+                    }
+                );
+
+
+                secondStats.scores.push(
+                    {
+                        points:
+                            secondPoints,
+                        opponent_points:
+                            firstPoints,
+                        opponent_owner_id:
+                            first.owner_id,
+                        opponent:
+                            first.owner,
+                        week:
+                            Number(game.week)
+                    }
+                );
+
+
+                if (
+                    firstPoints >
+                    secondPoints
+                ) {
+
+                    const margin =
+                        roundTo(
+                            firstPoints -
+                            secondPoints,
+                            2
+                        );
+
+
+                    firstStats.wins.push(
+                        {
+                            points:
+                                firstPoints,
+                            opponent_points:
+                                secondPoints,
+                            opponent_owner_id:
+                                second.owner_id,
+                            opponent:
+                                second.owner,
+                            margin:
+                                margin,
+                            week:
+                                Number(game.week)
+                        }
+                    );
+
+
+                    secondStats.losses.push(
+                        {
+                            points:
+                                secondPoints,
+                            opponent_points:
+                                firstPoints,
+                            opponent_owner_id:
+                                first.owner_id,
+                            opponent:
+                                first.owner,
+                            margin:
+                                margin,
+                            week:
+                                Number(game.week)
+                        }
+                    );
+
+
+                    firstStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'W'
+                        }
+                    );
+
+
+                    secondStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'L'
+                        }
+                    );
+
+                }
+
+                else if (
+                    secondPoints >
+                    firstPoints
+                ) {
+
+                    const margin =
+                        roundTo(
+                            secondPoints -
+                            firstPoints,
+                            2
+                        );
+
+
+                    secondStats.wins.push(
+                        {
+                            points:
+                                secondPoints,
+                            opponent_points:
+                                firstPoints,
+                            opponent_owner_id:
+                                first.owner_id,
+                            opponent:
+                                first.owner,
+                            margin:
+                                margin,
+                            week:
+                                Number(game.week)
+                        }
+                    );
+
+
+                    firstStats.losses.push(
+                        {
+                            points:
+                                firstPoints,
+                            opponent_points:
+                                secondPoints,
+                            opponent_owner_id:
+                                second.owner_id,
+                            opponent:
+                                second.owner,
+                            margin:
+                                margin,
+                            week:
+                                Number(game.week)
+                        }
+                    );
+
+
+                    secondStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'W'
+                        }
+                    );
+
+
+                    firstStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'L'
+                        }
+                    );
+
+                }
+
+                else {
+
+                    firstStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'T'
+                        }
+                    );
+
+
+                    secondStats.weekly_results.push(
+                        {
+                            week:
+                                Number(game.week),
+                            result:
+                                'T'
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        const gameStatManagers =
+            Object.values(
+                gameStats
+            );
+
+
+        gameStatManagers.forEach(
+            manager => {
+
+                manager.weekly_results.sort(
+                    (a, b) =>
+                        a.week -
+                        b.week
+                );
+
+
+                manager.longest_winning_streak =
+                    longestStreak(
+                        manager.weekly_results,
+                        'W'
+                    );
+
+
+                manager.longest_losing_streak =
+                    longestStreak(
+                        manager.weekly_results,
+                        'L'
+                    );
+
+            }
+        );
+                /*
+         * =====================================================
+         * MOST / FEWEST WINS
+         * =====================================================
          */
 
-        const highestPPG =
-            [...managers]
-                .filter(
-                    manager =>
+        const mostWinsValue =
+            managers.length
+                ? Math.max(
+                    ...managers.map(
+                        manager =>
+                            Number(
+                                manager
+                                    .regular_season
+                                    .wins || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const fewestWinsValue =
+            managers.length
+                ? Math.min(
+                    ...managers.map(
+                        manager =>
+                            Number(
+                                manager
+                                    .regular_season
+                                    .wins || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const mostWinsManagers =
+            managers.filter(
+                manager =>
+                    Number(
                         manager
                             .regular_season
-                            .games > 0
-                )
-                .sort(
-                    (a, b) =>
-                        b
-                            .scoring
-                            .points_per_game -
-                        a
-                            .scoring
-                            .points_per_game
-                )[0];
+                            .wins || 0
+                    ) ===
+                    mostWinsValue
+            );
+
+
+        const fewestWinsManagers =
+            managers.filter(
+                manager =>
+                    Number(
+                        manager
+                            .regular_season
+                            .wins || 0
+                    ) ===
+                    fewestWinsValue
+            );
 
 
         /*
-         * Highest Team Score
+         * =====================================================
+         * HIGHEST / LOWEST PPG
+         * =====================================================
          */
 
-        const highestTeamScore =
-            [...managers]
-                .filter(
-                    manager =>
+        const managersWithGames =
+            managers.filter(
+                manager =>
+                    Number(
                         manager
-                            .highest_team_score
-                )
-                .sort(
-                    (a, b) =>
-                        b
-                            .highest_team_score
-                            .points -
-                        a
-                            .highest_team_score
-                            .points
-                )[0];
+                            .regular_season
+                            .games || 0
+                    ) > 0
+            );
 
+
+        const highestPPGValue =
+            managersWithGames.length
+                ? Math.max(
+                    ...managersWithGames.map(
+                        manager =>
+                            Number(
+                                manager
+                                    .scoring
+                                    .points_per_game || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const lowestPPGValue =
+            managersWithGames.length
+                ? Math.min(
+                    ...managersWithGames.map(
+                        manager =>
+                            Number(
+                                manager
+                                    .scoring
+                                    .points_per_game || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const highestPPGManagers =
+            managersWithGames.filter(
+                manager =>
+                    nearlyEqual(
+                        Number(
+                            manager
+                                .scoring
+                                .points_per_game || 0
+                        ),
+                        highestPPGValue
+                    )
+            );
+
+
+        const lowestPPGManagers =
+            managersWithGames.filter(
+                manager =>
+                    nearlyEqual(
+                        Number(
+                            manager
+                                .scoring
+                                .points_per_game || 0
+                        ),
+                        lowestPPGValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * HIGHEST / LOWEST SINGLE-GAME SCORE
+         * =====================================================
+         */
+
+        const allScores =
+            gameStatManagers.flatMap(
+                manager =>
+                    manager.scores.map(
+                        score => ({
+                            ...score,
+                            owner_id:
+                                manager.owner_id,
+                            owner:
+                                manager.owner
+                        })
+                    )
+            );
+
+
+        const highestSingleGameValue =
+            allScores.length
+                ? Math.max(
+                    ...allScores.map(
+                        score =>
+                            score.points
+                    )
+                )
+                : 0;
+
+
+        const lowestSingleGameValue =
+            allScores.length
+                ? Math.min(
+                    ...allScores.map(
+                        score =>
+                            score.points
+                    )
+                )
+                : 0;
+
+
+        const highestSingleGames =
+            allScores.filter(
+                score =>
+                    nearlyEqual(
+                        score.points,
+                        highestSingleGameValue
+                    )
+            );
+
+
+        const lowestSingleGames =
+            allScores.filter(
+                score =>
+                    nearlyEqual(
+                        score.points,
+                        lowestSingleGameValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * MOST / FEWEST TOTAL POINTS FOR
+         * =====================================================
+         */
+
+        const mostPointsForValue =
+            seasonData.teams.length
+                ? Math.max(
+                    ...seasonData.teams.map(
+                        team =>
+                            Number(
+                                team.points_for || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const fewestPointsForValue =
+            seasonData.teams.length
+                ? Math.min(
+                    ...seasonData.teams.map(
+                        team =>
+                            Number(
+                                team.points_for || 0
+                            )
+                    )
+                )
+                : 0;
+
+
+        const mostPointsForTeams =
+            seasonData.teams.filter(
+                team =>
+                    nearlyEqual(
+                        Number(
+                            team.points_for || 0
+                        ),
+                        mostPointsForValue
+                    )
+            );
+
+
+        const fewestPointsForTeams =
+            seasonData.teams.filter(
+                team =>
+                    nearlyEqual(
+                        Number(
+                            team.points_for || 0
+                        ),
+                        fewestPointsForValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * MOST / LEAST EFFICIENT
+         * =====================================================
+         */
+
+        const highestEfficiencyValue =
+            efficiencyData.length
+                ? Math.max(
+                    ...efficiencyData.map(
+                        manager =>
+                            manager.efficiency
+                    )
+                )
+                : 0;
+
+
+        const lowestEfficiencyValue =
+            efficiencyData.length
+                ? Math.min(
+                    ...efficiencyData.map(
+                        manager =>
+                            manager.efficiency
+                    )
+                )
+                : 0;
+
+
+        const mostEfficientManagers =
+            efficiencyData.filter(
+                manager =>
+                    nearlyEqual(
+                        manager.efficiency,
+                        highestEfficiencyValue
+                    )
+            );
+
+
+        const leastEfficientManagers =
+            efficiencyData.filter(
+                manager =>
+                    nearlyEqual(
+                        manager.efficiency,
+                        lowestEfficiencyValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * LONGEST WINNING / LOSING STREAK
+         * =====================================================
+         */
+
+        const longestWinningStreakValue =
+            gameStatManagers.length
+                ? Math.max(
+                    ...gameStatManagers.map(
+                        manager =>
+                            manager
+                                .longest_winning_streak
+                    )
+                )
+                : 0;
+
+
+        const longestLosingStreakValue =
+            gameStatManagers.length
+                ? Math.max(
+                    ...gameStatManagers.map(
+                        manager =>
+                            manager
+                                .longest_losing_streak
+                    )
+                )
+                : 0;
+
+
+        const longestWinningStreakManagers =
+            gameStatManagers.filter(
+                manager =>
+                    manager
+                        .longest_winning_streak ===
+                    longestWinningStreakValue
+            );
+
+
+        const longestLosingStreakManagers =
+            gameStatManagers.filter(
+                manager =>
+                    manager
+                        .longest_losing_streak ===
+                    longestLosingStreakValue
+            );
+
+
+        /*
+         * =====================================================
+         * LOWEST SCORE IN A WIN
+         * =====================================================
+         */
+
+        const allWins =
+            gameStatManagers.flatMap(
+                manager =>
+                    manager.wins.map(
+                        win => ({
+                            ...win,
+                            owner_id:
+                                manager.owner_id,
+                            owner:
+                                manager.owner
+                        })
+                    )
+            );
+
+
+        const lowestWinningScoreValue =
+            allWins.length
+                ? Math.min(
+                    ...allWins.map(
+                        win =>
+                            win.points
+                    )
+                )
+                : 0;
+
+
+        const lowestWinningScores =
+            allWins.filter(
+                win =>
+                    nearlyEqual(
+                        win.points,
+                        lowestWinningScoreValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * HIGHEST SCORE IN A LOSS
+         * =====================================================
+         */
+
+        const allLosses =
+            gameStatManagers.flatMap(
+                manager =>
+                    manager.losses.map(
+                        loss => ({
+                            ...loss,
+                            owner_id:
+                                manager.owner_id,
+                            owner:
+                                manager.owner
+                        })
+                    )
+            );
+
+
+        const highestLosingScoreValue =
+            allLosses.length
+                ? Math.max(
+                    ...allLosses.map(
+                        loss =>
+                            loss.points
+                    )
+                )
+                : 0;
+
+
+        const highestLosingScores =
+            allLosses.filter(
+                loss =>
+                    nearlyEqual(
+                        loss.points,
+                        highestLosingScoreValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * BIGGEST BLOWOUT WIN
+         * =====================================================
+         */
+
+        const biggestBlowoutValue =
+            allWins.length
+                ? Math.max(
+                    ...allWins.map(
+                        win =>
+                            win.margin
+                    )
+                )
+                : 0;
+
+
+        const biggestBlowoutWins =
+            allWins.filter(
+                win =>
+                    nearlyEqual(
+                        win.margin,
+                        biggestBlowoutValue
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * CLOSEST LOSS
+         * =====================================================
+         */
+
+        const closestLossValue =
+            allLosses.length
+                ? Math.min(
+                    ...allLosses.map(
+                        loss =>
+                            loss.margin
+                    )
+                )
+                : 0;
+
+
+        const closestLosses =
+            allLosses.filter(
+                loss =>
+                    nearlyEqual(
+                        loss.margin,
+                        closestLossValue
+                    )
+            );
 
 
         /*
@@ -545,10 +1387,9 @@ async function loadHistorySeason(
                 );
 
 
-
         /*
          * =====================================================
-         * BUILD PAGE
+         * BUILD SEASON PAGE
          * =====================================================
          */
 
@@ -578,7 +1419,6 @@ async function loadHistorySeason(
 
             <div class="history-podium">
 
-
                 <div
                     class="
                         history-podium-card
@@ -595,7 +1435,6 @@ async function loadHistorySeason(
                     </span>
 
                     <strong>
-
                         ${
                             champion
                                 ? champion.team_name
@@ -604,7 +1443,6 @@ async function loadHistorySeason(
                                   ]?.team_name ||
                                   '—'
                         }
-
                     </strong>
 
                     <small>
@@ -630,13 +1468,11 @@ async function loadHistorySeason(
                     </span>
 
                     <strong>
-
                         ${
                             runnerUp
                                 ? runnerUp.team_name
                                 : '—'
                         }
-
                     </strong>
 
                     <small>
@@ -662,13 +1498,11 @@ async function loadHistorySeason(
                     </span>
 
                     <strong>
-
                         ${
                             thirdPlace
                                 ? thirdPlace.team_name
                                 : '—'
                         }
-
                     </strong>
 
                     <small>
@@ -677,80 +1511,248 @@ async function loadHistorySeason(
 
                 </div>
 
-
             </div>
 
+
+            <!-- ==========================================
+                 SEASON LEADERS
+            =========================================== -->
 
             <h3 class="history-subtitle">
                 Season Leaders
             </h3>
 
 
-            <div class="history-leaders-grid">
+            <div
+                class="
+                    history-leaders-grid
+                    history-awards-grid
+                "
+            >
 
 
                 ${leaderCard(
-
                     'Most Wins',
-
-                    managers.length > 0
-                        ? mostWinsRecord
-                        : '—',
-
-                    mostWinsNames ||
-                    '—'
-
+                    mostWinsValue,
+                    formatManagerNames(
+                        mostWinsManagers
+                    )
                 )}
 
 
                 ${leaderCard(
-
                     'Highest PPG',
+                    formatNumber(
+                        highestPPGValue
+                    ),
+                    formatManagerNames(
+                        highestPPGManagers
+                    )
+                )}
 
-                    highestPPG
-                        ? highestPPG
-                            .scoring
-                            .points_per_game
-                            .toFixed(2)
+
+                ${leaderCard(
+                    'Highest Single-Game Score',
+                    formatNumber(
+                        highestSingleGameValue
+                    ),
+                    formatGameAwardDetails(
+                        highestSingleGames
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Most Points For',
+                    formatNumber(
+                        mostPointsForValue
+                    ),
+                    formatTeamManagerNames(
+                        mostPointsForTeams
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Most Efficient Manager',
+                    efficiencyData.length
+                        ? `${formatNumber(
+                            highestEfficiencyValue
+                          )}%`
                         : '—',
+                    formatEfficiencyNames(
+                        mostEfficientManagers
+                    )
+                )}
 
-                    highestPPG
-                        ? getLeagueOwnerName(
-                            highestPPG.owner_id,
-                            highestPPG.owner
+
+                ${leaderCard(
+                    'Longest Winning Streak',
+                    longestWinningStreakValue
+                        ? `${longestWinningStreakValue} Games`
+                        : '—',
+                    longestWinningStreakValue
+                        ? formatManagerNames(
+                            longestWinningStreakManagers
                           )
                         : '—'
-
                 )}
 
 
                 ${leaderCard(
-
-                    'Highest Team Score',
-
-                    highestTeamScore
-                        ? highestTeamScore
-                            .highest_team_score
-                            .points
-                            .toFixed(2)
+                    'Lowest Score in a Win',
+                    allWins.length
+                        ? formatNumber(
+                            lowestWinningScoreValue
+                          )
                         : '—',
+                    formatWinLossDetails(
+                        lowestWinningScores
+                    )
+                )}
 
-                    highestTeamScore
-                        ? `
-                            ${getLeagueOwnerName(
-                                highestTeamScore.owner_id,
-                                highestTeamScore.owner
-                            )}
-                            • Week
-                            ${highestTeamScore.highest_team_score.week}
-                          `
-                        : '—'
 
+                ${leaderCard(
+                    'Biggest Blowout Win',
+                    allWins.length
+                        ? `${formatNumber(
+                            biggestBlowoutValue
+                          )} pts`
+                        : '—',
+                    formatWinLossDetails(
+                        biggestBlowoutWins
+                    )
                 )}
 
 
             </div>
 
+
+            <!-- ==========================================
+                 SEASON LOSERS
+            =========================================== -->
+
+            <h3
+                class="
+                    history-subtitle
+                    history-losers-title
+                "
+            >
+                Season Losers
+            </h3>
+
+
+            <div
+                class="
+                    history-leaders-grid
+                    history-awards-grid
+                    history-losers-grid
+                "
+            >
+
+
+                ${leaderCard(
+                    'Fewest Wins',
+                    fewestWinsValue,
+                    formatManagerNames(
+                        fewestWinsManagers
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Lowest PPG',
+                    formatNumber(
+                        lowestPPGValue
+                    ),
+                    formatManagerNames(
+                        lowestPPGManagers
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Lowest Single-Game Score',
+                    allScores.length
+                        ? formatNumber(
+                            lowestSingleGameValue
+                          )
+                        : '—',
+                    formatGameAwardDetails(
+                        lowestSingleGames
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Fewest Points For',
+                    formatNumber(
+                        fewestPointsForValue
+                    ),
+                    formatTeamManagerNames(
+                        fewestPointsForTeams
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Least Efficient Manager',
+                    efficiencyData.length
+                        ? `${formatNumber(
+                            lowestEfficiencyValue
+                          )}%`
+                        : '—',
+                    formatEfficiencyNames(
+                        leastEfficientManagers
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Longest Losing Streak',
+                    longestLosingStreakValue
+                        ? `${longestLosingStreakValue} Games`
+                        : '—',
+                    longestLosingStreakValue
+                        ? formatManagerNames(
+                            longestLosingStreakManagers
+                          )
+                        : '—'
+                )}
+
+
+                ${leaderCard(
+                    'Highest Score in a Loss',
+                    allLosses.length
+                        ? formatNumber(
+                            highestLosingScoreValue
+                          )
+                        : '—',
+                    formatWinLossDetails(
+                        highestLosingScores
+                    )
+                )}
+
+
+                ${leaderCard(
+                    'Closest Loss',
+                    allLosses.length
+                        ? `${formatNumber(
+                            closestLossValue
+                          )} pts`
+                        : '—',
+                    formatWinLossDetails(
+                        closestLosses
+                    )
+                )}
+
+
+            </div>
+
+
+                        <!-- ==========================================
+                 REGULAR-SEASON STANDINGS
+            =========================================== -->
 
             <h3 class="history-subtitle">
                 Regular-Season Standings
@@ -895,7 +1897,7 @@ async function loadHistorySeason(
 
 /*
  * ======================================================
- * LEADER CARD
+ * LEADER / LOSER CARD
  * ======================================================
  */
 
@@ -924,6 +1926,485 @@ function leaderCard(
         </div>
 
     `;
+
+}
+
+
+
+/*
+ * ======================================================
+ * FORMAT MANAGER NAMES
+ * ======================================================
+ *
+ * Works with manager-performance objects as well as
+ * the custom game-stat objects created above.
+ *
+ * Supports any number of ties.
+ */
+
+function formatManagerNames(
+    managers
+) {
+
+    if (
+        !managers ||
+        managers.length === 0
+    ) {
+
+        return '—';
+
+    }
+
+
+    return managers
+        .map(
+            manager =>
+
+                getLeagueOwnerName(
+                    manager.owner_id,
+                    manager.owner ||
+                    'Unknown Manager'
+                )
+
+        )
+        .join(
+            ' • '
+        );
+
+}
+
+
+
+/*
+ * ======================================================
+ * FORMAT TEAM / MANAGER NAMES
+ * ======================================================
+ */
+
+function formatTeamManagerNames(
+    teams
+) {
+
+    if (
+        !teams ||
+        teams.length === 0
+    ) {
+
+        return '—';
+
+    }
+
+
+    return teams
+        .map(
+            team => {
+
+                const ownerName =
+                    getLeagueOwnerName(
+                        team.owner_id,
+                        team.owner ||
+                        'Unknown Manager'
+                    );
+
+
+                return `${ownerName} • ${team.team_name}`;
+
+            }
+        )
+        .join(
+            '<br>'
+        );
+
+}
+
+
+
+/*
+ * ======================================================
+ * FORMAT EFFICIENCY NAMES
+ * ======================================================
+ */
+
+function formatEfficiencyNames(
+    managers
+) {
+
+    if (
+        !managers ||
+        managers.length === 0
+    ) {
+
+        return '—';
+
+    }
+
+
+    return managers
+        .map(
+            manager => {
+
+                const ownerName =
+                    getLeagueOwnerName(
+                        manager.owner_id,
+                        manager.owner ||
+                        'Unknown Manager'
+                    );
+
+
+                return `
+                    ${ownerName}
+                    •
+                    ${formatNumber(
+                        manager.actual_pf
+                    )}
+                    /
+                    ${formatNumber(
+                        manager.max_pf
+                    )}
+                    Max PF
+                `;
+
+            }
+        )
+        .join(
+            '<br>'
+        );
+
+}
+
+
+
+/*
+ * ======================================================
+ * FORMAT SINGLE-GAME AWARD DETAILS
+ * ======================================================
+ *
+ * Used for highest/lowest single-game score.
+ */
+
+function formatGameAwardDetails(
+    games
+) {
+
+    if (
+        !games ||
+        games.length === 0
+    ) {
+
+        return '—';
+
+    }
+
+
+    return games
+        .map(
+            game => {
+
+                const ownerName =
+                    getLeagueOwnerName(
+                        game.owner_id,
+                        game.owner ||
+                        'Unknown Manager'
+                    );
+
+
+                const opponentName =
+                    getLeagueOwnerName(
+                        game.opponent_owner_id,
+                        game.opponent ||
+                        'Unknown Manager'
+                    );
+
+
+                return `
+
+                    ${ownerName}
+                    • Week ${game.week}
+                    • vs ${opponentName}
+                    • ${formatNumber(
+                        game.points
+                    )}-${formatNumber(
+                        game.opponent_points
+                    )}
+
+                `;
+
+            }
+        )
+        .join(
+            '<br>'
+        );
+
+}
+
+
+
+/*
+ * ======================================================
+ * FORMAT WIN / LOSS DETAILS
+ * ======================================================
+ *
+ * Used for:
+ *
+ * Lowest Score in a Win
+ * Biggest Blowout Win
+ * Highest Score in a Loss
+ * Closest Loss
+ */
+
+function formatWinLossDetails(
+    games
+) {
+
+    if (
+        !games ||
+        games.length === 0
+    ) {
+
+        return '—';
+
+    }
+
+
+    return games
+        .map(
+            game => {
+
+                const ownerName =
+                    getLeagueOwnerName(
+                        game.owner_id,
+                        game.owner ||
+                        'Unknown Manager'
+                    );
+
+
+                const opponentName =
+                    getLeagueOwnerName(
+                        game.opponent_owner_id,
+                        game.opponent ||
+                        'Unknown Manager'
+                    );
+
+
+                return `
+
+                    ${ownerName}
+                    • Week ${game.week}
+                    • vs ${opponentName}
+                    • ${formatNumber(
+                        game.points
+                    )}-${formatNumber(
+                        game.opponent_points
+                    )}
+
+                `;
+
+            }
+        )
+        .join(
+            '<br>'
+        );
+
+}
+
+
+
+/*
+ * ======================================================
+ * LONGEST STREAK
+ * ======================================================
+ *
+ * Ties break a winning or losing streak.
+ */
+
+function longestStreak(
+    weeklyResults,
+    targetResult
+) {
+
+    let longest =
+        0;
+
+
+    let current =
+        0;
+
+
+    weeklyResults.forEach(
+        week => {
+
+            if (
+                week.result ===
+                targetResult
+            ) {
+
+                current++;
+
+
+                longest =
+                    Math.max(
+                        longest,
+                        current
+                    );
+
+            }
+
+            else {
+
+                current =
+                    0;
+
+            }
+
+        }
+    );
+
+
+    return longest;
+
+}
+
+
+
+/*
+ * ======================================================
+ * SLEEPER POINTS
+ * ======================================================
+ *
+ * Sleeper stores fantasy points like:
+ *
+ * fpts: 4179
+ * fpts_decimal: 73
+ *
+ * Meaning:
+ *
+ * 4179.73
+ *
+ * The same applies to ppts / ppts_decimal.
+ */
+
+function sleeperPoints(
+    wholePoints,
+    decimalPoints
+) {
+
+    const whole =
+        Number(
+            wholePoints ||
+            0
+        );
+
+
+    const decimal =
+        Number(
+            decimalPoints ||
+            0
+        );
+
+
+    return roundTo(
+        whole +
+        (
+            decimal /
+            100
+        ),
+        2
+    );
+
+}
+
+
+
+/*
+ * ======================================================
+ * NUMBER FORMAT
+ * ======================================================
+ */
+
+function formatNumber(
+    value
+) {
+
+    const number =
+        Number(
+            value
+        );
+
+
+    if (
+        !Number.isFinite(
+            number
+        )
+    ) {
+
+        return '—';
+
+    }
+
+
+    return number.toFixed(
+        2
+    );
+
+}
+
+
+
+/*
+ * ======================================================
+ * ROUND NUMBER
+ * ======================================================
+ */
+
+function roundTo(
+    value,
+    decimals = 2
+) {
+
+    const factor =
+        Math.pow(
+            10,
+            decimals
+        );
+
+
+    return Math.round(
+        (
+            Number(
+                value
+            ) +
+            Number.EPSILON
+        ) *
+        factor
+    ) /
+    factor;
+
+}
+
+
+
+/*
+ * ======================================================
+ * FLOAT COMPARISON
+ * ======================================================
+ *
+ * Prevent tiny floating-point differences from breaking
+ * ties such as 81.75 vs 81.7500000001.
+ */
+
+function nearlyEqual(
+    first,
+    second,
+    tolerance = 0.001
+) {
+
+    return (
+        Math.abs(
+            Number(first) -
+            Number(second)
+        ) <=
+        tolerance
+    );
 
 }
 
@@ -964,7 +2445,7 @@ function formatRecord(
 
 /*
  * ======================================================
- * SEASON SELECT
+ * SEASON SELECTOR
  * ======================================================
  */
 
@@ -980,7 +2461,6 @@ historySeasonSelect.addEventListener(
 
     }
 );
-
 
 
 /*
@@ -1092,7 +2572,6 @@ async function loadHallOfShame() {
                 await usersResponse.json();
 
 
-
             /*
              * =============================================
              * USER LOOKUP
@@ -1115,7 +2594,6 @@ async function loadHallOfShame() {
             );
 
 
-
             /*
              * =============================================
              * ROSTER LOOKUP
@@ -1128,7 +2606,6 @@ async function loadHallOfShame() {
 
             rosters.forEach(
                 roster => {
-
 
                     const user =
                         userMap[
@@ -1166,7 +2643,6 @@ async function loadHallOfShame() {
             );
 
 
-
             /*
              * =============================================
              * FIND FINAL ROUND
@@ -1181,7 +2657,6 @@ async function loadHallOfShame() {
                             0
                     )
                 );
-
 
 
             /*
@@ -1211,13 +2686,10 @@ async function loadHallOfShame() {
             }
 
 
-
             /*
-             * IMPORTANT:
-             *
-             * We confirmed through the historical results
-             * that .w identifies the actual loser / 12th
-             * place finisher in this losers bracket.
+             * We confirmed through historical results
+             * that .w identifies the actual 12th-place
+             * finisher in this league's losers bracket.
              */
 
             const lastPlaceRosterId =
@@ -1244,7 +2716,6 @@ async function loadHallOfShame() {
                 continue;
 
             }
-
 
 
             /*
@@ -1275,14 +2746,12 @@ async function loadHallOfShame() {
                         realOwnerName,
 
                     team_name:
-                        lastPlaceTeam
-                            .team_name
+                        lastPlaceTeam.team_name
 
                 }
             );
 
         }
-
 
 
         /*
@@ -1294,7 +2763,6 @@ async function loadHallOfShame() {
                 a.season -
                 b.season
         );
-
 
 
         /*
@@ -1379,7 +2847,6 @@ async function loadHallOfShame() {
     }
 
 }
-
 
 
 /*
