@@ -22,7 +22,7 @@
  */
 
 
-const LEAGUE_DATA = {
+window.LEAGUE_DATA = {
 
 
     /*
