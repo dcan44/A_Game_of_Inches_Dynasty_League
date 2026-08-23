@@ -20,36 +20,59 @@ async function loadRecords() {
          * =====================================================
          */
 
-        const [
-            teamsResponse,
-            historyResponse,
-            performance2023Response,
-            performance2024Response,
-            performance2025Response,
-            performance2026Response
-        ] = await Promise.all([
+       const [
+    teamsResponse,
+    historyResponse,
 
-            fetch('/api/teams'),
+    performance2023Response,
+    performance2024Response,
+    performance2025Response,
+    performance2026Response,
 
-            fetch('/api/history'),
+    matchups2023Response,
+    matchups2024Response,
+    matchups2025Response,
+    matchups2026Response
 
-            fetch(
-                '/api/manager-performance?season=2023'
-            ),
+] = await Promise.all([
 
-            fetch(
-                '/api/manager-performance?season=2024'
-            ),
+    fetch('/api/teams'),
 
-            fetch(
-                '/api/manager-performance?season=2025'
-            ),
+    fetch('/api/history'),
 
-            fetch(
-                '/api/manager-performance?season=2026'
-            )
+    fetch(
+        '/api/manager-performance?season=2023'
+    ),
 
-        ]);
+    fetch(
+        '/api/manager-performance?season=2024'
+    ),
+
+    fetch(
+        '/api/manager-performance?season=2025'
+    ),
+
+    fetch(
+        '/api/manager-performance?season=2026'
+    ),
+
+    fetch(
+        '/api/matchup-history?season=2023'
+    ),
+
+    fetch(
+        '/api/matchup-history?season=2024'
+    ),
+
+    fetch(
+        '/api/matchup-history?season=2025'
+    ),
+
+    fetch(
+        '/api/matchup-history?season=2026'
+    )
+
+]);
 
 
         const responses = [
