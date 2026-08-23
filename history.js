@@ -21,48 +21,89 @@ const hallOfShame =
         'hall-of-shame'
     );
 
+
+
 /*
  * ======================================================
  * CONFIRMED CHAMPIONS
  * ======================================================
+ *
+ * Team names are preserved historically because team
+ * names change over time.
+ *
+ * Owner names are pulled from league-data.js.
  */
 
 const confirmedChampions = {
 
     2023: {
+
         owner_id:
             "978544154789699584",
-        owner:
-            "dcan44",
-        owner_name:
-            "Dan",
+
         team_name:
             "Rollin with Ma-Homies"
+
     },
 
     2024: {
+
         owner_id:
             "978815135223525376",
-        owner:
-            "RJ196",
-        owner_name:
-            "RJ",
+
         team_name:
             "Goats"
+
     },
 
     2025: {
+
         owner_id:
             "1060373241799262208",
-        owner:
-            "ChefBoySJ",
-        owner_name:
-            "Seth",
+
         team_name:
             "Big Dog"
+
     }
 
 };
+
+
+
+/*
+ * ======================================================
+ * GET REAL OWNER NAME
+ * ======================================================
+ *
+ * Uses league-data.js.
+ *
+ * If the manager has not been entered there, the
+ * supplied Sleeper username is used as a fallback.
+ */
+
+function getLeagueOwnerName(
+    ownerId,
+    fallback = "Unknown Manager"
+) {
+
+    if (
+        typeof LEAGUE_DATA !==
+            'undefined' &&
+        typeof LEAGUE_DATA.getOwnerName ===
+            'function'
+    ) {
+
+        return LEAGUE_DATA.getOwnerName(
+            ownerId,
+            fallback
+        );
+
+    }
+
+
+    return fallback;
+
+}
 
 
 
@@ -74,13 +115,22 @@ const confirmedChampions = {
 
 function loadChampionPennants() {
 
-    historyChampions.innerHTML = '';
+    historyChampions.innerHTML =
+        '';
 
 
     Object.entries(
         confirmedChampions
     ).forEach(
         ([year, champion]) => {
+
+
+            const ownerName =
+                getLeagueOwnerName(
+                    champion.owner_id,
+                    "Unknown Manager"
+                );
+
 
             const pennant =
                 document.createElement(
@@ -99,7 +149,7 @@ function loadChampionPennants() {
                 </div>
 
                 <div class="history-pennant-trophy">
-                    ★
+                    🏆
                 </div>
 
                 <div class="history-pennant-title">
@@ -111,7 +161,7 @@ function loadChampionPennants() {
                 </div>
 
                 <div class="history-pennant-owner">
-                    ${champion.owner_name}
+                    ${ownerName}
                 </div>
 
             `;
@@ -170,7 +220,9 @@ async function loadHistorySeason(
             bracketResponse
         ] = await Promise.all([
 
-            fetch('/api/history'),
+            fetch(
+                '/api/history'
+            ),
 
             fetch(
                 `/api/manager-performance?season=${season}`
@@ -208,6 +260,7 @@ async function loadHistorySeason(
             await bracketResponse.json();
 
 
+
         /*
          * =====================================================
          * FIND SEASON
@@ -226,7 +279,9 @@ async function loadHistorySeason(
             );
 
 
-        if (!seasonData) {
+        if (
+            !seasonData
+        ) {
 
             throw new Error(
                 'Season not found.'
@@ -235,13 +290,15 @@ async function loadHistorySeason(
         }
 
 
+
         /*
          * =====================================================
          * ROSTER LOOKUP
          * =====================================================
          */
 
-        const rosterMap = {};
+        const rosterMap =
+            {};
 
 
         seasonData.teams.forEach(
@@ -249,10 +306,12 @@ async function loadHistorySeason(
 
                 rosterMap[
                     team.roster_id
-                ] = team;
+                ] =
+                    team;
 
             }
         );
+
 
 
         /*
@@ -299,6 +358,46 @@ async function loadHistorySeason(
                 : null;
 
 
+
+        /*
+         * =====================================================
+         * REAL PODIUM OWNER NAMES
+         * =====================================================
+         */
+
+        const championOwnerName =
+            champion
+                ? getLeagueOwnerName(
+                    champion.owner_id,
+                    champion.owner
+                )
+                : getLeagueOwnerName(
+                    confirmedChampions[
+                        season
+                    ]?.owner_id,
+                    "Unknown Manager"
+                );
+
+
+        const runnerUpOwnerName =
+            runnerUp
+                ? getLeagueOwnerName(
+                    runnerUp.owner_id,
+                    runnerUp.owner
+                )
+                : '—';
+
+
+        const thirdPlaceOwnerName =
+            thirdPlace
+                ? getLeagueOwnerName(
+                    thirdPlace.owner_id,
+                    thirdPlace.owner
+                )
+                : '—';
+
+
+
         /*
          * =====================================================
          * REGULAR-SEASON LEADERS
@@ -306,63 +405,109 @@ async function loadHistorySeason(
          */
 
         const managers =
-            performanceData.managers || [];
+            performanceData.managers ||
+            [];
 
 
-const mostWinsRecord =
-    Math.max(
-        ...managers.map(
-            manager =>
-                manager.regular_season.wins
-        )
-    );
+        /*
+         * Most Wins
+         *
+         * Supports any number of ties.
+         */
+
+        const mostWinsRecord =
+            managers.length > 0
+                ? Math.max(
+                    ...managers.map(
+                        manager =>
+                            manager
+                                .regular_season
+                                .wins
+                    )
+                  )
+                : 0;
 
 
-const mostWinsLeaders =
-    managers.filter(
-        manager =>
-            manager.regular_season.wins ===
-            mostWinsRecord
-    );
+        const mostWinsLeaders =
+            managers.filter(
+                manager =>
+                    manager
+                        .regular_season
+                        .wins ===
+                    mostWinsRecord
+            );
 
+
+        const mostWinsNames =
+            mostWinsLeaders
+                .map(
+                    manager =>
+                        getLeagueOwnerName(
+                            manager.owner_id,
+                            manager.owner
+                        )
+                )
+                .join(
+                    ' • '
+                );
+
+
+        /*
+         * Highest PPG
+         */
 
         const highestPPG =
             [...managers]
                 .filter(
                     manager =>
-                        manager.regular_season.games > 0
+                        manager
+                            .regular_season
+                            .games > 0
                 )
                 .sort(
                     (a, b) =>
-                        b.scoring.points_per_game -
-                        a.scoring.points_per_game
+                        b
+                            .scoring
+                            .points_per_game -
+                        a
+                            .scoring
+                            .points_per_game
                 )[0];
 
+
+        /*
+         * Highest Team Score
+         */
 
         const highestTeamScore =
             [...managers]
                 .filter(
                     manager =>
-                        manager.highest_team_score
+                        manager
+                            .highest_team_score
                 )
                 .sort(
                     (a, b) =>
-                        b.highest_team_score.points -
-                        a.highest_team_score.points
+                        b
+                            .highest_team_score
+                            .points -
+                        a
+                            .highest_team_score
+                            .points
                 )[0];
+
 
 
         /*
          * =====================================================
-         * FINAL STANDINGS
+         * REGULAR-SEASON STANDINGS
          * =====================================================
-         *
-         * This first version ranks by regular-season record.
-         * Playoff podium is shown separately above.
          */
 
         const standings =
-            [...seasonData.teams]
+            [
+                ...seasonData.teams
+            ]
                 .sort(
                     (a, b) => {
 
@@ -401,6 +546,7 @@ const mostWinsLeaders =
                 );
 
 
+
         /*
          * =====================================================
          * BUILD PAGE
@@ -416,105 +562,124 @@ const mostWinsLeaders =
                 </span>
 
                 <h2>
-                    ${confirmedChampions[season]?.team_name || 'Season Archive'}
+                    ${
+                        confirmedChampions[
+                            season
+                        ]?.team_name ||
+                        'Season Archive'
+                    }
                 </h2>
 
                 <p>
-                    League Champion
+                    League Champion — ${championOwnerName}
                 </p>
 
             </div>
 
 
-<div class="history-podium">
-
-    <div class="history-podium-card history-podium-champion">
-
-        <div class="history-podium-icon">
-            🏆
-        </div>
-
-        <span>
-            Champion
-        </span>
-
-        <strong>
-            ${
-                champion
-                    ? champion.team_name
-                    : confirmedChampions[season]?.team_name || '—'
-            }
-        </strong>
-
-        <small>
-            ${
-                champion
-                    ? champion.owner
-                    : confirmedChampions[season]?.owner_name || '—'
-            }
-        </small>
-
-    </div>
+            <div class="history-podium">
 
 
-    <div class="history-podium-card history-podium-runnerup">
+                <div
+                    class="
+                        history-podium-card
+                        history-podium-champion
+                    "
+                >
 
-        <div class="history-podium-icon">
-            🏆
-        </div>
+                    <div class="history-podium-icon">
+                        🏆
+                    </div>
 
-        <span>
-            Runner-Up
-        </span>
+                    <span>
+                        Champion
+                    </span>
 
-        <strong>
-            ${
-                runnerUp
-                    ? runnerUp.team_name
-                    : '—'
-            }
-        </strong>
+                    <strong>
 
-        <small>
-            ${
-                runnerUp
-                    ? runnerUp.owner
-                    : '—'
-            }
-        </small>
+                        ${
+                            champion
+                                ? champion.team_name
+                                : confirmedChampions[
+                                    season
+                                  ]?.team_name ||
+                                  '—'
+                        }
 
-    </div>
+                    </strong>
+
+                    <small>
+                        ${championOwnerName}
+                    </small>
+
+                </div>
 
 
-    <div class="history-podium-card history-podium-third">
+                <div
+                    class="
+                        history-podium-card
+                        history-podium-runnerup
+                    "
+                >
 
-        <div class="history-podium-icon">
-            🏆
-        </div>
+                    <div class="history-podium-icon">
+                        🏆
+                    </div>
 
-        <span>
-            Third Place
-        </span>
+                    <span>
+                        Runner-Up
+                    </span>
 
-        <strong>
-            ${
-                thirdPlace
-                    ? thirdPlace.team_name
-                    : '—'
-            }
-        </strong>
+                    <strong>
 
-        <small>
-            ${
-                thirdPlace
-                    ? thirdPlace.owner
-                    : '—'
-            }
-        </small>
+                        ${
+                            runnerUp
+                                ? runnerUp.team_name
+                                : '—'
+                        }
 
-    </div>
+                    </strong>
 
-</div>
+                    <small>
+                        ${runnerUpOwnerName}
+                    </small>
+
+                </div>
+
+
+                <div
+                    class="
+                        history-podium-card
+                        history-podium-third
+                    "
+                >
+
+                    <div class="history-podium-icon">
+                        🏆
+                    </div>
+
+                    <span>
+                        Third Place
+                    </span>
+
+                    <strong>
+
+                        ${
+                            thirdPlace
+                                ? thirdPlace.team_name
+                                : '—'
+                        }
+
+                    </strong>
+
+                    <small>
+                        ${thirdPlaceOwnerName}
+                    </small>
+
+                </div>
+
+
+            </div>
 
 
             <h3 class="history-subtitle">
@@ -524,42 +689,66 @@ const mostWinsLeaders =
 
             <div class="history-leaders-grid">
 
-${leaderCard(
-    'Most Wins',
-    mostWinsRecord >= 0
-        ? mostWinsRecord
-        : '—',
-    mostWinsLeaders.length > 0
-        ? mostWinsLeaders
-            .map(
-                manager =>
-                    manager.owner
-            )
-            .join(' • ')
-        : '—'
-)}
+
+                ${leaderCard(
+
+                    'Most Wins',
+
+                    managers.length > 0
+                        ? mostWinsRecord
+                        : '—',
+
+                    mostWinsNames ||
+                    '—'
+
+                )}
 
 
                 ${leaderCard(
+
                     'Highest PPG',
+
                     highestPPG
-                        ? highestPPG.scoring.points_per_game.toFixed(2)
+                        ? highestPPG
+                            .scoring
+                            .points_per_game
+                            .toFixed(2)
                         : '—',
+
                     highestPPG
-                        ? highestPPG.owner
+                        ? getLeagueOwnerName(
+                            highestPPG.owner_id,
+                            highestPPG.owner
+                          )
                         : '—'
+
                 )}
 
 
                 ${leaderCard(
+
                     'Highest Team Score',
+
                     highestTeamScore
-                        ? highestTeamScore.highest_team_score.points.toFixed(2)
+                        ? highestTeamScore
+                            .highest_team_score
+                            .points
+                            .toFixed(2)
                         : '—',
+
                     highestTeamScore
-                        ? `${highestTeamScore.owner} • Week ${highestTeamScore.highest_team_score.week}`
+                        ? `
+                            ${getLeagueOwnerName(
+                                highestTeamScore.owner_id,
+                                highestTeamScore.owner
+                            )}
+                            • Week
+                            ${highestTeamScore.highest_team_score.week}
+                          `
                         : '—'
+
                 )}
+
 
             </div>
 
@@ -578,50 +767,84 @@ ${leaderCard(
                         <thead>
 
                             <tr>
-                                <th>Rank</th>
-                                <th>Team</th>
-                                <th>Manager</th>
-                                <th>Record</th>
-                                <th>PF</th>
+
+                                <th>
+                                    Rank
+                                </th>
+
+                                <th>
+                                    Team
+                                </th>
+
+                                <th>
+                                    Manager
+                                </th>
+
+                                <th>
+                                    Record
+                                </th>
+
+                                <th>
+                                    PF
+                                </th>
+
                             </tr>
 
                         </thead>
 
+
                         <tbody>
 
-                            ${standings.map(
-                                (team, index) => `
-                                    <tr>
+                            ${standings
+                                .map(
+                                    (
+                                        team,
+                                        index
+                                    ) => `
 
-                                        <td>
-                                            ${index + 1}
-                                        </td>
+                                        <tr>
 
-                                        <td class="history-team-name">
-                                            ${team.team_name}
-                                        </td>
+                                            <td>
+                                                ${index + 1}
+                                            </td>
 
-                                        <td>
-                                            ${team.owner}
-                                        </td>
+                                            <td class="history-team-name">
+                                                ${team.team_name}
+                                            </td>
 
-                                        <td>
-                                            ${formatRecord(
-                                                team.wins,
-                                                team.losses,
-                                                team.ties
-                                            )}
-                                        </td>
+                                            <td>
 
-                                        <td>
-                                            ${Number(
-                                                team.points_for || 0
-                                            ).toFixed(2)}
-                                        </td>
+                                                ${getLeagueOwnerName(
+                                                    team.owner_id,
+                                                    team.owner
+                                                )}
 
-                                    </tr>
-                                `
-                            ).join('')}
+                                            </td>
+
+                                            <td>
+
+                                                ${formatRecord(
+                                                    team.wins,
+                                                    team.losses,
+                                                    team.ties
+                                                )}
+
+                                            </td>
+
+                                            <td>
+
+                                                ${Number(
+                                                    team.points_for ||
+                                                    0
+                                                ).toFixed(2)}
+
+                                            </td>
+
+                                        </tr>
+
+                                    `
+                                )
+                                .join('')}
 
                         </tbody>
 
@@ -635,7 +858,9 @@ ${leaderCard(
             <div class="history-draft-link">
 
                 <a href="/draft">
+
                     View ${season} Draft Archive →
+
                 </a>
 
             </div>
@@ -656,7 +881,9 @@ ${leaderCard(
         historySeasonContent.innerHTML = `
 
             <div class="draft-error">
+
                 Unable to load season history.
+
             </div>
 
         `;
@@ -756,21 +983,28 @@ historySeasonSelect.addEventListener(
 );
 
 
+
 /*
  * ======================================================
  * HALL OF SHAME
  * ======================================================
  *
- * In our consolation bracket:
+ * In this league's consolation bracket:
  *
- * - Winning moves a team toward a better finish.
- * - Losing moves a team deeper into the bracket.
+ * - Winning earns the better finishing position.
+ * - Losing moves a team toward the Toilet Bowl.
  * - The worst two regular-season teams receive byes.
  *
- * Therefore the p === 1 game is the final
- * Toilet Bowl matchup.
+ * Sleeper's loser-bracket w/l progression is inverted
+ * relative to how the actual Toilet Bowl result should
+ * be interpreted for our Hall of Shame.
  *
- * The LOSER of that game finishes 12th.
+ * For the final-round p === 1 game:
+ *
+ * .l = actual game winner / 11th place
+ * .w = actual game loser  / 12th place
+ *
+ * Hall of Shame therefore uses .w.
  */
 
 async function loadHallOfShame() {
@@ -791,21 +1025,28 @@ async function loadHallOfShame() {
         };
 
 
-        const shameResults = [];
+        const shameResults =
+            [];
 
 
         /*
-         * Process each historical season separately
-         * so roster ownership stays season-specific.
+         * Process each historical season separately.
          */
 
         for (
-            const [yearText, leagueId]
-            of Object.entries(leagueIds)
+            const [
+                yearText,
+                leagueId
+            ]
+            of Object.entries(
+                leagueIds
+            )
         ) {
 
             const season =
-                Number(yearText);
+                Number(
+                    yearText
+                );
 
 
             const [
@@ -852,13 +1093,15 @@ async function loadHallOfShame() {
                 await usersResponse.json();
 
 
+
             /*
              * =============================================
              * USER LOOKUP
              * =============================================
              */
 
-            const userMap = {};
+            const userMap =
+                {};
 
 
             users.forEach(
@@ -866,10 +1109,12 @@ async function loadHallOfShame() {
 
                     userMap[
                         user.user_id
-                    ] = user;
+                    ] =
+                        user;
 
                 }
             );
+
 
 
             /*
@@ -878,11 +1123,13 @@ async function loadHallOfShame() {
              * =============================================
              */
 
-            const rosterMap = {};
+            const rosterMap =
+                {};
 
 
             rosters.forEach(
                 roster => {
+
 
                     const user =
                         userMap[
@@ -900,8 +1147,9 @@ async function loadHallOfShame() {
                         owner_id:
                             roster.owner_id,
 
-                        owner:
-                            user?.display_name ||
+                        sleeper_username:
+                            user
+                                ?.display_name ||
                             "Unknown Manager",
 
                         team_name:
@@ -909,7 +1157,8 @@ async function loadHallOfShame() {
                                 ?.metadata
                                 ?.team_name
                                 ?.trim() ||
-                            user?.display_name ||
+                            user
+                                ?.display_name ||
                             `Team ${roster.roster_id}`
 
                     };
@@ -918,54 +1167,44 @@ async function loadHallOfShame() {
             );
 
 
-            /*
-             * =============================================
-             * TOILET BOWL FINAL
-             * =============================================
-             *
-             * In our consolation bracket, teams move
-             * toward last place by LOSING.
-             *
-             * The Toilet Bowl final is the final-round
-             * matchup whose two teams arrived by advancing
-             * through the consolation bracket.
-             *
-             * The LOSER of this game finishes 12th.
-             */
-
 
             /*
-             * Find the highest round number in the
-             * consolation bracket.
+             * =============================================
+             * FIND FINAL ROUND
+             * =============================================
              */
 
             const finalRound =
                 Math.max(
                     ...bracket.map(
                         game =>
-                            game.r || 0
+                            game.r ||
+                            0
                     )
                 );
 
 
+
             /*
-             * Find the Toilet Bowl final.
-             *
-             * In Sleeper's consolation bracket this is
-             * the p === 1 matchup in the final round.
+             * =============================================
+             * TOILET BOWL FINAL
+             * =============================================
              */
 
             const toiletBowlFinal =
                 bracket.find(
                     game =>
-                        game.r === finalRound &&
-                        game.p === 1
+                        game.r ===
+                            finalRound &&
+                        game.p ===
+                            1
                 );
 
 
             if (
                 !toiletBowlFinal ||
-                toiletBowlFinal.l == null
+                toiletBowlFinal.w ==
+                    null
             ) {
 
                 continue;
@@ -973,28 +1212,19 @@ async function loadHallOfShame() {
             }
 
 
-/*
- * IMPORTANT:
- *
- * In Sleeper's LOSERS bracket, the w/l fields describe
- * progression through the consolation bracket rather
- * than the intuitive result of the actual matchup.
- *
- * For our Toilet Bowl final:
- *
- * toiletBowlFinal.l = team that WON the matchup
- *                     and finished 11th
- *
- * toiletBowlFinal.w = team that LOST the matchup
- *                     and finished 12th
- *
- * Hall of Shame therefore uses .w
- */
 
-const lastPlaceRosterId =
-    Number(
-        toiletBowlFinal.w
-    );
+            /*
+             * IMPORTANT:
+             *
+             * We confirmed through the historical results
+             * that .w identifies the actual loser / 12th
+             * place finisher in this losers bracket.
+             */
+
+            const lastPlaceRosterId =
+                Number(
+                    toiletBowlFinal.w
+                );
 
 
             const lastPlaceTeam =
@@ -1017,6 +1247,19 @@ const lastPlaceRosterId =
             }
 
 
+
+            /*
+             * Real owner name comes from league-data.js.
+             */
+
+            const realOwnerName =
+                getLeagueOwnerName(
+                    lastPlaceTeam.owner_id,
+                    lastPlaceTeam
+                        .sleeper_username
+                );
+
+
             shameResults.push(
                 {
 
@@ -1030,15 +1273,17 @@ const lastPlaceRosterId =
                         lastPlaceTeam.owner_id,
 
                     owner:
-                        lastPlaceTeam.owner,
+                        realOwnerName,
 
                     team_name:
-                        lastPlaceTeam.team_name
+                        lastPlaceTeam
+                            .team_name
 
                 }
             );
 
         }
+
 
 
         /*
@@ -1050,6 +1295,7 @@ const lastPlaceRosterId =
                 a.season -
                 b.season
         );
+
 
 
         /*
@@ -1065,7 +1311,9 @@ const lastPlaceRosterId =
             hallOfShame.innerHTML = `
 
                 <div class="hall-of-shame-empty">
+
                     No shame has been recorded... somehow.
+
                 </div>
 
             `;
@@ -1109,7 +1357,9 @@ const lastPlaceRosterId =
                 .join('');
 
 
-    } catch (error) {
+    } catch (
+        error
+    ) {
 
         console.error(
             'Hall of Shame error:',
@@ -1120,7 +1370,9 @@ const lastPlaceRosterId =
         hallOfShame.innerHTML = `
 
             <div class="hall-of-shame-empty">
+
                 Unable to load league shame.
+
             </div>
 
         `;
@@ -1128,6 +1380,7 @@ const lastPlaceRosterId =
     }
 
 }
+
 
 
 /*
