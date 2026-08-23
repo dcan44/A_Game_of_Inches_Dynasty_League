@@ -5,6 +5,11 @@ async function loadManagers() {
             'managers-grid'
         );
 
+const formerManagersContainer =
+    document.querySelector(
+        '.former-managers-card'
+    );
+    
 
     try {
 
