@@ -973,19 +973,28 @@ async function loadHallOfShame() {
             }
 
 
-            /*
-             * IMPORTANT:
-             *
-             * w = winner of the Toilet Bowl final
-             * l = loser of the Toilet Bowl final
-             *
-             * We want the LOSER for Hall of Shame.
-             */
+/*
+ * IMPORTANT:
+ *
+ * In Sleeper's LOSERS bracket, the w/l fields describe
+ * progression through the consolation bracket rather
+ * than the intuitive result of the actual matchup.
+ *
+ * For our Toilet Bowl final:
+ *
+ * toiletBowlFinal.l = team that WON the matchup
+ *                     and finished 11th
+ *
+ * toiletBowlFinal.w = team that LOST the matchup
+ *                     and finished 12th
+ *
+ * Hall of Shame therefore uses .w
+ */
 
-            const lastPlaceRosterId =
-                Number(
-                    toiletBowlFinal.l
-                );
+const lastPlaceRosterId =
+    Number(
+        toiletBowlFinal.w
+    );
 
 
             const lastPlaceTeam =
