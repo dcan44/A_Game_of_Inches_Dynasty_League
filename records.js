@@ -1358,30 +1358,52 @@ const longestWinningStreakLeaders =
         );
 
 
-        addRecordCard(
-            recordsGrid,
-            'Highest Score in a Loss',
-            highestLossManager
-                ? highestLossManager
-                    .highest_score_in_loss
-                    .points
-                    .toFixed(2)
-                : '—',
-            highestLossManager
-                ? `
-                    ${highestLossManager.owner}
-                    vs
-                    ${highestLossManager.highest_score_in_loss.opponent || 'Unknown'}
-                    •
-                    ${highestLossManager.highest_score_in_loss.points.toFixed(2)}
-                    -
-                    ${highestLossManager.highest_score_in_loss.opponent_points.toFixed(2)}
-                    • Week
-                    ${highestLossManager.highest_score_in_loss.week},
-                    ${highestLossManager.highest_score_in_loss.season}
-                  `
-                : '—'
-        );
+addRecordCard(
+    recordsGrid,
+
+    'Longest Winning Streak',
+
+    longestWinningStreak > 0
+        ? `${longestWinningStreak} Games`
+        : '—',
+
+    longestWinningStreakLeaders.length > 0
+        ? longestWinningStreakLeaders
+            .map(
+                streak => {
+
+                    const manager =
+                        managerMap[
+                            streak.owner_id
+                        ];
+
+
+                    const owner =
+                        manager
+                            ? manager.owner
+                            : streak.owner;
+
+
+                    const weeks =
+                        streak.start_week ===
+                        streak.end_week
+                            ? `Week ${streak.start_week}`
+                            : `Weeks ${streak.start_week}-${streak.end_week}`;
+
+
+                    return `
+                        ${owner}
+                        • ${streak.season}
+                        • ${weeks}
+                    `;
+
+                }
+            )
+            .join(
+                '<br>'
+            )
+        : '—'
+);
 
 
         addRecordCard(
