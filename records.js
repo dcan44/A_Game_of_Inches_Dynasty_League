@@ -412,24 +412,383 @@ const matchupData = [
                         }
 
 
-                        /*
-                         * Highest score in a loss
-                         */
+                       /*
+ * =====================================================
+ * LONGEST REGULAR-SEASON WINNING STREAK
+ * =====================================================
+ *
+ * Supports ties.
+ *
+ * Each season is evaluated independently, so a streak
+ * cannot carry from the end of one season into the next.
+ */
+
+const winningStreaks = [];
+
+
+matchupData.forEach(
+    seasonEntry => {
+
+        const season =
+            seasonEntry.season;
+
+
+        const games =
+            (
+                seasonEntry.data.games ||
+                []
+            )
+                .filter(
+                    game =>
+                        !game.playoff
+                )
+                .sort(
+                    (a, b) =>
+                        Number(a.week) -
+                        Number(b.week)
+                );
+
+
+        const managerResults =
+            {};
+
+
+        games.forEach(
+            game => {
+
+                const team1 =
+                    game.team_1;
+
+
+                const team2 =
+                    game.team_2;
+
+
+                if (
+                    !team1 ||
+                    !team2
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !managerResults[
+                        team1.owner_id
+                    ]
+                ) {
+
+                    managerResults[
+                        team1.owner_id
+                    ] = {
+
+                        owner_id:
+                            team1.owner_id,
+
+                        owner:
+                            team1.owner,
+
+                        results:
+                            []
+
+                    };
+
+                }
+
+
+                if (
+                    !managerResults[
+                        team2.owner_id
+                    ]
+                ) {
+
+                    managerResults[
+                        team2.owner_id
+                    ] = {
+
+                        owner_id:
+                            team2.owner_id,
+
+                        owner:
+                            team2.owner,
+
+                        results:
+                            []
+
+                    };
+
+                }
+
+
+                const team1Points =
+                    Number(
+                        team1.points ||
+                        0
+                    );
+
+
+                const team2Points =
+                    Number(
+                        team2.points ||
+                        0
+                    );
+
+
+                if (
+                    team1Points >
+                    team2Points
+                ) {
+
+                    managerResults[
+                        team1.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'W'
+                        }
+                    );
+
+
+                    managerResults[
+                        team2.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'L'
+                        }
+                    );
+
+                }
+
+                else if (
+                    team2Points >
+                    team1Points
+                ) {
+
+                    managerResults[
+                        team1.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'L'
+                        }
+                    );
+
+
+                    managerResults[
+                        team2.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'W'
+                        }
+                    );
+
+                }
+
+                else {
+
+                    managerResults[
+                        team1.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'T'
+                        }
+                    );
+
+
+                    managerResults[
+                        team2.owner_id
+                    ].results.push(
+                        {
+                            week:
+                                Number(
+                                    game.week
+                                ),
+
+                            result:
+                                'T'
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        Object.values(
+            managerResults
+        ).forEach(
+            manager => {
+
+                manager.results.sort(
+                    (a, b) =>
+                        a.week -
+                        b.week
+                );
+
+
+                let currentStreak =
+                    0;
+
+
+                let currentStartWeek =
+                    null;
+
+
+                let bestStreak =
+                    0;
+
+
+                let bestStartWeek =
+                    null;
+
+
+                let bestEndWeek =
+                    null;
+
+
+                manager.results.forEach(
+                    result => {
 
                         if (
-                            manager.highest_score_in_loss &&
-                            (
-                                !career.highest_score_in_loss ||
-                                manager.highest_score_in_loss.points >
-                                career.highest_score_in_loss.points
-                            )
+                            result.result ===
+                            'W'
                         ) {
 
-                            career.highest_score_in_loss = {
+                            if (
+                                currentStreak ===
+                                0
+                            ) {
 
-                                ...manager.highest_score_in_loss
+                                currentStartWeek =
+                                    result.week;
 
-                            };
+                            }
+
+
+                            currentStreak++;
+
+
+                            if (
+                                currentStreak >
+                                bestStreak
+                            ) {
+
+                                bestStreak =
+                                    currentStreak;
+
+
+                                bestStartWeek =
+                                    currentStartWeek;
+
+
+                                bestEndWeek =
+                                    result.week;
+
+                            }
+
+                        }
+
+                        else {
+
+                            currentStreak =
+                                0;
+
+
+                            currentStartWeek =
+                                null;
+
+                        }
+
+                    }
+                );
+
+
+                if (
+                    bestStreak >
+                    0
+                ) {
+
+                    winningStreaks.push(
+                        {
+
+                            owner_id:
+                                manager.owner_id,
+
+                            owner:
+                                manager.owner,
+
+                            season:
+                                season,
+
+                            streak:
+                                bestStreak,
+
+                            start_week:
+                                bestStartWeek,
+
+                            end_week:
+                                bestEndWeek
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+const longestWinningStreak =
+    winningStreaks.length > 0
+        ? Math.max(
+            ...winningStreaks.map(
+                streak =>
+                    streak.streak
+            )
+          )
+        : 0;
+
+
+const longestWinningStreakLeaders =
+    winningStreaks.filter(
+        streak =>
+            streak.streak ===
+            longestWinningStreak
+    );
 
                         }
 
