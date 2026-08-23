@@ -923,24 +923,49 @@ async function loadHallOfShame() {
              * TOILET BOWL FINAL
              * =============================================
              *
-             * Unlike the championship bracket, the
-             * consolation bracket advances teams toward
-             * last place through losses.
+             * In our consolation bracket, teams move
+             * toward last place by LOSING.
              *
-             * The p === 1 matchup is therefore the final
-             * Toilet Bowl game.
+             * The Toilet Bowl final is the final-round
+             * matchup whose two teams arrived by advancing
+             * through the consolation bracket.
+             *
+             * The LOSER of this game finishes 12th.
+             */
+
+
+            /*
+             * Find the highest round number in the
+             * consolation bracket.
+             */
+
+            const finalRound =
+                Math.max(
+                    ...bracket.map(
+                        game =>
+                            game.r || 0
+                    )
+                );
+
+
+            /*
+             * Find the Toilet Bowl final.
+             *
+             * In Sleeper's consolation bracket this is
+             * the p === 1 matchup in the final round.
              */
 
             const toiletBowlFinal =
                 bracket.find(
                     game =>
+                        game.r === finalRound &&
                         game.p === 1
                 );
 
 
             if (
                 !toiletBowlFinal ||
-                !toiletBowlFinal.l
+                toiletBowlFinal.l == null
             ) {
 
                 continue;
@@ -949,12 +974,18 @@ async function loadHallOfShame() {
 
 
             /*
-             * The loser of the Toilet Bowl final
-             * finishes 12th.
+             * IMPORTANT:
+             *
+             * w = winner of the Toilet Bowl final
+             * l = loser of the Toilet Bowl final
+             *
+             * We want the LOSER for Hall of Shame.
              */
 
             const lastPlaceRosterId =
-                toiletBowlFinal.l;
+                Number(
+                    toiletBowlFinal.l
+                );
 
 
             const lastPlaceTeam =
@@ -966,6 +997,11 @@ async function loadHallOfShame() {
             if (
                 !lastPlaceTeam
             ) {
+
+                console.warn(
+                    `Unable to find ${season} last-place roster:`,
+                    lastPlaceRosterId
+                );
 
                 continue;
 
