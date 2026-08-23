@@ -5755,3 +5755,35 @@ footer p {
 .hall-of-shame-title {
     margin-top: 45px;
 }
+/* ======================================================
+   HISTORY AWARDS — 4 CARDS PER ROW
+====================================================== */
+
+.history-awards-grid {
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+}
+
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+
+    .history-awards-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .history-awards-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
