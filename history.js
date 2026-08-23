@@ -1102,10 +1102,6 @@ const lastPlaceRosterId =
                                 ${result.owner}
                             </div>
 
-                            <div class="shame-footer">
-                                12th Place
-                            </div>
-
                         </div>
 
                     `
