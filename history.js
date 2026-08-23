@@ -87,13 +87,12 @@ function getLeagueOwnerName(
 ) {
 
     if (
-        typeof LEAGUE_DATA !==
-            'undefined' &&
-        typeof LEAGUE_DATA.getOwnerName ===
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName ===
             'function'
     ) {
 
-        return LEAGUE_DATA.getOwnerName(
+        return window.LEAGUE_DATA.getOwnerName(
             ownerId,
             fallback
         );
