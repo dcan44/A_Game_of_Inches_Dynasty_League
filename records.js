@@ -75,16 +75,22 @@ async function loadRecords() {
 ]);
 
 
-        const responses = [
+const responses = [
 
-            teamsResponse,
-            historyResponse,
-            performance2023Response,
-            performance2024Response,
-            performance2025Response,
-            performance2026Response
+    teamsResponse,
+    historyResponse,
 
-        ];
+    performance2023Response,
+    performance2024Response,
+    performance2025Response,
+    performance2026Response,
+
+    matchups2023Response,
+    matchups2024Response,
+    matchups2025Response,
+    matchups2026Response
+
+];
 
 
         if (
@@ -108,17 +114,17 @@ async function loadRecords() {
             await historyResponse.json();
 
 
-        const performanceData = [
+const performanceData = [
 
-            await performance2023Response.json(),
+    await performance2023Response.json(),
 
-            await performance2024Response.json(),
+    await performance2024Response.json(),
 
-            await performance2025Response.json(),
+    await performance2025Response.json(),
 
-            await performance2026Response.json()
+    await performance2026Response.json()
 
-        ];
+];
 
 
         /*
