@@ -1300,19 +1300,27 @@ async function loadHomeTransactions() {
          * ==================================================
          */
 
-        const recentWaivers =
-            allTransactions
-                .filter(
-                    transaction =>
-                        transaction.status ===
-                            'complete' &&
-                        transaction.type ===
-                            'waiver'
-                )
-                .slice(
-                    0,
-                    5
-                );
+const recentWaivers =
+    allTransactions
+        .filter(
+            transaction =>
+                transaction.status ===
+                    'complete' &&
+                (
+                    transaction.type ===
+                        'waiver' ||
+                    transaction.type ===
+                        'free_agent'
+                ) &&
+                transaction.adds &&
+                Object.keys(
+                    transaction.adds
+                ).length > 0
+        )
+        .slice(
+            0,
+            5
+        );
 
 
         if (
@@ -1334,7 +1342,7 @@ async function loadHomeTransactions() {
             waiversContainer.innerHTML = `
 
                 <p class="placeholder-text">
-                    No recent waiver claims.
+                    No recent waiver or free-agent activity.
                 </p>
 
             `;
