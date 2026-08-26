@@ -455,51 +455,144 @@ rosters.forEach(
                             );
 
 
-                        return `
+return `
 
-                            <div class="home-matchup-card">
-
-                                <div class="home-matchup-team">
-
-                                    <span>
-                                        ${
-                                            firstTeam
-                                                ?.team_name ||
-                                            'Unknown Team'
-                                        }
-                                    </span>
-
-                                    <strong>
-                                        ${firstPoints.toFixed(2)}
-                                    </strong>
-
-                                </div>
+    <div class="home-matchup-card">
 
 
-                                <div class="home-matchup-vs">
-                                    VS
-                                </div>
+        <div class="
+            home-matchup-side
+            home-matchup-left
+        ">
+
+            <div class="home-matchup-avatar">
+
+                ${
+                    firstTeam?.avatar
+                        ? `
+                            <img
+                                src="${firstTeam.avatar}"
+                                alt="${firstTeam.owner}"
+                            >
+                          `
+                        : `
+                            <span>
+                                ${
+                                    firstTeam
+                                        ?.owner
+                                        ?.charAt(0)
+                                        ?.toUpperCase() ||
+                                    '?'
+                                }
+                            </span>
+                          `
+                }
+
+            </div>
 
 
-                                <div class="home-matchup-team">
+            <div class="home-matchup-info">
 
-                                    <span>
-                                        ${
-                                            secondTeam
-                                                ?.team_name ||
-                                            'Unknown Team'
-                                        }
-                                    </span>
+                <span class="home-matchup-team-name">
 
-                                    <strong>
-                                        ${secondPoints.toFixed(2)}
-                                    </strong>
+                    ${
+                        firstTeam
+                            ?.team_name ||
+                        'Unknown Team'
+                    }
 
-                                </div>
+                </span>
 
-                            </div>
+                <span class="home-matchup-owner">
 
-                        `;
+                    ${
+                        firstTeam
+                            ?.owner ||
+                        'Unknown Manager'
+                    }
+
+                </span>
+
+            </div>
+
+
+            <strong class="home-matchup-score">
+                ${firstPoints.toFixed(2)}
+            </strong>
+
+        </div>
+
+
+        <div class="home-matchup-vs">
+            VS
+        </div>
+
+
+        <div class="
+            home-matchup-side
+            home-matchup-right
+        ">
+
+            <strong class="home-matchup-score">
+                ${secondPoints.toFixed(2)}
+            </strong>
+
+
+            <div class="home-matchup-info">
+
+                <span class="home-matchup-team-name">
+
+                    ${
+                        secondTeam
+                            ?.team_name ||
+                        'Unknown Team'
+                    }
+
+                </span>
+
+                <span class="home-matchup-owner">
+
+                    ${
+                        secondTeam
+                            ?.owner ||
+                        'Unknown Manager'
+                    }
+
+                </span>
+
+            </div>
+
+
+            <div class="home-matchup-avatar">
+
+                ${
+                    secondTeam?.avatar
+                        ? `
+                            <img
+                                src="${secondTeam.avatar}"
+                                alt="${secondTeam.owner}"
+                            >
+                          `
+                        : `
+                            <span>
+                                ${
+                                    secondTeam
+                                        ?.owner
+                                        ?.charAt(0)
+                                        ?.toUpperCase() ||
+                                    '?'
+                                }
+                            </span>
+                          `
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+`;
 
                     }
                 )
