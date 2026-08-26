@@ -6855,26 +6855,88 @@ footer p {
 
     color: var(--navy);
 
-    font-size: 12px;
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.15;
 
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 
-.home-matchup-team-line strong {
-    font-weight: 700;
-}
-
-
-.home-matchup-team-line em {
-    margin-left: 4px;
+.home-matchup-owner-line {
+    margin-top: 3px;
 
     color: #7A8288;
 
-    font-size: 10px;
-    font-weight: 400;
+    font-size: 9px;
     font-style: italic;
+    font-weight: 400;
+}
+
+
+/* ======================================================
+   FIXED AVATAR / TEAM ALIGNMENT
+====================================================== */
+
+.home-matchup-side {
+    display: grid;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+}
+
+
+.home-matchup-left {
+    grid-template-columns:
+        28px
+        minmax(0, 1fr)
+        auto;
+}
+
+
+.home-matchup-right {
+    grid-template-columns:
+        auto
+        minmax(0, 1fr)
+        28px;
+}
+
+
+.home-matchup-left .home-matchup-avatar {
+    grid-column: 1;
+}
+
+
+.home-matchup-left .home-matchup-info {
+    grid-column: 2;
+}
+
+
+.home-matchup-left .home-matchup-score {
+    grid-column: 3;
+}
+
+
+.home-matchup-right .home-matchup-score {
+    grid-column: 1;
+}
+
+
+.home-matchup-right .home-matchup-info {
+    grid-column: 2;
+}
+
+
+.home-matchup-right .home-matchup-avatar {
+    grid-column: 3;
 }
 
 
@@ -6885,8 +6947,7 @@ footer p {
 .home-matchup-score {
     flex-shrink: 0;
 
-    color:
-        var(--navy);
+    color: var(--navy);
 
     font-family:
         'Oswald',
@@ -6901,8 +6962,7 @@ footer p {
 ====================================================== */
 
 .home-matchup-vs {
-    color:
-        var(--silver);
+    color: var(--silver);
 
     font-family:
         'Oswald',
@@ -6952,13 +7012,29 @@ footer p {
     }
 
 
-    .home-matchup-team-line {
-        font-size: 9px;
+    .home-matchup-left {
+        grid-template-columns:
+            28px
+            minmax(0, 1fr)
+            auto;
     }
 
 
-    .home-matchup-team-line em {
-        margin-left: 2px;
+    .home-matchup-right {
+        grid-template-columns:
+            auto
+            minmax(0, 1fr)
+            28px;
+    }
+
+
+    .home-matchup-team-line {
+        font-size: 10px;
+    }
+
+
+    .home-matchup-owner-line {
+        margin-top: 2px;
 
         font-size: 8px;
     }
