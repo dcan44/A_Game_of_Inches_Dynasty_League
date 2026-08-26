@@ -6498,3 +6498,91 @@ footer p {
     }
 
 }
+/* ======================================================
+   HOME HERO WITH LOGO
+====================================================== */
+
+.home-hero {
+    display: grid;
+
+    grid-template-columns:
+        220px
+        1fr;
+
+    align-items: center;
+
+    gap: 30px;
+
+    padding:
+        30px
+        34px;
+
+    background: var(--navy);
+}
+
+
+.home-logo-wrap {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.home-logo {
+    width: 100%;
+    max-width: 210px;
+    height: auto;
+
+    display: block;
+}
+
+
+.home-hero-content {
+    text-align: center;
+}
+
+
+.home-hero-content h1 {
+    margin:
+        0
+        0
+        12px;
+}
+
+
+.home-quote {
+    margin:
+        0;
+
+    font-size: 18px;
+    font-style: italic;
+}
+
+
+.home-quote-source {
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 12px;
+}
+
+
+/* Tablet / mobile */
+
+@media (max-width: 700px) {
+
+    .home-hero {
+        grid-template-columns:
+            1fr;
+
+        text-align: center;
+    }
+
+
+    .home-logo {
+        max-width: 180px;
+    }
+
+}
