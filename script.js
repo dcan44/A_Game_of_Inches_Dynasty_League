@@ -543,7 +543,7 @@ return `
     <span class="home-matchup-team-line">
 
         ${
-            firstTeam
+            secondTeam
                 ?.team_name ||
             'Unknown Team'
         }
@@ -553,7 +553,7 @@ return `
     <span class="home-matchup-owner-line">
 
         ${
-            firstTeam
+            secondTeam
                 ?.owner ||
             'Unknown Manager'
         }
