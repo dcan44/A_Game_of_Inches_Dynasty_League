@@ -193,27 +193,44 @@ async function loadHomeMatchups() {
          * Sleeper's current NFL week.
          */
 
-        let currentWeek =
-            Number(
-                nflState.week ||
-                1
-            );
+/*
+ * Determine the fantasy week.
+ *
+ * Sleeper's NFL week can advance during preseason.
+ * Before the NFL regular season begins, the fantasy
+ * league should continue displaying Week 1.
+ */
+
+let currentWeek =
+    Number(
+        nflState.week ||
+        1
+    );
 
 
-        /*
-         * Prevent offseason NFL state from showing
-         * a meaningless week on the fantasy site.
-         */
+if (
+    nflState.season_type !==
+    'regular'
+) {
 
-        if (
-            league.status !==
-            'in_season'
-        ) {
+    currentWeek =
+        1;
 
-            currentWeek =
-                1;
+}
 
-        }
+
+/*
+ * Safety check.
+ */
+
+if (
+    currentWeek < 1
+) {
+
+    currentWeek =
+        1;
+
+}
 
 
         const matchupsResponse =
