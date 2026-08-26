@@ -43,18 +43,77 @@ async function loadStandings() {
 }
 
 loadStandings();
-const homeSeasonLabel =
-    document.getElementById(
-        'home-season-label'
-    );
+async function loadHomeSeason() {
+
+    const homeSeasonLabel =
+        document.getElementById(
+            'home-season-label'
+        );
 
 
-if (
-    homeSeasonLabel &&
-    league.season
-) {
+    const seasonHeroTitle =
+        document.getElementById(
+            'season-hero-title'
+        );
 
-    homeSeasonLabel.textContent =
-        `${league.season} Season`;
+
+    try {
+
+        const response =
+            await fetch(
+                'https://api.sleeper.app/v1/league/1312098239821914112'
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                'Unable to load Sleeper league.'
+            );
+
+        }
+
+
+        const league =
+            await response.json();
+
+
+        if (
+            homeSeasonLabel &&
+            league.season
+        ) {
+
+            homeSeasonLabel.textContent =
+                `${league.season} Season`;
+
+        }
+
+
+        if (
+            seasonHeroTitle &&
+            league.season
+        ) {
+
+            seasonHeroTitle.textContent =
+                `${league.season} Season`;
+
+        }
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Error loading season:',
+            error
+        );
+
+    }
 
 }
+
+
+loadHomeSeason();
