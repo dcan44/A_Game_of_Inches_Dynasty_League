@@ -265,40 +265,99 @@ async function loadHomeMatchups() {
             {};
 
 
-        rosters.forEach(
-            roster => {
+rosters.forEach(
+    roster => {
 
-                const user =
-                    userMap[
-                        roster.owner_id
-                    ];
+        const user =
+            userMap[
+                roster.owner_id
+            ];
 
 
-                rosterMap[
-                    roster.roster_id
-                ] = {
+        const sleeperUsername =
+            user
+                ?.display_name ||
+            'Unknown Manager';
 
-                    owner_id:
-                        roster.owner_id,
 
-                    owner:
-                        user
-                            ?.display_name ||
-                        'Unknown Manager',
+        /*
+         * Real owner name from league-data.js.
+         */
 
-                    team_name:
-                        user
-                            ?.metadata
-                            ?.team_name
-                            ?.trim() ||
-                        user
-                            ?.display_name ||
-                        `Team ${roster.roster_id}`
+        const ownerName =
+            window.LEAGUE_DATA &&
+            typeof window.LEAGUE_DATA.getOwnerName ===
+                'function'
+                ? window.LEAGUE_DATA.getOwnerName(
+                    roster.owner_id,
+                    sleeperUsername
+                  )
+                : sleeperUsername;
 
-                };
 
-            }
-        );
+        /*
+         * Sleeper avatar.
+         */
+
+        let avatarUrl =
+            null;
+
+
+        if (
+            user?.avatar
+        ) {
+
+            avatarUrl =
+                `https://sleepercdn.com/avatars/${user.avatar}`;
+
+        }
+
+
+        /*
+         * Some users have a custom uploaded avatar
+         * stored in metadata instead.
+         */
+
+        if (
+            user
+                ?.metadata
+                ?.avatar
+        ) {
+
+            avatarUrl =
+                user.metadata.avatar;
+
+        }
+
+
+        rosterMap[
+            roster.roster_id
+        ] = {
+
+            owner_id:
+                roster.owner_id,
+
+            owner:
+                ownerName,
+
+            sleeper_username:
+                sleeperUsername,
+
+            avatar:
+                avatarUrl,
+
+            team_name:
+                user
+                    ?.metadata
+                    ?.team_name
+                    ?.trim() ||
+                sleeperUsername ||
+                `Team ${roster.roster_id}`
+
+        };
+
+    }
+);
 
 
         /*
