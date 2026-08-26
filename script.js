@@ -1,45 +1,605 @@
 async function loadStandings() {
+
     try {
-        const response = await fetch('/api/teams');
-        const data = await response.json();
 
-        const standingsBody = document.getElementById('standings-body');
+        const leagueId =
+            "1312098239821914112";
 
-        if (!data.teams) {
-            standingsBody.innerHTML =
-                '<tr><td colspan="4">Unable to load standings.</td></tr>';
-            return;
+
+        const [
+            teamsResponse,
+            rostersResponse
+        ] = await Promise.all([
+
+            fetch(
+                '/api/teams'
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+            )
+
+        ]);
+
+
+        if (
+            !teamsResponse.ok ||
+            !rostersResponse.ok
+        ) {
+
+            throw new Error(
+                'Unable to load standings.'
+            );
+
         }
 
-        const sortedTeams = data.teams.sort((a, b) => {
-            if (b.wins !== a.wins) {
-                return b.wins - a.wins;
-            }
 
-            return b.points_for - a.points_for;
-        });
+        const data =
+            await teamsResponse.json();
 
-        standingsBody.innerHTML = '';
 
-        sortedTeams.forEach(team => {
-            const row = document.createElement('tr');
+        const rosters =
+            await rostersResponse.json();
 
-            row.innerHTML = `
-                <td>${team.team_name}</td>
-                <td>${team.wins}</td>
-                <td>${team.losses}</td>
-                <td>${team.points_for.toFixed(2)}</td>
+
+        const standingsBody =
+            document.getElementById(
+                'standings-body'
+            );
+
+
+        if (
+            !data.teams
+        ) {
+
+            standingsBody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+                        Unable to load standings.
+                    </td>
+
+                </tr>
+
             `;
 
-            standingsBody.appendChild(row);
-        });
+            return;
 
-    } catch (error) {
-        console.error('Error loading standings:', error);
+        }
 
-        document.getElementById('standings-body').innerHTML =
-            '<tr><td colspan="4">Unable to load standings.</td></tr>';
+
+        /*
+         * ==================================================
+         * DIVISION LOOKUP
+         * ==================================================
+         *
+         * Sleeper stores division on the roster settings.
+         *
+         * We map both roster ID and owner ID so this still
+         * works regardless of which identifier /api/teams
+         * supplies.
+         */
+
+        const divisionByRosterId =
+            {};
+
+
+        const divisionByOwnerId =
+            {};
+
+
+        rosters.forEach(
+            roster => {
+
+                const division =
+                    Number(
+                        roster
+                            ?.settings
+                            ?.division
+                    );
+
+
+                if (
+                    Number.isFinite(
+                        division
+                    )
+                ) {
+
+                    divisionByRosterId[
+                        String(
+                            roster.roster_id
+                        )
+                    ] =
+                        division;
+
+
+                    if (
+                        roster.owner_id
+                    ) {
+
+                        divisionByOwnerId[
+                            String(
+                                roster.owner_id
+                            )
+                        ] =
+                            division;
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Add the division to each standings team.
+         */
+
+        const teams =
+            data.teams.map(
+                team => {
+
+                    let division =
+                        null;
+
+
+                    if (
+                        team.roster_id !==
+                            undefined &&
+                        divisionByRosterId[
+                            String(
+                                team.roster_id
+                            )
+                        ] !==
+                            undefined
+                    ) {
+
+                        division =
+                            divisionByRosterId[
+                                String(
+                                    team.roster_id
+                                )
+                            ];
+
+                    }
+
+                    else if (
+                        team.owner_id &&
+                        divisionByOwnerId[
+                            String(
+                                team.owner_id
+                            )
+                        ] !==
+                            undefined
+                    ) {
+
+                        division =
+                            divisionByOwnerId[
+                                String(
+                                    team.owner_id
+                                )
+                            ];
+
+                    }
+
+
+                    return {
+
+                        ...team,
+
+                        division:
+                            division
+
+                    };
+
+                }
+            );
+
+
+        /*
+         * ==================================================
+         * STANDINGS SORT
+         * ==================================================
+         *
+         * Record first.
+         * Points For is the tiebreaker.
+         */
+
+        const sortStandings =
+            (
+                a,
+                b
+            ) => {
+
+                if (
+                    Number(b.wins) !==
+                    Number(a.wins)
+                ) {
+
+                    return (
+                        Number(b.wins) -
+                        Number(a.wins)
+                    );
+
+                }
+
+
+                return (
+                    Number(
+                        b.points_for
+                    ) -
+                    Number(
+                        a.points_for
+                    )
+                );
+
+            };
+
+
+        /*
+         * ==================================================
+         * FIND DIVISION WINNERS
+         * ==================================================
+         */
+
+        const divisionGroups =
+            {};
+
+
+        teams.forEach(
+            team => {
+
+                if (
+                    team.division ===
+                    null
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    !divisionGroups[
+                        team.division
+                    ]
+                ) {
+
+                    divisionGroups[
+                        team.division
+                    ] =
+                        [];
+
+                }
+
+
+                divisionGroups[
+                    team.division
+                ].push(
+                    team
+                );
+
+            }
+        );
+
+
+        const divisionWinners =
+            Object.values(
+                divisionGroups
+            )
+                .map(
+                    divisionTeams =>
+
+                        [
+                            ...divisionTeams
+                        ]
+                            .sort(
+                                sortStandings
+                            )[0]
+
+                )
+                .filter(
+                    Boolean
+                );
+
+
+        /*
+         * ==================================================
+         * DETERMINE BYES
+         * ==================================================
+         *
+         * The two best division winners receive Week 15
+         * byes.
+         */
+
+        const rankedDivisionWinners =
+            [
+                ...divisionWinners
+            ]
+                .sort(
+                    sortStandings
+                );
+
+
+        const byeTeams =
+            new Set(
+                rankedDivisionWinners
+                    .slice(
+                        0,
+                        2
+                    )
+                    .map(
+                        team =>
+                            String(
+                                team.roster_id ??
+                                team.owner_id
+                            )
+                    )
+            );
+
+
+        const divisionWinnerTeams =
+            new Set(
+                divisionWinners.map(
+                    team =>
+                        String(
+                            team.roster_id ??
+                            team.owner_id
+                        )
+                )
+            );
+
+
+        /*
+         * ==================================================
+         * FIND WILD CARDS
+         * ==================================================
+         *
+         * Remove the three division winners.
+         *
+         * Rank every remaining team by:
+         *
+         * 1. Record
+         * 2. Points For
+         *
+         * The top three are Wild Cards.
+         */
+
+        const wildCards =
+            teams
+                .filter(
+                    team => {
+
+                        const teamId =
+                            String(
+                                team.roster_id ??
+                                team.owner_id
+                            );
+
+
+                        return (
+                            !divisionWinnerTeams.has(
+                                teamId
+                            )
+                        );
+
+                    }
+                )
+                .sort(
+                    sortStandings
+                )
+                .slice(
+                    0,
+                    3
+                );
+
+
+        const wildCardTeams =
+            new Set(
+                wildCards.map(
+                    team =>
+                        String(
+                            team.roster_id ??
+                            team.owner_id
+                        )
+                )
+            );
+
+
+        /*
+         * ==================================================
+         * PLAYOFF STATUS
+         * ==================================================
+         */
+
+        function getPlayoffStatus(
+            team
+        ) {
+
+            const teamId =
+                String(
+                    team.roster_id ??
+                    team.owner_id
+                );
+
+
+            if (
+                byeTeams.has(
+                    teamId
+                )
+            ) {
+
+                return `
+
+                    <span
+                        class="
+                            playoff-badge
+                            playoff-bye
+                        "
+                    >
+                        Division Winner • Bye
+                    </span>
+
+                `;
+
+            }
+
+
+            if (
+                divisionWinnerTeams.has(
+                    teamId
+                )
+            ) {
+
+                return `
+
+                    <span
+                        class="
+                            playoff-badge
+                            playoff-division
+                        "
+                    >
+                        Division Winner
+                    </span>
+
+                `;
+
+            }
+
+
+            if (
+                wildCardTeams.has(
+                    teamId
+                )
+            ) {
+
+                return `
+
+                    <span
+                        class="
+                            playoff-badge
+                            playoff-wildcard
+                        "
+                    >
+                        Wild Card
+                    </span>
+
+                `;
+
+            }
+
+
+            return `
+
+                <span
+                    class="
+                        playoff-badge
+                        playoff-toilet
+                    "
+                >
+                    Toilet Bowl
+                </span>
+
+            `;
+
+        }
+
+
+        /*
+         * ==================================================
+         * DISPLAY OVERALL STANDINGS
+         * ==================================================
+         */
+
+        const sortedTeams =
+            [
+                ...teams
+            ]
+                .sort(
+                    sortStandings
+                );
+
+
+        standingsBody.innerHTML =
+            '';
+
+
+        sortedTeams.forEach(
+            team => {
+
+                const row =
+                    document.createElement(
+                        'tr'
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${team.team_name}
+                    </td>
+
+                    <td>
+                        ${team.wins}
+                    </td>
+
+                    <td>
+                        ${team.losses}
+                    </td>
+
+                    <td>
+                        ${
+                            Number(
+                                team.points_for
+                            ).toFixed(2)
+                        }
+                    </td>
+
+                    <td>
+                        ${getPlayoffStatus(team)}
+                    </td>
+
+                `;
+
+
+                standingsBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Error loading standings:',
+            error
+        );
+
+
+        document
+            .getElementById(
+                'standings-body'
+            )
+            .innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+                        Unable to load standings.
+                    </td>
+
+                </tr>
+
+            `;
+
     }
+
 }
 
 loadStandings();
