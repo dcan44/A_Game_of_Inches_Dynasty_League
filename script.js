@@ -43,3 +43,18 @@ async function loadStandings() {
 }
 
 loadStandings();
+const homeSeasonLabel =
+    document.getElementById(
+        'home-season-label'
+    );
+
+
+if (
+    homeSeasonLabel &&
+    league.season
+) {
+
+    homeSeasonLabel.textContent =
+        `${league.season} Season`;
+
+}
