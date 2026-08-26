@@ -665,3 +665,713 @@ return `
 
 
 loadHomeMatchups();
+/*
+ * ======================================================
+ * HOME — RECENT TRANSACTIONS / WAIVER WIRE
+ * ======================================================
+ */
+
+async function loadHomeTransactions() {
+
+    const transactionsContainer =
+        document.getElementById(
+            'home-transactions'
+        );
+
+
+    const waiversContainer =
+        document.getElementById(
+            'home-waivers'
+        );
+
+
+    if (
+        !transactionsContainer ||
+        !waiversContainer
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const leagueId =
+            "1312098239821914112";
+
+
+        /*
+         * Sleeper transactions are week-based.
+         *
+         * We use the current NFL week, then work backward
+         * until enough recent activity is found.
+         */
+
+        const [
+            stateResponse,
+            usersResponse,
+            rostersResponse,
+            playersResponse
+        ] = await Promise.all([
+
+            fetch(
+                'https://api.sleeper.app/v1/state/nfl'
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/users`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+            ),
+
+            fetch(
+                'https://api.sleeper.app/v1/players/nfl'
+            )
+
+        ]);
+
+
+        if (
+            !stateResponse.ok ||
+            !usersResponse.ok ||
+            !rostersResponse.ok ||
+            !playersResponse.ok
+        ) {
+
+            throw new Error(
+                'Unable to retrieve transaction data.'
+            );
+
+        }
+
+
+        const nflState =
+            await stateResponse.json();
+
+
+        const users =
+            await usersResponse.json();
+
+
+        const rosters =
+            await rostersResponse.json();
+
+
+        const players =
+            await playersResponse.json();
+
+
+        /*
+         * ==================================================
+         * USER LOOKUP
+         * ==================================================
+         */
+
+        const userMap =
+            {};
+
+
+        users.forEach(
+            user => {
+
+                userMap[
+                    user.user_id
+                ] =
+                    user;
+
+            }
+        );
+
+
+        /*
+         * ==================================================
+         * ROSTER LOOKUP
+         * ==================================================
+         */
+
+        const rosterMap =
+            {};
+
+
+        rosters.forEach(
+            roster => {
+
+                const user =
+                    userMap[
+                        roster.owner_id
+                    ];
+
+
+                const sleeperUsername =
+                    user
+                        ?.display_name ||
+                    'Unknown Manager';
+
+
+                const ownerName =
+                    window.LEAGUE_DATA &&
+                    typeof window.LEAGUE_DATA.getOwnerName ===
+                        'function'
+                        ? window.LEAGUE_DATA.getOwnerName(
+                            roster.owner_id,
+                            sleeperUsername
+                          )
+                        : sleeperUsername;
+
+
+                rosterMap[
+                    roster.roster_id
+                ] = {
+
+                    roster_id:
+                        roster.roster_id,
+
+                    owner_id:
+                        roster.owner_id,
+
+                    owner:
+                        ownerName,
+
+                    team_name:
+                        user
+                            ?.metadata
+                            ?.team_name
+                            ?.trim() ||
+                        sleeperUsername ||
+                        `Team ${roster.roster_id}`
+
+                };
+
+            }
+        );
+
+
+        /*
+         * ==================================================
+         * LOAD RECENT WEEKS
+         * ==================================================
+         */
+
+        const currentWeek =
+            Number(
+                nflState.week ||
+                1
+            );
+
+
+        const allTransactions =
+            [];
+
+
+        /*
+         * Look backward up to 5 weeks.
+         *
+         * This prevents the Home page from being empty if
+         * the current week has little or no activity.
+         */
+
+        for (
+            let week = currentWeek;
+            week >= Math.max(
+                1,
+                currentWeek - 4
+            );
+            week--
+        ) {
+
+            const response =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/transactions/${week}`
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                continue;
+
+            }
+
+
+            const weekTransactions =
+                await response.json();
+
+
+            weekTransactions.forEach(
+                transaction => {
+
+                    allTransactions.push(
+                        {
+                            ...transaction,
+                            week:
+                                week
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Newest first.
+         */
+
+        allTransactions.sort(
+            (a, b) =>
+                Number(
+                    b.created ||
+                    0
+                ) -
+                Number(
+                    a.created ||
+                    0
+                )
+        );
+
+
+        /*
+         * ==================================================
+         * HELPERS
+         * ==================================================
+         */
+
+        function getPlayerName(
+            playerId
+        ) {
+
+            const player =
+                players[
+                    playerId
+                ];
+
+
+            if (
+                !player
+            ) {
+
+                return playerId;
+
+            }
+
+
+            return (
+                player.full_name ||
+                `${player.first_name || ''} ${player.last_name || ''}`.trim() ||
+                playerId
+            );
+
+        }
+
+
+        function getRoster(
+            rosterId
+        ) {
+
+            return rosterMap[
+                rosterId
+            ] || {
+
+                owner:
+                    'Unknown Manager',
+
+                team_name:
+                    'Unknown Team'
+
+            };
+
+        }
+
+
+        /*
+         * ==================================================
+         * TRANSACTION CARD
+         * ==================================================
+         */
+
+        function buildTransactionHTML(
+            transaction
+        ) {
+
+            const type =
+                transaction.type;
+
+
+            const adds =
+                transaction.adds ||
+                {};
+
+
+            const drops =
+                transaction.drops ||
+                {};
+
+
+            const rosterIds =
+                transaction.roster_ids ||
+                [];
+
+
+            /*
+             * ==============================================
+             * TRADE
+             * ==============================================
+             */
+
+            if (
+                type ===
+                'trade'
+            ) {
+
+                const teams =
+                    rosterIds
+                        .map(
+                            rosterId => {
+
+                                const roster =
+                                    getRoster(
+                                        rosterId
+                                    );
+
+
+                                return `
+                                    <span>
+                                        <strong>
+                                            ${roster.team_name}
+                                        </strong>
+                                        <small>
+                                            ${roster.owner}
+                                        </small>
+                                    </span>
+                                `;
+
+                            }
+                        )
+                        .join(
+                            '<span class="home-transaction-arrow">⇄</span>'
+                        );
+
+
+                return `
+
+                    <div class="home-transaction-item">
+
+                        <div class="home-transaction-type">
+                            Trade
+                        </div>
+
+                        <div class="home-transaction-main">
+
+                            <div class="home-transaction-trade">
+                                ${teams}
+                            </div>
+
+                            <div class="home-transaction-meta">
+                                Week ${transaction.week}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            /*
+             * ==============================================
+             * ADD / DROP / WAIVER
+             * ==============================================
+             */
+
+            const involvedRosterIds =
+                new Set();
+
+
+            Object.values(
+                adds
+            ).forEach(
+                rosterId =>
+                    involvedRosterIds.add(
+                        rosterId
+                    )
+            );
+
+
+            Object.values(
+                drops
+            ).forEach(
+                rosterId =>
+                    involvedRosterIds.add(
+                        rosterId
+                    )
+            );
+
+
+            const firstRosterId =
+                [
+                    ...involvedRosterIds
+                ][0];
+
+
+            const roster =
+                getRoster(
+                    firstRosterId
+                );
+
+
+            const addedPlayers =
+                Object.keys(
+                    adds
+                )
+                    .map(
+                        getPlayerName
+                    );
+
+
+            const droppedPlayers =
+                Object.keys(
+                    drops
+                )
+                    .map(
+                        getPlayerName
+                    );
+
+
+            let actionHTML =
+                '';
+
+
+            if (
+                addedPlayers.length >
+                0
+            ) {
+
+                actionHTML += `
+
+                    <div class="home-transaction-action add">
+
+                        <span>
+                            Added
+                        </span>
+
+                        <strong>
+                            ${addedPlayers.join(', ')}
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            if (
+                droppedPlayers.length >
+                0
+            ) {
+
+                actionHTML += `
+
+                    <div class="home-transaction-action drop">
+
+                        <span>
+                            Dropped
+                        </span>
+
+                        <strong>
+                            ${droppedPlayers.join(', ')}
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            let transactionLabel =
+                'Free Agent';
+
+
+            if (
+                type ===
+                'waiver'
+            ) {
+
+                transactionLabel =
+                    'Waiver';
+
+            }
+
+
+            return `
+
+                <div class="home-transaction-item">
+
+                    <div class="home-transaction-type">
+                        ${transactionLabel}
+                    </div>
+
+                    <div class="home-transaction-main">
+
+                        <div class="home-transaction-team">
+
+                            <strong>
+                                ${roster.team_name}
+                            </strong>
+
+                            <span>
+                                ${roster.owner}
+                            </span>
+
+                        </div>
+
+                        ${actionHTML}
+
+                        <div class="home-transaction-meta">
+                            Week ${transaction.week}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /*
+         * ==================================================
+         * RECENT TRANSACTIONS
+         * ==================================================
+         */
+
+        const recentTransactions =
+            allTransactions
+                .filter(
+                    transaction =>
+                        transaction.status ===
+                        'complete'
+                )
+                .slice(
+                    0,
+                    5
+                );
+
+
+        if (
+            recentTransactions.length >
+            0
+        ) {
+
+            transactionsContainer.innerHTML =
+                recentTransactions
+                    .map(
+                        buildTransactionHTML
+                    )
+                    .join('');
+
+        }
+
+        else {
+
+            transactionsContainer.innerHTML = `
+
+                <p class="placeholder-text">
+                    No recent transactions.
+                </p>
+
+            `;
+
+        }
+
+
+        /*
+         * ==================================================
+         * WAIVER WIRE
+         * ==================================================
+         */
+
+        const recentWaivers =
+            allTransactions
+                .filter(
+                    transaction =>
+                        transaction.status ===
+                            'complete' &&
+                        transaction.type ===
+                            'waiver'
+                )
+                .slice(
+                    0,
+                    5
+                );
+
+
+        if (
+            recentWaivers.length >
+            0
+        ) {
+
+            waiversContainer.innerHTML =
+                recentWaivers
+                    .map(
+                        buildTransactionHTML
+                    )
+                    .join('');
+
+        }
+
+        else {
+
+            waiversContainer.innerHTML = `
+
+                <p class="placeholder-text">
+                    No recent waiver claims.
+                </p>
+
+            `;
+
+        }
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Error loading home transactions:',
+            error
+        );
+
+
+        transactionsContainer.innerHTML = `
+
+            <p class="placeholder-text">
+                Unable to load recent transactions.
+            </p>
+
+        `;
+
+
+        waiversContainer.innerHTML = `
+
+            <p class="placeholder-text">
+                Unable to load waiver claims.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+loadHomeTransactions();
