@@ -491,25 +491,25 @@ return `
             </div>
 
 
-            <div class="home-matchup-info">
+<div class="home-matchup-info">
 
     <span class="home-matchup-team-line">
 
-        <strong>
-            ${
-                firstTeam
-                    ?.team_name ||
-                'Unknown Team'
-            }
-        </strong>
+        ${
+            firstTeam
+                ?.team_name ||
+            'Unknown Team'
+        }
 
-        <em>
-            (${
-                firstTeam
-                    ?.owner ||
-                'Unknown Manager'
-            })
-        </em>
+    </span>
+
+    <span class="home-matchup-owner-line">
+
+        ${
+            firstTeam
+                ?.owner ||
+            'Unknown Manager'
+        }
 
     </span>
 
@@ -542,21 +542,21 @@ return `
 
     <span class="home-matchup-team-line">
 
-        <strong>
-            ${
-                secondTeam
-                    ?.team_name ||
-                'Unknown Team'
-            }
-        </strong>
+        ${
+            firstTeam
+                ?.team_name ||
+            'Unknown Team'
+        }
 
-        <em>
-            (${
-                secondTeam
-                    ?.owner ||
-                'Unknown Manager'
-            })
-        </em>
+    </span>
+
+    <span class="home-matchup-owner-line">
+
+        ${
+            firstTeam
+                ?.owner ||
+            'Unknown Manager'
+        }
 
     </span>
 
