@@ -6724,13 +6724,13 @@ footer p {
 
 }
 /* ======================================================
-   HOME WEEKLY MATCHUPS
+   HOME WEEKLY MATCHUPS — ENHANCED
 ====================================================== */
 
 .home-matchups {
     padding:
         0
-        20px
+        18px
         20px;
 }
 
@@ -6740,16 +6740,18 @@ footer p {
 
     grid-template-columns:
         minmax(0, 1fr)
-        38px
+        42px
         minmax(0, 1fr);
 
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
+
+    min-height: 86px;
 
     padding:
-        12px
-        14px;
+        13px
+        8px;
 
     border-bottom:
         1px solid
@@ -6762,7 +6764,82 @@ footer p {
 }
 
 
-.home-matchup-team {
+/* ======================================================
+   EACH TEAM
+====================================================== */
+
+.home-matchup-side {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+.home-matchup-left {
+    justify-content: flex-end;
+}
+
+
+.home-matchup-right {
+    justify-content: flex-start;
+}
+
+
+/* ======================================================
+   AVATAR
+====================================================== */
+
+.home-matchup-avatar {
+    width: 46px;
+    height: 46px;
+
+    flex:
+        0
+        0
+        46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        var(--navy);
+
+    border:
+        2px solid
+        var(--light-silver);
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.home-matchup-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* ======================================================
+   TEAM / OWNER
+====================================================== */
+
+.home-matchup-info {
     display: flex;
     flex-direction: column;
 
@@ -6770,87 +6847,141 @@ footer p {
 }
 
 
-.home-matchup-team:first-child {
+.home-matchup-left .home-matchup-info {
     text-align: right;
 }
 
 
-.home-matchup-team:last-child {
+.home-matchup-right .home-matchup-info {
     text-align: left;
 }
 
 
-.home-matchup-team span {
+.home-matchup-team-name {
     overflow: hidden;
 
-    color: #4A535A;
-
-    font-size: 11px;
-    font-weight: 500;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-.home-matchup-team strong {
-    margin-top: 3px;
-
-    color: var(--navy);
+    color:
+        var(--navy);
 
     font-family:
         'Oswald',
         sans-serif;
 
-    font-size: 17px;
+    font-size: 13px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    text-transform: uppercase;
 }
 
 
+.home-matchup-owner {
+    margin-top: 2px;
+
+    color: #7A8288;
+
+    font-size: 10px;
+}
+
+
+/* ======================================================
+   SCORE
+====================================================== */
+
+.home-matchup-score {
+    flex-shrink: 0;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 22px;
+}
+
+
+/* ======================================================
+   VS
+====================================================== */
+
 .home-matchup-vs {
-    color: var(--silver);
+    color:
+        var(--silver);
 
     font-family:
         'Oswald',
         sans-serif;
 
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
+
+    letter-spacing: 1px;
 
     text-align: center;
 }
 
+
+/* ======================================================
+   MOBILE
+====================================================== */
 
 @media (max-width: 600px) {
 
     .home-matchups {
         padding:
             0
-            12px
-            16px;
+            8px
+            14px;
     }
 
 
     .home-matchup-card {
         grid-template-columns:
             minmax(0, 1fr)
-            28px
+            24px
             minmax(0, 1fr);
 
-        gap: 6px;
+        gap: 5px;
+
+        min-height: 74px;
 
         padding:
-            11px
-            6px;
+            10px
+            2px;
     }
 
 
-    .home-matchup-team span {
+    .home-matchup-avatar {
+        width: 34px;
+        height: 34px;
+
+        flex-basis: 34px;
+
+        font-size: 13px;
+    }
+
+
+    .home-matchup-side {
+        gap: 6px;
+    }
+
+
+    .home-matchup-team-name {
         font-size: 10px;
     }
 
 
-    .home-matchup-team strong {
-        font-size: 15px;
+    .home-matchup-owner {
+        font-size: 8px;
+    }
+
+
+    .home-matchup-score {
+        font-size: 16px;
     }
 
 }
