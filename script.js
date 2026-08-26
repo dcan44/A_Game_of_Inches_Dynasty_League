@@ -493,27 +493,27 @@ return `
 
             <div class="home-matchup-info">
 
-                <span class="home-matchup-team-name">
+    <span class="home-matchup-team-line">
 
-                    ${
-                        firstTeam
-                            ?.team_name ||
-                        'Unknown Team'
-                    }
+        <strong>
+            ${
+                firstTeam
+                    ?.team_name ||
+                'Unknown Team'
+            }
+        </strong>
 
-                </span>
+        <em>
+            (${
+                firstTeam
+                    ?.owner ||
+                'Unknown Manager'
+            })
+        </em>
 
-                <span class="home-matchup-owner">
+    </span>
 
-                    ${
-                        firstTeam
-                            ?.owner ||
-                        'Unknown Manager'
-                    }
-
-                </span>
-
-            </div>
+</div>
 
 
             <strong class="home-matchup-score">
@@ -538,29 +538,29 @@ return `
             </strong>
 
 
-            <div class="home-matchup-info">
+<div class="home-matchup-info">
 
-                <span class="home-matchup-team-name">
+    <span class="home-matchup-team-line">
 
-                    ${
-                        secondTeam
-                            ?.team_name ||
-                        'Unknown Team'
-                    }
+        <strong>
+            ${
+                secondTeam
+                    ?.team_name ||
+                'Unknown Team'
+            }
+        </strong>
 
-                </span>
+        <em>
+            (${
+                secondTeam
+                    ?.owner ||
+                'Unknown Manager'
+            })
+        </em>
 
-                <span class="home-matchup-owner">
+    </span>
 
-                    ${
-                        secondTeam
-                            ?.owner ||
-                        'Unknown Manager'
-                    }
-
-                </span>
-
-            </div>
+</div>
 
 
             <div class="home-matchup-avatar">
