@@ -653,20 +653,40 @@ const toiletBowlByeIds =
             }
 
 
-            return `
+if (
+    toiletBowlByeIds.has(
+        id
+    )
+) {
 
-                <span
-                    class="
-                        playoff-badge
-                        playoff-toilet
-                    "
-                >
-                    Toilet Bowl
-                </span>
+    return `
 
-            `;
+        <span
+            class="
+                playoff-badge
+                playoff-toilet-bye
+            "
+        >
+            Toilet Bowl • Bye
+        </span>
 
-        }
+    `;
+
+}
+
+
+return `
+
+    <span
+        class="
+            playoff-badge
+            playoff-toilet
+        "
+    >
+        Toilet Bowl
+    </span>
+
+`;
 
 
         /*
