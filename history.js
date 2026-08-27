@@ -2031,7 +2031,13 @@ const finalStandings =
                             index
                         ) => `
 
-                            <tr>
+<tr
+    class="${
+        index < 6
+            ? 'history-final-playoff'
+            : 'history-final-nonplayoff'
+    }"
+>
 
                                 <td>
                                     ${index + 1}
