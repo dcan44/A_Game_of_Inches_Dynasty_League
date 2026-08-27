@@ -2139,6 +2139,13 @@ const finalStandings =
 
     ${index + 1}
 
+    ${
+        Number(team.roster_id) ===
+        toiletBowlLoserRosterId
+            ? ' 💩'
+            : ''
+    }
+
 </td>
 
                                 <td class="history-team-name">
