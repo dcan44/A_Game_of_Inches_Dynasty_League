@@ -8425,12 +8425,17 @@ font-size: 19px;
 
 @media (max-width: 600px) {
 
-    #home-waivers {
-        padding:
-            6px
-            10px
-            12px;
-    }
+#home-waivers {
+    grid-template-columns:
+        1fr;
+
+    gap: 8px;
+
+    padding:
+        6px
+        10px
+        12px;
+}
 
 
     #home-waivers .home-transaction-item {
