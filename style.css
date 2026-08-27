@@ -2073,7 +2073,7 @@ main {
 .division-team-name span {
     display: block;
 
-    margin-top: 3px;
+    margin-top: 4px;
 
     color: #777F85;
 
@@ -2081,7 +2081,7 @@ main {
         'Roboto',
         sans-serif;
 
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 400;
 }
 
