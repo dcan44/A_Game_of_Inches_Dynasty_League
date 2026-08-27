@@ -953,6 +953,24 @@ async function loadHomeSeason() {
 
 
 loadHomeSeason();
+
+/*
+ * ======================================================
+ * HOME — WEEKLY MATCHUPS
+ * ======================================================
+ *
+ * Automatically loads the current A Game of Inches league,
+ * determines the current fantasy week, and highlights one
+ * matchup as the Game of the Week.
+ *
+ * GAME OF THE WEEK:
+ *
+ * 1. Highest combined wins
+ * 2. Highest combined Points For as the tiebreaker
+ *
+ * ======================================================
+ */
+
 async function loadHomeMatchups() {
 
     const weekNumber =
@@ -967,11 +985,40 @@ async function loadHomeMatchups() {
         );
 
 
+    if (
+        !weekNumber ||
+        !matchupsContainer
+    ) {
+
+        return;
+
+    }
+
+
     try {
+
+        /*
+         * ==================================================
+         * CURRENT LEAGUE
+         * ==================================================
+         */
+
+        const league =
+            await getCurrentHomeLeague();
+
+
+        const leagueId =
+            league.league_id;
+
+
+        /*
+         * ==================================================
+         * LOAD SLEEPER DATA
+         * ==================================================
+         */
 
         const [
             stateResponse,
-            leagueResponse,
             usersResponse,
             rostersResponse
         ] = await Promise.all([
@@ -981,15 +1028,11 @@ async function loadHomeMatchups() {
             ),
 
             fetch(
-                'https://api.sleeper.app/v1/league/1312098239821914112'
+                `https://api.sleeper.app/v1/league/${leagueId}/users`
             ),
 
             fetch(
-                'https://api.sleeper.app/v1/league/1312098239821914112/users'
-            ),
-
-            fetch(
-                'https://api.sleeper.app/v1/league/1312098239821914112/rosters'
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
             )
 
         ]);
@@ -997,7 +1040,6 @@ async function loadHomeMatchups() {
 
         if (
             !stateResponse.ok ||
-            !leagueResponse.ok ||
             !usersResponse.ok ||
             !rostersResponse.ok
         ) {
@@ -1013,10 +1055,6 @@ async function loadHomeMatchups() {
             await stateResponse.json();
 
 
-        const league =
-            await leagueResponse.json();
-
-
         const users =
             await usersResponse.json();
 
@@ -1026,52 +1064,51 @@ async function loadHomeMatchups() {
 
 
         /*
-         * Sleeper's current NFL week.
+         * ==================================================
+         * DETERMINE CURRENT FANTASY WEEK
+         * ==================================================
+         *
+         * Sleeper's NFL week can advance during preseason.
+         * Until the regular season begins, we display Week 1.
          */
 
-/*
- * Determine the fantasy week.
- *
- * Sleeper's NFL week can advance during preseason.
- * Before the NFL regular season begins, the fantasy
- * league should continue displaying Week 1.
- */
-
-let currentWeek =
-    Number(
-        nflState.week ||
-        1
-    );
+        let currentWeek =
+            Number(
+                nflState.week ||
+                1
+            );
 
 
-if (
-    nflState.season_type !==
-    'regular'
-) {
+        if (
+            nflState.season_type !==
+            'regular'
+        ) {
 
-    currentWeek =
-        1;
+            currentWeek =
+                1;
 
-}
+        }
 
 
-/*
- * Safety check.
- */
+        if (
+            currentWeek < 1
+        ) {
 
-if (
-    currentWeek < 1
-) {
+            currentWeek =
+                1;
 
-    currentWeek =
-        1;
+        }
 
-}
 
+        /*
+         * ==================================================
+         * LOAD CURRENT WEEK MATCHUPS
+         * ==================================================
+         */
 
         const matchupsResponse =
             await fetch(
-                `https://api.sleeper.app/v1/league/1312098239821914112/matchups/${currentWeek}`
+                `https://api.sleeper.app/v1/league/${leagueId}/matchups/${currentWeek}`
             );
 
 
@@ -1091,7 +1128,9 @@ if (
 
 
         /*
-         * User lookup
+         * ==================================================
+         * USER LOOKUP
+         * ==================================================
          */
 
         const userMap =
@@ -1111,110 +1150,151 @@ if (
 
 
         /*
-         * Roster lookup
+         * ==================================================
+         * ROSTER LOOKUP
+         * ==================================================
          */
 
         const rosterMap =
             {};
 
 
-rosters.forEach(
-    roster => {
+        rosters.forEach(
+            roster => {
 
-        const user =
-            userMap[
-                roster.owner_id
-            ];
+                const user =
+                    userMap[
+                        roster.owner_id
+                    ];
 
 
-        const sleeperUsername =
-            user
-                ?.display_name ||
-            'Unknown Manager';
+                const sleeperUsername =
+                    user
+                        ?.display_name ||
+                    'Unknown Manager';
+
+
+                /*
+                 * Real owner name from league-data.js.
+                 */
+
+                const ownerName =
+                    window.LEAGUE_DATA &&
+                    typeof window.LEAGUE_DATA.getOwnerName ===
+                        'function'
+                        ? window.LEAGUE_DATA.getOwnerName(
+                            roster.owner_id,
+                            sleeperUsername
+                          )
+                        : sleeperUsername;
+
+
+                /*
+                 * Sleeper avatar.
+                 */
+
+                let avatarUrl =
+                    null;
+
+
+                if (
+                    user?.avatar
+                ) {
+
+                    avatarUrl =
+                        `https://sleepercdn.com/avatars/${user.avatar}`;
+
+                }
+
+
+                if (
+                    user
+                        ?.metadata
+                        ?.avatar
+                ) {
+
+                    avatarUrl =
+                        user.metadata.avatar;
+
+                }
+
+
+                /*
+                 * Current standings information.
+                 *
+                 * This is what we use to choose the
+                 * Game of the Week.
+                 */
+
+                const settings =
+                    roster.settings ||
+                    {};
+
+
+                const wins =
+                    Number(
+                        settings.wins ||
+                        0
+                    );
+
+
+                const pointsFor =
+                    Number(
+                        settings.fpts ||
+                        0
+                    ) +
+                    (
+                        Number(
+                            settings.fpts_decimal ||
+                            0
+                        ) /
+                        100
+                    );
+
+
+                rosterMap[
+                    roster.roster_id
+                ] = {
+
+                    roster_id:
+                        roster.roster_id,
+
+                    owner_id:
+                        roster.owner_id,
+
+                    owner:
+                        ownerName,
+
+                    sleeper_username:
+                        sleeperUsername,
+
+                    avatar:
+                        avatarUrl,
+
+                    team_name:
+                        user
+                            ?.metadata
+                            ?.team_name
+                            ?.trim() ||
+                        sleeperUsername ||
+                        `Team ${roster.roster_id}`,
+
+                    wins:
+                        wins,
+
+                    points_for:
+                        pointsFor
+
+                };
+
+            }
+        );
 
 
         /*
-         * Real owner name from league-data.js.
-         */
-
-        const ownerName =
-            window.LEAGUE_DATA &&
-            typeof window.LEAGUE_DATA.getOwnerName ===
-                'function'
-                ? window.LEAGUE_DATA.getOwnerName(
-                    roster.owner_id,
-                    sleeperUsername
-                  )
-                : sleeperUsername;
-
-
-        /*
-         * Sleeper avatar.
-         */
-
-        let avatarUrl =
-            null;
-
-
-        if (
-            user?.avatar
-        ) {
-
-            avatarUrl =
-                `https://sleepercdn.com/avatars/${user.avatar}`;
-
-        }
-
-
-        /*
-         * Some users have a custom uploaded avatar
-         * stored in metadata instead.
-         */
-
-        if (
-            user
-                ?.metadata
-                ?.avatar
-        ) {
-
-            avatarUrl =
-                user.metadata.avatar;
-
-        }
-
-
-        rosterMap[
-            roster.roster_id
-        ] = {
-
-            owner_id:
-                roster.owner_id,
-
-            owner:
-                ownerName,
-
-            sleeper_username:
-                sleeperUsername,
-
-            avatar:
-                avatarUrl,
-
-            team_name:
-                user
-                    ?.metadata
-                    ?.team_name
-                    ?.trim() ||
-                sleeperUsername ||
-                `Team ${roster.roster_id}`
-
-        };
-
-    }
-);
-
-
-        /*
-         * Group matchup entries by matchup_id.
+         * ==================================================
+         * GROUP MATCHUPS
+         * ==================================================
          */
 
         const matchupGroups =
@@ -1258,11 +1338,11 @@ rosters.forEach(
         );
 
 
-        weekNumber.textContent =
-            `Week ${currentWeek}`;
+        /*
+         * Only keep complete two-team matchup groups.
+         */
 
-
-        const matchupCards =
+        const validMatchups =
             Object.values(
                 matchupGroups
             )
@@ -1270,9 +1350,134 @@ rosters.forEach(
                     matchup =>
                         matchup.length ===
                         2
-                )
+                );
+
+
+        /*
+         * ==================================================
+         * GAME OF THE WEEK
+         * ==================================================
+         *
+         * Rank each matchup by:
+         *
+         * 1. Combined wins
+         * 2. Combined PF
+         *
+         * The matchup with the strongest combined standing
+         * becomes Game of the Week.
+         */
+
+        let gameOfWeekIndex =
+            -1;
+
+
+        let bestCombinedWins =
+            -1;
+
+
+        let bestCombinedPF =
+            -1;
+
+
+        validMatchups.forEach(
+            (
+                matchup,
+                index
+            ) => {
+
+                const firstTeam =
+                    rosterMap[
+                        matchup[0].roster_id
+                    ];
+
+
+                const secondTeam =
+                    rosterMap[
+                        matchup[1].roster_id
+                    ];
+
+
+                if (
+                    !firstTeam ||
+                    !secondTeam
+                ) {
+
+                    return;
+
+                }
+
+
+                const combinedWins =
+                    firstTeam.wins +
+                    secondTeam.wins;
+
+
+                const combinedPF =
+                    firstTeam.points_for +
+                    secondTeam.points_for;
+
+
+                if (
+                    combinedWins >
+                    bestCombinedWins
+                ) {
+
+                    bestCombinedWins =
+                        combinedWins;
+
+                    bestCombinedPF =
+                        combinedPF;
+
+                    gameOfWeekIndex =
+                        index;
+
+                    return;
+
+                }
+
+
+                if (
+                    combinedWins ===
+                        bestCombinedWins &&
+                    combinedPF >
+                        bestCombinedPF
+                ) {
+
+                    bestCombinedPF =
+                        combinedPF;
+
+                    gameOfWeekIndex =
+                        index;
+
+                }
+
+            }
+        );
+
+
+        /*
+         * ==================================================
+         * WEEK LABEL
+         * ==================================================
+         */
+
+        weekNumber.textContent =
+            `Week ${currentWeek}`;
+
+
+        /*
+         * ==================================================
+         * BUILD MATCHUP CARDS
+         * ==================================================
+         */
+
+        const matchupCards =
+            validMatchups
                 .map(
-                    matchup => {
+                    (
+                        matchup,
+                        index
+                    ) => {
 
                         const first =
                             matchup[0];
@@ -1308,144 +1513,172 @@ rosters.forEach(
                             );
 
 
-return `
+                        const isGameOfWeek =
+                            index ===
+                            gameOfWeekIndex;
 
-    <div class="home-matchup-card">
+
+                        const gameOfWeekBanner =
+                            isGameOfWeek
+                                ? `
+
+                                    <div class="game-of-week-label">
+                                        ★ Game of the Week ★
+                                    </div>
+
+                                  `
+                                : '';
 
 
-        <div class="
-            home-matchup-side
-            home-matchup-left
-        ">
+                        return `
 
-            <div class="home-matchup-avatar">
-
-                ${
-                    firstTeam?.avatar
-                        ? `
-                            <img
-                                src="${firstTeam.avatar}"
-                                alt="${firstTeam.owner}"
+                            <div
+                                class="
+                                    home-matchup-card
+                                    ${
+                                        isGameOfWeek
+                                            ? 'game-of-week'
+                                            : ''
+                                    }
+                                "
                             >
-                          `
-                        : `
-                            <span>
-                                ${
-                                    firstTeam
-                                        ?.owner
-                                        ?.charAt(0)
-                                        ?.toUpperCase() ||
-                                    '?'
-                                }
-                            </span>
-                          `
-                }
 
-            </div>
+                                ${gameOfWeekBanner}
 
 
-<div class="home-matchup-info">
+                                <div class="
+                                    home-matchup-side
+                                    home-matchup-left
+                                ">
 
-    <span class="home-matchup-team-line">
+                                    <div class="home-matchup-avatar">
 
-        ${
-            firstTeam
-                ?.team_name ||
-            'Unknown Team'
-        }
+                                        ${
+                                            firstTeam?.avatar
+                                                ? `
+                                                    <img
+                                                        src="${firstTeam.avatar}"
+                                                        alt="${firstTeam.owner}"
+                                                    >
+                                                  `
+                                                : `
+                                                    <span>
+                                                        ${
+                                                            firstTeam
+                                                                ?.owner
+                                                                ?.charAt(0)
+                                                                ?.toUpperCase() ||
+                                                            '?'
+                                                        }
+                                                    </span>
+                                                  `
+                                        }
 
-    </span>
-
-    <span class="home-matchup-owner-line">
-
-        ${
-            firstTeam
-                ?.owner ||
-            'Unknown Manager'
-        }
-
-    </span>
-
-</div>
-
-
-            <strong class="home-matchup-score">
-                ${firstPoints.toFixed(2)}
-            </strong>
-
-        </div>
-
-
-        <div class="home-matchup-vs">
-            VS
-        </div>
+                                    </div>
 
 
-        <div class="
-            home-matchup-side
-            home-matchup-right
-        ">
+                                    <div class="home-matchup-info">
 
-            <strong class="home-matchup-score">
-                ${secondPoints.toFixed(2)}
-            </strong>
+                                        <span class="home-matchup-team-line">
 
+                                            ${
+                                                firstTeam
+                                                    ?.team_name ||
+                                                'Unknown Team'
+                                            }
 
-<div class="home-matchup-info">
+                                        </span>
 
-    <span class="home-matchup-team-line">
+                                        <span class="home-matchup-owner-line">
 
-        ${
-            secondTeam
-                ?.team_name ||
-            'Unknown Team'
-        }
+                                            ${
+                                                firstTeam
+                                                    ?.owner ||
+                                                'Unknown Manager'
+                                            }
 
-    </span>
+                                        </span>
 
-    <span class="home-matchup-owner-line">
-
-        ${
-            secondTeam
-                ?.owner ||
-            'Unknown Manager'
-        }
-
-    </span>
-
-</div>
+                                    </div>
 
 
-            <div class="home-matchup-avatar">
+                                    <strong class="home-matchup-score">
+                                        ${firstPoints.toFixed(2)}
+                                    </strong>
 
-                ${
-                    secondTeam?.avatar
-                        ? `
-                            <img
-                                src="${secondTeam.avatar}"
-                                alt="${secondTeam.owner}"
-                            >
-                          `
-                        : `
-                            <span>
-                                ${
-                                    secondTeam
-                                        ?.owner
-                                        ?.charAt(0)
-                                        ?.toUpperCase() ||
-                                    '?'
-                                }
-                            </span>
-                          `
-                }
+                                </div>
 
-            </div>
 
-        </div>
+                                <div class="home-matchup-vs">
+                                    VS
+                                </div>
 
-    </div>
 
-`;
+                                <div class="
+                                    home-matchup-side
+                                    home-matchup-right
+                                ">
+
+                                    <strong class="home-matchup-score">
+                                        ${secondPoints.toFixed(2)}
+                                    </strong>
+
+
+                                    <div class="home-matchup-info">
+
+                                        <span class="home-matchup-team-line">
+
+                                            ${
+                                                secondTeam
+                                                    ?.team_name ||
+                                                'Unknown Team'
+                                            }
+
+                                        </span>
+
+                                        <span class="home-matchup-owner-line">
+
+                                            ${
+                                                secondTeam
+                                                    ?.owner ||
+                                                'Unknown Manager'
+                                            }
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="home-matchup-avatar">
+
+                                        ${
+                                            secondTeam?.avatar
+                                                ? `
+                                                    <img
+                                                        src="${secondTeam.avatar}"
+                                                        alt="${secondTeam.owner}"
+                                                    >
+                                                  `
+                                                : `
+                                                    <span>
+                                                        ${
+                                                            secondTeam
+                                                                ?.owner
+                                                                ?.charAt(0)
+                                                                ?.toUpperCase() ||
+                                                            '?'
+                                                        }
+                                                    </span>
+                                                  `
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        `;
 
                     }
                 )
@@ -1486,31 +1719,19 @@ return `
         );
 
 
-        if (
-            weekNumber
-        ) {
-
-            weekNumber.textContent =
-                'This Week';
-
-        }
+        weekNumber.textContent =
+            'This Week';
 
 
-        if (
-            matchupsContainer
-        ) {
+        matchupsContainer.innerHTML = `
 
-            matchupsContainer.innerHTML = `
+            <div class="matchup-placeholder">
 
-                <div class="matchup-placeholder">
+                Unable to load weekly matchups.
 
-                    Unable to load weekly matchups.
+            </div>
 
-                </div>
-
-            `;
-
-        }
+        `;
 
     }
 
@@ -1518,6 +1739,7 @@ return `
 
 
 loadHomeMatchups();
+
 /*
  * ======================================================
  * HOME — RECENT TRANSACTIONS / WAIVER WIRE
