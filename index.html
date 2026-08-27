@@ -265,17 +265,24 @@
 
 
     <!-- ==================================================
-         THIS WEEK
-    =================================================== -->
+     THIS WEEK
+=================================================== -->
 
-    <section class="home-this-week">
+<section class="home-this-week">
 
-        <h2 class="section-title">
-            This Week
-        </h2>
+    <h2 class="section-title">
+        This Week
+    </h2>
 
 
-        <div class="card">
+    <div class="this-week-layout">
+
+
+        <!-- ==========================================
+             WEEKLY MATCHUPS
+        =========================================== -->
+
+        <div class="card this-week-matchups-card">
 
             <div class="card-header">
 
@@ -307,35 +314,89 @@
 
         </div>
 
-    </section>
 
+        <!-- ==========================================
+             LEAGUE PULSE
+        =========================================== -->
 
-    <!-- ==================================================
-         LEAGUE PULSE
-    =================================================== -->
+        <aside class="card league-pulse-card">
 
-    <section class="league-pulse-section">
+            <div class="card-header">
 
-        <h2 class="section-title">
-            League Pulse
-        </h2>
+                <h3>
+                    League Pulse
+                </h3>
 
-        <div
-            id="home-league-pulse"
-            class="league-pulse-grid"
-        >
-
-            <div class="card">
-
-                <p class="placeholder-text">
-                    League Pulse coming next...
-                </p>
+                <span class="live-indicator">
+                    ● LIVE FROM SLEEPER
+                </span>
 
             </div>
 
-        </div>
 
-    </section>
+            <div
+                id="home-league-pulse"
+                class="league-pulse-grid"
+            >
+
+                <div class="league-pulse-item">
+
+                    <span class="league-pulse-label">
+                        Winning Streak
+                    </span>
+
+                    <strong>
+                        Available after Week 3
+                    </strong>
+
+                </div>
+
+
+                <div class="league-pulse-item">
+
+                    <span class="league-pulse-label">
+                        Losing Streak
+                    </span>
+
+                    <strong>
+                        Available after Week 3
+                    </strong>
+
+                </div>
+
+
+                <div class="league-pulse-item">
+
+                    <span class="league-pulse-label">
+                        Rising Team
+                    </span>
+
+                    <strong>
+                        Available after Week 2
+                    </strong>
+
+                </div>
+
+
+                <div class="league-pulse-item">
+
+                    <span class="league-pulse-label">
+                        Falling Team
+                    </span>
+
+                    <strong>
+                        Available after Week 2
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
 
 
     <!-- ==================================================
