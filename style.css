@@ -7286,17 +7286,16 @@ font-size: 19px;
 
 .home-matchup-left {
     grid-template-columns:
-        46px
+        60px
         minmax(0, 1fr)
         auto;
 }
-
 
 .home-matchup-right {
     grid-template-columns:
         auto
         minmax(0, 1fr)
-        46px;
+        60px;
 }
 
 
