@@ -1933,6 +1933,13 @@ async function loadHomeTransactions() {
 
         }
 
+        
+        const transactionPeriodLabel =
+    nflState.season_type ===
+        'regular'
+        ? `Week ${currentWeek}`
+        : 'Offseason';
+
 
         /*
          * LOAD RECENT TRANSACTIONS
