@@ -54,61 +54,65 @@
     </section>
 
 
-    <!-- ==================================================
-         CURRENT STANDINGS
-    =================================================== -->
+  <!-- ==================================================
+     CURRENT STANDINGS
+=================================================== -->
 
-    <section>
+<section>
 
-        <div class="records-heading">
+    <div class="records-heading">
 
-            <h2 class="section-title">
-                2026 Standings
-            </h2>
+        <h2
+            id="standings-season-title"
+            class="section-title"
+        >
+            Loading Standings...
+        </h2>
 
-            <span class="live-indicator records-live">
-                ● LIVE FROM SLEEPER
-            </span>
+        <span class="live-indicator records-live">
+            ● LIVE FROM SLEEPER
+        </span>
+
+    </div>
+
+
+    <div class="records-table-card">
+
+        <div class="records-table-scroll">
+
+            <table class="standings-page-table">
+
+                <thead>
+
+                    <tr>
+                        <th data-sort="rank">Rank</th>
+                        <th data-sort="team">Team</th>
+                        <th data-sort="owner">Owner</th>
+                        <th data-sort="division">Division</th>
+                        <th data-sort="record">Record</th>
+                        <th data-sort="pf">PF</th>
+                        <th data-sort="playoff">Playoff Picture</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="standings-page-body">
+
+                    <tr>
+                        <td colspan="7">
+                            Loading standings...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </div>
 
+    </div>
 
-        <div class="records-table-card">
-
-            <div class="records-table-scroll">
-
-                <table class="standings-page-table">
-
-                    <thead>
-
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>Manager</th>
-                            <th>Division</th>
-                            <th>Record</th>
-                            <th>PF</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="standings-page-body">
-
-                        <tr>
-                            <td colspan="6">
-                                Loading standings...
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </section>
+</section>
 
 
     <!-- ==================================================
