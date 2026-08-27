@@ -499,13 +499,35 @@ async function loadStandingsPage() {
          * =====================================================
          */
 
-        let displayedTeams =
-            [
-                ...teams
-            ]
-                .sort(
-                    standingsSort
-                );
+/*
+ * Assign each team its true standings rank.
+ * This rank remains attached to the team
+ * even when the table is sorted by another column.
+ */
+
+const officialStandings =
+    [
+        ...teams
+    ]
+        .sort(
+            standingsSort
+        );
+
+
+officialStandings.forEach(
+    (team, index) => {
+
+        team.officialRank =
+            index + 1;
+
+    }
+);
+
+
+let displayedTeams =
+    [
+        ...officialStandings
+    ];
 
 
         let currentSort =
