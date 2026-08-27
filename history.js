@@ -1978,6 +1978,111 @@ const finalStandings =
 
             </div>
 
+<!-- ==========================================
+     FINAL STANDINGS
+=========================================== -->
+
+<h3 class="history-subtitle">
+    Final Standings
+</h3>
+
+
+<div class="records-table-card">
+
+    <div class="records-table-scroll">
+
+        <table class="history-standings-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Rank
+                    </th>
+
+                    <th>
+                        Team
+                    </th>
+
+                    <th>
+                        Owner
+                    </th>
+
+                    <th>
+                        Record
+                    </th>
+
+                    <th>
+                        PF
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                ${finalStandings
+                    .map(
+                        (
+                            team,
+                            index
+                        ) => `
+
+                            <tr>
+
+                                <td>
+                                    ${index + 1}
+                                </td>
+
+                                <td class="history-team-name">
+                                    ${team.team_name}
+                                </td>
+
+                                <td>
+
+                                    ${getLeagueOwnerName(
+                                        team.owner_id,
+                                        team.owner
+                                    )}
+
+                                </td>
+
+                                <td>
+
+                                    ${formatRecord(
+                                        team.wins,
+                                        team.losses,
+                                        team.ties
+                                    )}
+
+                                </td>
+
+                                <td>
+
+                                    ${Number(
+                                        team.points_for ||
+                                        0
+                                    ).toFixed(2)}
+
+                                </td>
+
+                            </tr>
+
+                        `
+                    )
+                    .join('')}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 
             <div class="history-draft-link">
 
