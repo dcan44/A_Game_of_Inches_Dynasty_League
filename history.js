@@ -2047,9 +2047,21 @@ const finalStandings =
     }"
 >
 
-                                <td>
-                                    ${index + 1}
-                                </td>
+<td class="history-final-rank">
+
+    ${
+        index === 0
+            ? '🏆 '
+            : index === 1
+                ? '🥈 '
+                : index === 2
+                    ? '🥉 '
+                    : ''
+    }
+
+    ${index + 1}
+
+</td>
 
                                 <td class="history-team-name">
                                     ${team.team_name}
