@@ -2232,200 +2232,217 @@ const receivedPicks =
          */
 
         function buildWaiverHTML(
-            transaction
-        ) {
+    transaction
+) {
 
-            const adds =
-                transaction.adds ||
-                {};
+    const adds =
+        transaction.adds ||
+        {};
 
-            const drops =
-                transaction.drops ||
-                {};
-
-
-            const involvedRosterIds =
-                new Set([
-                    ...Object.values(adds),
-                    ...Object.values(drops)
-                ]);
+    const drops =
+        transaction.drops ||
+        {};
 
 
-            const rosterId =
-                [...involvedRosterIds][0];
+    /*
+     * Determine which roster made the move.
+     */
+
+    const involvedRosterIds =
+        new Set([
+            ...Object.values(adds),
+            ...Object.values(drops)
+        ]);
 
 
-            const roster =
-                getRoster(
-                    rosterId
-                );
+    const rosterId =
+        [...involvedRosterIds][0];
 
 
-            const addedPlayers =
-                Object.keys(adds)
-                    .map(
-                        getPlayerName
-                    );
+    const roster =
+        getRoster(
+            rosterId
+        );
 
 
-            const droppedPlayers =
-                Object.keys(drops)
-                    .map(
-                        getPlayerName
-                    );
+    /*
+     * Player names.
+     */
+
+    const addedPlayers =
+        Object.keys(
+            adds
+        )
+            .map(
+                getPlayerName
+            );
 
 
-            const label =
-                transaction.type ===
-                    'waiver'
-                    ? 'Waiver'
-                    : 'Free Agent';
+    const droppedPlayers =
+        Object.keys(
+            drops
+        )
+            .map(
+                getPlayerName
+            );
 
 
-            const faabBid =
-                Number(
-                    transaction
-                        ?.settings
-                        ?.waiver_bid ||
-                    0
-                );
+    /*
+     * Build Added / Dropped section.
+     */
+
+    let actionHTML =
+        '';
 
 
-            return `
+    if (
+        addedPlayers.length >
+        0
+    ) {
 
-return `
+        actionHTML += `
 
-    <div class="home-transaction-item waiver-activity-item">
-
-        <div class="home-transaction-main">
-
-            <div class="home-transaction-team">
-
-                <strong>
-                    ${roster.owner}
-                </strong>
+            <div class="
+                home-transaction-action
+                add
+            ">
 
                 <span>
-                    ${roster.team_name}
+                    Added
                 </span>
+
+                <strong>
+                    ${addedPlayers.join(', ')}
+                </strong>
 
             </div>
 
+        `;
 
-            ${actionHTML}
-
-            ${faabHTML}
+    }
 
 
-            <div class="home-transaction-meta">
+    if (
+        droppedPlayers.length >
+        0
+    ) {
 
-                ${
-                    nflState.season_type ===
-                        'regular'
-                        ? `Week ${transaction.week}`
-                        : 'Offseason'
-                }
+        actionHTML += `
+
+            <div class="
+                home-transaction-action
+                drop
+            ">
+
+                <span>
+                    Dropped
+                </span>
+
+                <strong>
+                    ${droppedPlayers.join(', ')}
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * FAAB amount for waiver claims.
+     */
+
+    const faabBid =
+        Number(
+            transaction
+                ?.settings
+                ?.waiver_bid ||
+            0
+        );
+
+
+    let faabHTML =
+        '';
+
+
+    if (
+        transaction.type ===
+        'waiver'
+    ) {
+
+        faabHTML = `
+
+            <div class="home-waiver-faab">
+
+                FAAB:
+
+                <strong>
+                    $${faabBid}
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * Build waiver / free-agent card.
+     *
+     * No "Free Agent" or "Waiver" tag.
+     * Owner and team are displayed at the top.
+     */
+
+    return `
+
+        <div class="
+            home-transaction-item
+            waiver-activity-item
+        ">
+
+            <div class="home-transaction-main">
+
+
+                <div class="home-transaction-team">
+
+                    <strong>
+                        ${roster.owner}
+                    </strong>
+
+                    <span>
+                        ${roster.team_name}
+                    </span>
+
+                </div>
+
+
+                ${actionHTML}
+
+
+                ${faabHTML}
+
+
+                <div class="home-transaction-meta">
+
+                    ${
+                        nflState.season_type ===
+                            'regular'
+                            ? `Week ${transaction.week}`
+                            : 'Offseason'
+                    }
+
+                </div>
+
 
             </div>
 
         </div>
 
-    </div>
+    `;
 
-`;
-
-
-                    <div class="home-transaction-main">
-
-                        <div class="home-transaction-team">
-
-                            <strong>
-                                ${roster.owner}
-                            </strong>
-
-                            <span>
-                                ${roster.team_name}
-                            </span>
-
-                        </div>
-
-
-                        ${
-                            addedPlayers.length
-                                ? `
-                                    <div class="
-                                        home-transaction-action
-                                        add
-                                    ">
-
-                                        <span>
-                                            Added
-                                        </span>
-
-                                        <strong>
-                                            ${addedPlayers.join(', ')}
-                                        </strong>
-
-                                    </div>
-                                  `
-                                : ''
-                        }
-
-
-                        ${
-                            droppedPlayers.length
-                                ? `
-                                    <div class="
-                                        home-transaction-action
-                                        drop
-                                    ">
-
-                                        <span>
-                                            Dropped
-                                        </span>
-
-                                        <strong>
-                                            ${droppedPlayers.join(', ')}
-                                        </strong>
-
-                                    </div>
-                                  `
-                                : ''
-                        }
-
-
-                        ${
-                            transaction.type ===
-                                'waiver'
-                                ? `
-                                    <div class="home-waiver-faab">
-
-                                        FAAB:
-                                        <strong>
-                                            $${faabBid}
-                                        </strong>
-
-                                    </div>
-                                  `
-                                : ''
-                        }
-
-
-<div class="home-transaction-meta">
-    ${
-        nflState.season_type ===
-            'regular'
-            ? `Week ${transaction.week}`
-            : 'Offseason'
-    }
-</div>
-                    </div>
-
-                </div>
-
-            `;
-
-        }
+}
 
 
         /*
