@@ -568,9 +568,9 @@ let displayedTeams =
 
                     row.innerHTML = `
 
-                        <td class="standing-rank">
-                            ${formatRank(index + 1)}
-                        </td>
+<td class="standing-rank">
+    ${formatRank(team.officialRank)}
+</td>
 
                         <td class="standings-team-name">
                             ${team.team_name}
