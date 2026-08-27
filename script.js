@@ -540,6 +540,36 @@ return {
                 )
             );
 
+        /*
+ * ==================================================
+ * TOILET BOWL BYES
+ * ==================================================
+ *
+ * Bottom two teams in the overall standings receive
+ * a first-round Toilet Bowl bye.
+ */
+
+const toiletBowlByeTeams =
+    [
+        ...teams
+    ]
+        .sort(
+            sortStandings
+        )
+        .slice(
+            -2
+        );
+
+
+const toiletBowlByeIds =
+    new Set(
+        toiletBowlByeTeams.map(
+            team =>
+                String(
+                    team.roster_id
+                )
+        )
+    );
 
         /*
          * ==================================================
