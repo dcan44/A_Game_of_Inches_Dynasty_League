@@ -7581,3 +7581,163 @@ font-size: 19px;
 .road-to-championship {
     margin-top: 0;
 }
+/* ======================================================
+   LEAGUE PULSE
+====================================================== */
+
+.league-pulse-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+    padding: 16px;
+}
+
+
+.league-pulse-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 120px;
+
+    padding:
+        16px
+        12px;
+
+    background: #F7F8F9;
+
+    border:
+        1px solid
+        #E1E4E6;
+
+    border-radius: 5px;
+
+    text-align: center;
+}
+
+
+/* ======================================================
+   PULSE LABEL
+====================================================== */
+
+.league-pulse-label {
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   PULSE VALUE
+====================================================== */
+
+.league-pulse-value {
+    display: block;
+
+    margin-top: 10px;
+
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ======================================================
+   PULSE DETAIL
+====================================================== */
+
+.league-pulse-detail {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #7A8288;
+
+    font-size: 10px;
+    font-style: italic;
+}
+
+
+/* ======================================================
+   POSITIVE PULSE
+====================================================== */
+
+.pulse-winning,
+.pulse-rising {
+    border-top:
+        3px solid
+        #4E8B57;
+}
+
+
+/* ======================================================
+   NEGATIVE PULSE
+====================================================== */
+
+.pulse-losing,
+.pulse-falling {
+    border-top:
+        3px solid
+        #9A4A4A;
+}
+
+
+/* ======================================================
+   LEAGUE PULSE — MOBILE
+====================================================== */
+
+@media (max-width: 600px) {
+
+    .league-pulse-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+
+        padding: 10px;
+    }
+
+
+    .league-pulse-item {
+        min-height: 100px;
+
+        padding:
+            12px
+            8px;
+    }
+
+
+    .league-pulse-label {
+        font-size: 11px;
+    }
+
+
+    .league-pulse-value {
+        font-size: 18px;
+    }
+
+
+    .league-pulse-detail {
+        font-size: 8px;
+    }
+
+}
