@@ -1,18 +1,200 @@
+/*
+ * ======================================================
+ * HOME — CURRENT LEAGUE LOOKUP
+ * ======================================================
+ *
+ * Uses the current NFL season to locate the current
+ * A Game of Inches Sleeper league automatically.
+ *
+ * This avoids hard-coding a new league ID each season.
+ * ======================================================
+ */
+
+async function getCurrentHomeLeague() {
+
+    const leagueOwnerUserId =
+        "978544154789699584";
+
+
+    /*
+     * Determine Sleeper's current NFL season.
+     */
+
+    const stateResponse =
+        await fetch(
+            'https://api.sleeper.app/v1/state/nfl'
+        );
+
+
+    if (
+        !stateResponse.ok
+    ) {
+
+        throw new Error(
+            'Unable to retrieve NFL state.'
+        );
+
+    }
+
+
+    const nflState =
+        await stateResponse.json();
+
+
+    const season =
+        String(
+            nflState.season
+        );
+
+
+    /*
+     * Find this user's leagues for the current season.
+     */
+
+    const leaguesResponse =
+        await fetch(
+            `https://api.sleeper.app/v1/user/${leagueOwnerUserId}/leagues/nfl/${season}`
+        );
+
+
+    if (
+        !leaguesResponse.ok
+    ) {
+
+        throw new Error(
+            'Unable to retrieve current Sleeper leagues.'
+        );
+
+    }
+
+
+    const leagues =
+        await leaguesResponse.json();
+
+
+    /*
+     * Locate A Game of Inches.
+     */
+
+    const league =
+        leagues.find(
+            item =>
+                String(
+                    item.name ||
+                    ''
+                )
+                    .toLowerCase()
+                    .includes(
+                        'a game of inches'
+                    )
+        );
+
+
+    if (
+        !league
+    ) {
+
+        throw new Error(
+            `Unable to find A Game of Inches for ${season}.`
+        );
+
+    }
+
+
+    return league;
+
+}
+
+
+
+/*
+ * ======================================================
+ * HOME — DIVISION STANDINGS
+ * ======================================================
+ */
+
 async function loadStandings() {
+
+    const standingsContainer =
+        document.getElementById(
+            'home-division-standings'
+        );
+
+
+    if (
+        !standingsContainer
+    ) {
+
+        return;
+
+    }
+
 
     try {
 
-        const leagueId =
-            "1312098239821914112";
+        /*
+         * ==================================================
+         * CURRENT LEAGUE
+         * ==================================================
+         */
 
+        const league =
+            await getCurrentHomeLeague();
+
+
+        const leagueId =
+            league.league_id;
+
+
+        /*
+         * Update both season labels while we're here.
+         */
+
+        const homeSeasonLabel =
+            document.getElementById(
+                'home-season-label'
+            );
+
+
+        const seasonHeroTitle =
+            document.getElementById(
+                'season-hero-title'
+            );
+
+
+        if (
+            homeSeasonLabel
+        ) {
+
+            homeSeasonLabel.textContent =
+                `${league.season} Season`;
+
+        }
+
+
+        if (
+            seasonHeroTitle
+        ) {
+
+            seasonHeroTitle.textContent =
+                `${league.season} Season`;
+
+        }
+
+
+        /*
+         * ==================================================
+         * LOAD USERS + ROSTERS
+         * ==================================================
+         */
 
         const [
-            teamsResponse,
+            usersResponse,
             rostersResponse
         ] = await Promise.all([
 
             fetch(
-                '/api/teams'
+                `https://api.sleeper.app/v1/league/${leagueId}/users`
             ),
 
             fetch(
@@ -23,174 +205,129 @@ async function loadStandings() {
 
 
         if (
-            !teamsResponse.ok ||
+            !usersResponse.ok ||
             !rostersResponse.ok
         ) {
 
             throw new Error(
-                'Unable to load standings.'
+                'Unable to retrieve division standings.'
             );
 
         }
 
 
-        const data =
-            await teamsResponse.json();
+        const users =
+            await usersResponse.json();
 
 
         const rosters =
             await rostersResponse.json();
 
 
-        const standingsBody =
-            document.getElementById(
-                'standings-body'
-            );
-
-
-        if (
-            !data.teams
-        ) {
-
-            standingsBody.innerHTML = `
-
-                <tr>
-
-                    <td colspan="5">
-                        Unable to load standings.
-                    </td>
-
-                </tr>
-
-            `;
-
-            return;
-
-        }
-
-
         /*
          * ==================================================
-         * DIVISION LOOKUP
+         * USER LOOKUP
          * ==================================================
-         *
-         * Sleeper stores division on the roster settings.
-         *
-         * We map both roster ID and owner ID so this still
-         * works regardless of which identifier /api/teams
-         * supplies.
          */
 
-        const divisionByRosterId =
+        const userMap =
             {};
 
 
-        const divisionByOwnerId =
-            {};
+        users.forEach(
+            user => {
 
-
-        rosters.forEach(
-            roster => {
-
-                const division =
-                    Number(
-                        roster
-                            ?.settings
-                            ?.division
-                    );
-
-
-                if (
-                    Number.isFinite(
-                        division
-                    )
-                ) {
-
-                    divisionByRosterId[
-                        String(
-                            roster.roster_id
-                        )
-                    ] =
-                        division;
-
-
-                    if (
-                        roster.owner_id
-                    ) {
-
-                        divisionByOwnerId[
-                            String(
-                                roster.owner_id
-                            )
-                        ] =
-                            division;
-
-                    }
-
-                }
+                userMap[
+                    user.user_id
+                ] =
+                    user;
 
             }
         );
 
 
         /*
-         * Add the division to each standings team.
+         * ==================================================
+         * BUILD TEAM DATA
+         * ==================================================
          */
 
         const teams =
-            data.teams.map(
-                team => {
+            rosters.map(
+                roster => {
 
-                    let division =
-                        null;
+                    const user =
+                        userMap[
+                            roster.owner_id
+                        ];
 
 
-                    if (
-                        team.roster_id !==
-                            undefined &&
-                        divisionByRosterId[
-                            String(
-                                team.roster_id
-                            )
-                        ] !==
-                            undefined
-                    ) {
+                    const settings =
+                        roster.settings ||
+                        {};
 
-                        division =
-                            divisionByRosterId[
-                                String(
-                                    team.roster_id
-                                )
-                            ];
 
-                    }
+                    /*
+                     * Sleeper stores PF as whole points
+                     * plus a decimal component.
+                     */
 
-                    else if (
-                        team.owner_id &&
-                        divisionByOwnerId[
-                            String(
-                                team.owner_id
-                            )
-                        ] !==
-                            undefined
-                    ) {
-
-                        division =
-                            divisionByOwnerId[
-                                String(
-                                    team.owner_id
-                                )
-                            ];
-
-                    }
+                    const pointsFor =
+                        Number(
+                            settings.fpts ||
+                            0
+                        ) +
+                        (
+                            Number(
+                                settings.fpts_decimal ||
+                                0
+                            ) /
+                            100
+                        );
 
 
                     return {
 
-                        ...team,
+                        roster_id:
+                            roster.roster_id,
+
+                        owner_id:
+                            roster.owner_id,
+
+                        team_name:
+                            user
+                                ?.metadata
+                                ?.team_name
+                                ?.trim() ||
+                            user
+                                ?.display_name ||
+                            `Team ${roster.roster_id}`,
+
+                        wins:
+                            Number(
+                                settings.wins ||
+                                0
+                            ),
+
+                        losses:
+                            Number(
+                                settings.losses ||
+                                0
+                            ),
+
+                        ties:
+                            Number(
+                                settings.ties ||
+                                0
+                            ),
+
+                        points_for:
+                            pointsFor,
 
                         division:
-                            division
+                            Number(
+                                settings.division
+                            )
 
                     };
 
@@ -202,9 +339,6 @@ async function loadStandings() {
          * ==================================================
          * STANDINGS SORT
          * ==================================================
-         *
-         * Record first.
-         * Points For is the tiebreaker.
          */
 
         const sortStandings =
@@ -214,25 +348,21 @@ async function loadStandings() {
             ) => {
 
                 if (
-                    Number(b.wins) !==
-                    Number(a.wins)
+                    b.wins !==
+                    a.wins
                 ) {
 
                     return (
-                        Number(b.wins) -
-                        Number(a.wins)
+                        b.wins -
+                        a.wins
                     );
 
                 }
 
 
                 return (
-                    Number(
-                        b.points_for
-                    ) -
-                    Number(
-                        a.points_for
-                    )
+                    b.points_for -
+                    a.points_for
                 );
 
             };
@@ -240,7 +370,7 @@ async function loadStandings() {
 
         /*
          * ==================================================
-         * FIND DIVISION WINNERS
+         * GROUP TEAMS BY DIVISION
          * ==================================================
          */
 
@@ -251,24 +381,22 @@ async function loadStandings() {
         teams.forEach(
             team => {
 
-                if (
-                    team.division ===
-                    null
-                ) {
-
-                    return;
-
-                }
+                const division =
+                    Number.isFinite(
+                        team.division
+                    )
+                        ? team.division
+                        : 0;
 
 
                 if (
                     !divisionGroups[
-                        team.division
+                        division
                     ]
                 ) {
 
                     divisionGroups[
-                        team.division
+                        division
                     ] =
                         [];
 
@@ -276,7 +404,7 @@ async function loadStandings() {
 
 
                 divisionGroups[
-                    team.division
+                    division
                 ].push(
                     team
                 );
@@ -284,6 +412,12 @@ async function loadStandings() {
             }
         );
 
+
+        /*
+         * ==================================================
+         * DIVISION WINNERS
+         * ==================================================
+         */
 
         const divisionWinners =
             Object.values(
@@ -307,11 +441,11 @@ async function loadStandings() {
 
         /*
          * ==================================================
-         * DETERMINE BYES
+         * BYE TEAMS
          * ==================================================
          *
-         * The two best division winners receive Week 15
-         * byes.
+         * Top two division winners:
+         * Record, then PF.
          */
 
         const rankedDivisionWinners =
@@ -333,20 +467,18 @@ async function loadStandings() {
                     .map(
                         team =>
                             String(
-                                team.roster_id ??
-                                team.owner_id
+                                team.roster_id
                             )
                     )
             );
 
 
-        const divisionWinnerTeams =
+        const divisionWinnerIds =
             new Set(
                 divisionWinners.map(
                     team =>
                         String(
-                            team.roster_id ??
-                            team.owner_id
+                            team.roster_id
                         )
                 )
             );
@@ -354,38 +486,21 @@ async function loadStandings() {
 
         /*
          * ==================================================
-         * FIND WILD CARDS
+         * WILD CARDS
          * ==================================================
          *
-         * Remove the three division winners.
-         *
-         * Rank every remaining team by:
-         *
-         * 1. Record
-         * 2. Points For
-         *
-         * The top three are Wild Cards.
+         * Best three remaining teams across all divisions.
          */
 
         const wildCards =
             teams
                 .filter(
-                    team => {
-
-                        const teamId =
+                    team =>
+                        !divisionWinnerIds.has(
                             String(
-                                team.roster_id ??
-                                team.owner_id
-                            );
-
-
-                        return (
-                            !divisionWinnerTeams.has(
-                                teamId
+                                team.roster_id
                             )
-                        );
-
-                    }
+                        )
                 )
                 .sort(
                     sortStandings
@@ -396,13 +511,12 @@ async function loadStandings() {
                 );
 
 
-        const wildCardTeams =
+        const wildCardIds =
             new Set(
                 wildCards.map(
                     team =>
                         String(
-                            team.roster_id ??
-                            team.owner_id
+                            team.roster_id
                         )
                 )
             );
@@ -410,7 +524,7 @@ async function loadStandings() {
 
         /*
          * ==================================================
-         * PLAYOFF STATUS
+         * PLAYOFF LABEL
          * ==================================================
          */
 
@@ -418,16 +532,15 @@ async function loadStandings() {
             team
         ) {
 
-            const teamId =
+            const id =
                 String(
-                    team.roster_id ??
-                    team.owner_id
+                    team.roster_id
                 );
 
 
             if (
                 byeTeams.has(
-                    teamId
+                    id
                 )
             ) {
 
@@ -448,8 +561,8 @@ async function loadStandings() {
 
 
             if (
-                divisionWinnerTeams.has(
-                    teamId
+                divisionWinnerIds.has(
+                    id
                 )
             ) {
 
@@ -470,8 +583,8 @@ async function loadStandings() {
 
 
             if (
-                wildCardTeams.has(
-                    teamId
+                wildCardIds.has(
+                    id
                 )
             ) {
 
@@ -509,67 +622,207 @@ async function loadStandings() {
 
         /*
          * ==================================================
-         * DISPLAY OVERALL STANDINGS
+         * BUILD DIVISION CARDS
          * ==================================================
          */
 
-        const sortedTeams =
-            [
-                ...teams
-            ]
+        const divisionNumbers =
+            Object.keys(
+                divisionGroups
+            )
+                .map(
+                    Number
+                )
                 .sort(
-                    sortStandings
+                    (a, b) =>
+                        a - b
                 );
 
 
-        standingsBody.innerHTML =
-            '';
+        standingsContainer.innerHTML =
+            divisionNumbers
+                .map(
+                    divisionNumber => {
+
+                        const divisionTeams =
+                            [
+                                ...divisionGroups[
+                                    divisionNumber
+                                ]
+                            ]
+                                .sort(
+                                    sortStandings
+                                );
 
 
-        sortedTeams.forEach(
-            team => {
+                        /*
+                         * Sleeper commonly stores division
+                         * names in league metadata.
+                         *
+                         * Fall back to Division 1, etc.
+                         */
 
-                const row =
-                    document.createElement(
-                        'tr'
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${team.team_name}
-                    </td>
-
-                    <td>
-                        ${team.wins}
-                    </td>
-
-                    <td>
-                        ${team.losses}
-                    </td>
-
-                    <td>
-                        ${
-                            Number(
-                                team.points_for
-                            ).toFixed(2)
-                        }
-                    </td>
-
-                    <td>
-                        ${getPlayoffStatus(team)}
-                    </td>
-
-                `;
+                        const divisionName =
+                            league
+                                ?.metadata
+                                ?.[
+                                    `division_${divisionNumber}`
+                                ] ||
+                            `Division ${divisionNumber}`;
 
 
-                standingsBody.appendChild(
-                    row
-                );
+                        const rows =
+                            divisionTeams
+                                .map(
+                                    (
+                                        team,
+                                        index
+                                    ) => {
 
-            }
-        );
+                                        let record =
+                                            `${team.wins}-${team.losses}`;
+
+
+                                        if (
+                                            team.ties >
+                                            0
+                                        ) {
+
+                                            record +=
+                                                `-${team.ties}`;
+
+                                        }
+
+
+                                        return `
+
+                                            <tr>
+
+                                                <td
+                                                    class="
+                                                        division-rank
+                                                    "
+                                                >
+                                                    ${index + 1}
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        division-team-name
+                                                    "
+                                                >
+                                                    ${team.team_name}
+                                                </td>
+
+
+                                                <td>
+                                                    ${record}
+                                                </td>
+
+
+                                                <td>
+                                                    ${
+                                                        team
+                                                            .points_for
+                                                            .toFixed(2)
+                                                    }
+                                                </td>
+
+
+                                                <td>
+                                                    ${
+                                                        getPlayoffStatus(
+                                                            team
+                                                        )
+                                                    }
+                                                </td>
+
+                                            </tr>
+
+                                        `;
+
+                                    }
+                                )
+                                .join('');
+
+
+                        return `
+
+                            <div
+                                class="
+                                    card
+                                    division-standings-card
+                                "
+                            >
+
+                                <div class="card-header">
+
+                                    <h3>
+                                        ${divisionName}
+                                    </h3>
+
+                                </div>
+
+
+                                <div
+                                    class="
+                                        division-table-scroll
+                                    "
+                                >
+
+                                    <table
+                                        class="
+                                            division-standings-table
+                                        "
+                                    >
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>
+                                                    #
+                                                </th>
+
+                                                <th>
+                                                    Team
+                                                </th>
+
+                                                <th>
+                                                    Record
+                                                </th>
+
+                                                <th>
+                                                    PF
+                                                </th>
+
+                                                <th>
+                                                    Playoff Picture
+                                                </th>
+
+                                            </tr>
+
+                                        </thead>
+
+
+                                        <tbody>
+
+                                            ${rows}
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join('');
 
 
     } catch (
@@ -577,30 +830,27 @@ async function loadStandings() {
     ) {
 
         console.error(
-            'Error loading standings:',
+            'Error loading division standings:',
             error
         );
 
 
-        document
-            .getElementById(
-                'standings-body'
-            )
-            .innerHTML = `
+        standingsContainer.innerHTML = `
 
-                <tr>
+            <div class="card">
 
-                    <td colspan="5">
-                        Unable to load standings.
-                    </td>
+                <p class="placeholder-text">
+                    Unable to load division standings.
+                </p>
 
-                </tr>
+            </div>
 
-            `;
+        `;
 
     }
 
 }
+
 
 loadStandings();
 async function loadHomeSeason() {
