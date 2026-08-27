@@ -1948,8 +1948,8 @@ main {
     display: inline-block;
 
     padding:
-        4px
-        6px;
+        5px
+        7px;
 
     border-radius: 3px;
 
@@ -1957,7 +1957,7 @@ main {
         'Oswald',
         sans-serif;
 
-    font-size: 7px;
+    font-size: 9px;
 
     font-weight: 700;
 
