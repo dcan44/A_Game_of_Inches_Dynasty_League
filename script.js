@@ -2293,11 +2293,46 @@ const receivedPicks =
 
             return `
 
-                <div class="home-transaction-item">
+return `
 
-                    <div class="home-transaction-type">
-                        ${label}
-                    </div>
+    <div class="home-transaction-item waiver-activity-item">
+
+        <div class="home-transaction-main">
+
+            <div class="home-transaction-team">
+
+                <strong>
+                    ${roster.owner}
+                </strong>
+
+                <span>
+                    ${roster.team_name}
+                </span>
+
+            </div>
+
+
+            ${actionHTML}
+
+            ${faabHTML}
+
+
+            <div class="home-transaction-meta">
+
+                ${
+                    nflState.season_type ===
+                        'regular'
+                        ? `Week ${transaction.week}`
+                        : 'Offseason'
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+`;
 
 
                     <div class="home-transaction-main">
