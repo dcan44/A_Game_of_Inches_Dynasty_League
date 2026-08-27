@@ -2209,9 +2209,14 @@ const receivedPicks =
                             ${sides}
                         </div>
 
-                        <div class="home-transaction-meta">
-                            Week ${transaction.week}
-                        </div>
+<div class="home-transaction-meta">
+    ${
+        nflState.season_type ===
+            'regular'
+            ? `Week ${transaction.week}`
+            : 'Offseason'
+    }
+</div>
 
                     </div>
 
