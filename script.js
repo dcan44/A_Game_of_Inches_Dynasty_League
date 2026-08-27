@@ -2092,21 +2092,21 @@ async function loadHomeTransactions() {
                                     );
 
 
-                            const receivedPicks =
-                                draftPicks
-                                    .filter(
-                                        pick =>
-                                            Number(
-                                                pick.roster_id
-                                            ) ===
-                                            Number(
-                                                rosterId
-                                            )
-                                    )
-                                    .map(
-                                        pick =>
-                                            `${pick.season} Round ${pick.round} Pick`
-                                    );
+const receivedPicks =
+    draftPicks
+        .filter(
+            pick =>
+                Number(
+                    pick.owner_id
+                ) ===
+                Number(
+                    rosterId
+                )
+        )
+        .map(
+            pick =>
+                `${pick.season} Round ${pick.round} Pick`
+        );
 
 
                             const assets =
