@@ -1986,6 +1986,14 @@ const finalStandings =
     Final Standings
 </h3>
 
+<div class="head-to-head-note">
+
+    Final positions 1–6 reflect playoff results.
+    Positions 7–12 are ranked by regular-season record,
+    with Points For as the tiebreaker.
+    Toilet Bowl results do not affect final standings.
+
+</div>
 
 <div class="records-table-card">
 
