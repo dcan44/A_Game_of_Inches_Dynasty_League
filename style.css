@@ -8661,3 +8661,23 @@ font-size: 19px;
 .history-final-nonplayoff {
     background: white;
 }
+
+/* ======================================================
+   HISTORY — FINAL STANDINGS NOTE
+====================================================== */
+
+.history-final-standings-note {
+    margin:
+        -8px
+        0
+        16px;
+
+    padding:
+        0
+        2px;
+
+    color: #697178;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
