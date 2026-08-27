@@ -726,14 +726,21 @@ return {
                                                 </td>
 
 
-                                                <td
-                                                    class="
-                                                        division-team-name
-                                                    "
-                                                >
-                                                    ${team.team_name}
-                                                </td>
+                                            <td
+    class="
+        division-team-name
+    "
+>
 
+    <strong>
+        ${team.owner}
+    </strong>
+
+    <span>
+        ${team.team_name}
+    </span>
+
+</td>
 
                                                 <td>
                                                     ${record}
