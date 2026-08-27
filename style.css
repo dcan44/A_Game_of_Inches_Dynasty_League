@@ -7741,3 +7741,473 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   LEAGUE ACTIVITY
+====================================================== */
+
+.league-activity-section {
+    margin-top: 34px;
+}
+
+
+.league-activity-card {
+    min-width: 0;
+}
+
+
+/* ======================================================
+   WAIVER COUNTDOWN
+====================================================== */
+
+.waiver-countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 5px;
+
+    margin:
+        16px
+        16px
+        8px;
+
+    padding:
+        16px;
+
+    background:
+        #F4F6F7;
+
+    border:
+        1px solid
+        #DDE1E4;
+
+    border-radius: 5px;
+
+    text-align: center;
+}
+
+
+.waiver-countdown-label {
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+}
+
+
+.waiver-countdown-time {
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+.waiver-countdown-schedule {
+    color:
+        #7A8288;
+
+    font-size: 9px;
+    font-style: italic;
+}
+
+
+.waiver-countdown-inactive {
+    color:
+        var(--silver);
+
+    font-size: 20px;
+}
+
+
+/* ======================================================
+   TRADE ITEM
+====================================================== */
+
+.home-trade-item {
+    padding:
+        16px;
+}
+
+
+.home-trade-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        34px
+        minmax(0, 1fr);
+
+    align-items: stretch;
+
+    gap: 10px;
+}
+
+
+/* ======================================================
+   TRADE SIDE
+====================================================== */
+
+.home-trade-side {
+    min-width: 0;
+
+    padding:
+        12px;
+
+    background:
+        #F7F8F9;
+
+    border:
+        1px solid
+        #E1E4E6;
+
+    border-radius:
+        5px;
+}
+
+
+.home-trade-team {
+    padding-bottom:
+        8px;
+
+    border-bottom:
+        1px solid
+        #DDE1E4;
+
+    text-align:
+        center;
+}
+
+
+.home-trade-team strong {
+    display: block;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+.home-trade-team span {
+    display: block;
+
+    margin-top:
+        2px;
+
+    color:
+        #7A8288;
+
+    font-size:
+        9px;
+
+    font-style:
+        italic;
+}
+
+
+/* ======================================================
+   TRADE RECEIVES
+====================================================== */
+
+.home-trade-received {
+    margin-top:
+        9px;
+}
+
+
+.home-trade-received small {
+    display:
+        block;
+
+    margin-bottom:
+        6px;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1px;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+}
+
+
+.home-trade-asset {
+    margin-top:
+        4px;
+
+    color:
+        #39434A;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1.25;
+
+    text-align:
+        center;
+}
+
+
+/* ======================================================
+   TRADE ARROW
+====================================================== */
+
+.home-trade-arrow {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        24px;
+
+    font-weight:
+        700;
+}
+
+
+/* ======================================================
+   WAIVER / FREE AGENT TEAM
+====================================================== */
+
+.home-transaction-team strong {
+    display:
+        block;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+}
+
+
+.home-transaction-team span {
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        #7A8288;
+
+    font-size:
+        9px;
+
+    font-style:
+        italic;
+}
+
+
+/* ======================================================
+   WAIVER ACTIONS
+====================================================== */
+
+.home-transaction-action {
+    margin-top:
+        7px;
+}
+
+
+.home-transaction-action span {
+    display:
+        block;
+
+    color:
+        var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .7px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.home-transaction-action strong {
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        #39434A;
+
+    font-size:
+        11px;
+}
+
+
+.home-transaction-action.add strong {
+    color:
+        #356A3F;
+}
+
+
+.home-transaction-action.drop strong {
+    color:
+        #8A4444;
+}
+
+
+/* ======================================================
+   FAAB
+====================================================== */
+
+.home-waiver-faab {
+    margin-top:
+        7px;
+
+    color:
+        #7A8288;
+
+    font-size:
+        9px;
+}
+
+
+.home-waiver-faab strong {
+    color:
+        var(--navy);
+
+    font-size:
+        11px;
+}
+
+
+/* ======================================================
+   TRANSACTION META
+====================================================== */
+
+.home-transaction-meta {
+    margin-top:
+        9px;
+
+    color:
+        #9AA1A6;
+
+    font-size:
+        8px;
+
+    text-align:
+        right;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ======================================================
+   LEAGUE ACTIVITY — MOBILE
+====================================================== */
+
+@media (max-width: 700px) {
+
+    .home-trade-layout {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            8px;
+    }
+
+
+    .home-trade-arrow {
+        min-height:
+            20px;
+
+        font-size:
+            18px;
+
+        transform:
+            rotate(90deg);
+    }
+
+
+    .waiver-countdown-time {
+        font-size:
+            22px;
+    }
+
+
+    .waiver-countdown-inactive {
+        font-size:
+            17px;
+    }
+
+}
