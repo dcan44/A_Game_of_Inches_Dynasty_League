@@ -8468,3 +8468,130 @@ font-size: 19px;
     }
 
 }
+/* ======================================================
+   WAIVER ACTIVITY — CLEAN LAYOUT
+====================================================== */
+
+#home-waivers .waiver-activity-item {
+    display: block;
+
+    position: relative;
+
+    min-height: 145px;
+
+    padding:
+        16px
+        16px
+        30px;
+}
+
+
+#home-waivers .home-transaction-main {
+    position: relative;
+
+    height: 100%;
+}
+
+
+#home-waivers .home-transaction-team {
+    margin-bottom: 14px;
+
+    text-align: left;
+}
+
+
+#home-waivers .home-transaction-team strong {
+    display: block;
+
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+#home-waivers .home-transaction-team span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7A8288;
+
+    font-size: 10px;
+    font-style: italic;
+}
+
+
+/* ======================================================
+   LARGER ADDED / DROPPED
+====================================================== */
+
+#home-waivers .home-transaction-action {
+    margin-top: 10px;
+}
+
+
+#home-waivers .home-transaction-action span {
+    display: block;
+
+    min-width: 0;
+
+    margin-bottom: 2px;
+
+    color: #8B9398;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+#home-waivers .home-transaction-action strong {
+    display: block;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+#home-waivers .home-transaction-action.add strong {
+    color: #356A3F;
+}
+
+
+#home-waivers .home-transaction-action.drop strong {
+    color: #8A4444;
+}
+
+
+/* ======================================================
+   WEEK / OFFSEASON — BOTTOM RIGHT
+====================================================== */
+
+#home-waivers .home-transaction-meta {
+    position: absolute;
+
+    right: 0;
+    bottom: -20px;
+
+    margin: 0;
+
+    color: #A1A7AB;
+
+    font-size: 8px;
+
+    text-align: right;
+
+    text-transform: uppercase;
+}
