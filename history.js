@@ -1901,7 +1901,7 @@ const finalStandings =
                                 </th>
 
                                 <th>
-                                    Manager
+                                    Owner
                                 </th>
 
                                 <th>
