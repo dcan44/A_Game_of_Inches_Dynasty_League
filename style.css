@@ -8211,3 +8211,239 @@ font-size: 19px;
     }
 
 }
+/* ======================================================
+   WAIVER WIRE ACTIVITY
+====================================================== */
+
+#home-waivers {
+    padding:
+        8px
+        16px
+        16px;
+}
+
+
+/* ======================================================
+   INDIVIDUAL WAIVER / FREE AGENT ITEM
+====================================================== */
+
+#home-waivers .home-transaction-item {
+    display: grid;
+
+    grid-template-columns:
+        90px
+        minmax(0, 1fr);
+
+    gap: 14px;
+
+    margin-top: 10px;
+
+    padding:
+        14px
+        16px;
+
+    background: #F7F8F9;
+
+    border:
+        1px solid
+        #E1E4E6;
+
+    border-radius: 5px;
+}
+
+
+/* ======================================================
+   TRANSACTION TYPE
+====================================================== */
+
+#home-waivers .home-transaction-type {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    padding-top: 3px;
+
+    color: var(--silver);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   MANAGER / TEAM
+====================================================== */
+
+#home-waivers .home-transaction-team {
+    margin-bottom: 9px;
+}
+
+
+#home-waivers .home-transaction-team strong {
+    display: block;
+
+    color: var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+#home-waivers .home-transaction-team span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7A8288;
+
+    font-size: 10px;
+    font-style: italic;
+}
+
+
+/* ======================================================
+   ADDED / DROPPED
+====================================================== */
+
+#home-waivers .home-transaction-action {
+    margin-top: 7px;
+}
+
+
+#home-waivers .home-transaction-action span {
+    display: inline-block;
+
+    min-width: 55px;
+
+    color: #92999E;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+}
+
+
+#home-waivers .home-transaction-action strong {
+    font-size: 12px;
+}
+
+
+#home-waivers .home-transaction-action.add strong {
+    color: #356A3F;
+}
+
+
+#home-waivers .home-transaction-action.drop strong {
+    color: #8A4444;
+}
+
+
+/* ======================================================
+   FAAB
+====================================================== */
+
+#home-waivers .home-waiver-faab {
+    display: inline-block;
+
+    margin-top: 9px;
+
+    padding:
+        4px
+        7px;
+
+    background: #E8ECEF;
+
+    border-radius: 3px;
+
+    color: #6F777C;
+
+    font-size: 9px;
+}
+
+
+#home-waivers .home-waiver-faab strong {
+    color: var(--navy);
+
+    font-size: 11px;
+}
+
+
+/* ======================================================
+   WEEK
+====================================================== */
+
+#home-waivers .home-transaction-meta {
+    margin-top: 8px;
+
+    color: #A1A7AB;
+
+    font-size: 8px;
+
+    text-align: right;
+}
+
+
+/* ======================================================
+   WAIVER WIRE — MOBILE
+====================================================== */
+
+@media (max-width: 600px) {
+
+    #home-waivers {
+        padding:
+            6px
+            10px
+            12px;
+    }
+
+
+    #home-waivers .home-transaction-item {
+        grid-template-columns:
+            1fr;
+
+        gap: 6px;
+
+        padding:
+            12px;
+    }
+
+
+    #home-waivers .home-transaction-type {
+        justify-content: flex-start;
+
+        padding-top: 0;
+
+        font-size: 9px;
+    }
+
+
+    #home-waivers .home-transaction-team strong {
+        font-size: 14px;
+    }
+
+
+    #home-waivers .home-transaction-action strong {
+        font-size: 11px;
+    }
+
+}
