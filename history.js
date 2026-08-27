@@ -252,6 +252,84 @@ async function loadHistorySeason(
         const matchupHistoryData =
             await matchupHistoryResponse.json();
 
+/*
+ * =====================================================
+ * TOILET BOWL LOSER
+ * =====================================================
+ *
+ * Used only to mark the Hall of Shame loser.
+ * This does NOT affect Final Standings rank.
+ */
+
+let toiletBowlLoserRosterId =
+    null;
+
+
+try {
+
+    const losersBracketResponse =
+        await fetch(
+            `https://api.sleeper.app/v1/league/${seasonData.league_id}/losers_bracket`
+        );
+
+
+    if (
+        losersBracketResponse.ok
+    ) {
+
+        const losersBracket =
+            await losersBracketResponse.json();
+
+
+        if (
+            losersBracket.length >
+            0
+        ) {
+
+            const finalRound =
+                Math.max(
+                    ...losersBracket.map(
+                        game =>
+                            game.r ||
+                            0
+                    )
+                );
+
+
+            const toiletBowlFinal =
+                losersBracket.find(
+                    game =>
+                        game.r === finalRound &&
+                        game.p === 1
+                );
+
+
+            if (
+                toiletBowlFinal
+            ) {
+
+                toiletBowlLoserRosterId =
+                    Number(
+                        toiletBowlFinal.w
+                    );
+
+            }
+
+        }
+
+    }
+
+}
+catch (
+    error
+) {
+
+    console.warn(
+        'Unable to determine Toilet Bowl loser:',
+        error
+    );
+
+}       
 
         /*
          * =====================================================
