@@ -2028,32 +2028,31 @@ main {
 @media (max-width: 650px) {
 
     .home-section-heading {
-        align-items:
-            flex-start;
+        align-items: flex-start;
+        flex-direction: column;
 
-        flex-direction:
-            column;
-
-        margin-bottom:
-            14px;
+        margin-bottom: 14px;
     }
 
 
     .division-standings-table th {
-        font-size:
-            8px;
+        font-size: 8px;
     }
 
 
     .division-standings-table td {
-        font-size:
-            9px;
+        font-size: 9px;
     }
 
+}
+
+
+/* ======================================================
+   DIVISION OWNER / TEAM NAME
+====================================================== */
 
 .division-team-name {
-    color:
-        var(--navy) !important;
+    color: var(--navy) !important;
 
     font-family:
         'Oswald',
@@ -2074,7 +2073,7 @@ main {
 .division-team-name span {
     display: block;
 
-    margin-top: 2px;
+    margin-top: 3px;
 
     color: #777F85;
 
@@ -2085,7 +2084,6 @@ main {
     font-size: 8px;
     font-weight: 400;
 }
-
 
 /* ======================================================
    WEEK / MATCHUPS
@@ -7437,23 +7435,47 @@ footer p {
     }
 
 }
+
+/* ======================================================
+   HOME — WELCOME / SEASON SPACING
+====================================================== */
+
 .welcome-section {
-    margin-bottom: 30px;
+    margin-bottom: 36px;
 }
+
+
+.season-hero {
+    margin-bottom: 26px;
+}
+
+
+/* ======================================================
+   SEASON LIVE INDICATOR
+====================================================== */
+
 .season-live-indicator {
+    position: absolute;
+
+    right: 22px;
+    bottom: 14px;
+
     display: block;
 
-    margin-top: 14px;
+    margin: 0;
 
     color: #A9E9B4;
 
     font-size: 10px;
     font-weight: 600;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
 
+    text-align: right;
     text-transform: uppercase;
 }
+
+
 .road-to-championship {
-    margin-top: 24px;
+    margin-top: 0;
 }
