@@ -7337,14 +7337,17 @@ font-size: 19px;
     position: relative;
 
     border:
-        2px solid
+        4px solid
         #C9A227;
 
     box-shadow:
         0 4px 12px
-        rgba(0, 0, 0, 0.10);
+        rgba(0, 0, 0, 0.12);
 
-    padding-top: 28px;
+    padding-top: 52px;
+    padding-bottom: 18px;
+
+    overflow: hidden;
 }
 
 
