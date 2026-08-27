@@ -3800,16 +3800,16 @@ footer p {
 
 .head-to-head-table .h2h-corner,
 .head-to-head-table .h2h-row-header {
-    width: 90px;
-    min-width: 90px;
-    max-width: 90px;
+    width: 75px;
+    min-width: 75px;
+    max-width: 75px;
 }
 
 
 .head-to-head-table .h2h-row-header {
     padding:
         12px
-        6px;
+        3px;
 
     white-space: nowrap;
 }
