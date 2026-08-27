@@ -322,6 +322,12 @@ async function loadHistorySeason(
             );
 
 
+        const fifthPlaceGame =
+    bracketData.find(
+        game =>
+            game.p === 5
+    );
+
         const champion =
             championshipGame
                 ? rosterMap[
@@ -345,6 +351,30 @@ async function loadHistorySeason(
                   ]
                 : null;
 
+
+        const fourthPlace =
+    thirdPlaceGame
+        ? rosterMap[
+            thirdPlaceGame.l
+          ]
+        : null;
+
+
+const fifthPlace =
+    fifthPlaceGame
+        ? rosterMap[
+            fifthPlaceGame.w
+          ]
+        : null;
+
+
+const sixthPlace =
+    fifthPlaceGame
+        ? rosterMap[
+            fifthPlaceGame.l
+          ]
+        : null;
+        
 
         const championOwnerName =
             champion
