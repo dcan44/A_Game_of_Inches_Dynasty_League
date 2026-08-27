@@ -2051,20 +2051,39 @@ main {
     }
 
 
-    .division-team-name {
-        font-size:
-            10px !important;
-    }
+.division-team-name {
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    line-height: 1.2;
+}
 
 
-    .playoff-badge {
-        font-size:
-            6px;
+.division-team-name strong {
+    display: block;
 
-        white-space:
-            normal;
-    }
+    font-size: 12px;
+    font-weight: 700;
+}
 
+
+.division-team-name span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #777F85;
+
+    font-family:
+        'Roboto',
+        sans-serif;
+
+    font-size: 8px;
+    font-weight: 400;
 }
 
 
