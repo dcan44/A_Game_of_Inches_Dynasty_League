@@ -1765,6 +1765,308 @@ main {
 
 }
 
+/* ======================================================
+   ROAD TO THE CHAMPIONSHIP
+====================================================== */
+
+.home-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* ======================================================
+   DIVISION GRID
+====================================================== */
+
+.home-division-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* ======================================================
+   DIVISION CARD
+====================================================== */
+
+.division-standings-card {
+    min-width: 0;
+}
+
+
+.division-standings-card .card-header {
+    min-height: 52px;
+
+    padding:
+        13px
+        16px;
+}
+
+
+.division-standings-card .card-header h3 {
+    font-size: 17px;
+
+    letter-spacing: 1.5px;
+}
+
+
+/* ======================================================
+   DIVISION TABLE
+====================================================== */
+
+.division-table-scroll {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.division-standings-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.division-standings-table th {
+    padding:
+        9px
+        8px;
+
+    background:
+        var(--light-gray);
+
+    color:
+        var(--dark-navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    letter-spacing: .6px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+
+.division-standings-table th:nth-child(2) {
+    text-align: left;
+}
+
+
+.division-standings-table td {
+    padding:
+        10px
+        8px;
+
+    border-bottom:
+        1px solid
+        #E3E6E8;
+
+    color:
+        #39434A;
+
+    font-size: 10px;
+
+    text-align: center;
+}
+
+
+.division-standings-table td:nth-child(2) {
+    text-align: left;
+}
+
+
+.division-standings-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.division-standings-table tbody tr:hover {
+    background:
+        #F4F6F7;
+}
+
+
+/* ======================================================
+   DIVISION RANK
+====================================================== */
+
+.division-rank {
+    width: 28px;
+
+    color:
+        var(--silver) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 12px !important;
+
+    font-weight: 700;
+}
+
+
+/* ======================================================
+   TEAM NAME
+====================================================== */
+
+.division-team-name {
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 11px !important;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+/* ======================================================
+   PLAYOFF BADGES
+====================================================== */
+
+.playoff-badge {
+    display: inline-block;
+
+    padding:
+        4px
+        6px;
+
+    border-radius: 3px;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .4px;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+.playoff-bye {
+    background:
+        var(--navy);
+
+    color:
+        white;
+}
+
+
+.playoff-division {
+    background:
+        #DDE6F2;
+
+    color:
+        var(--navy);
+}
+
+
+.playoff-wildcard {
+    background:
+        #E7ECEF;
+
+    color:
+        #4B555C;
+}
+
+
+.playoff-toilet {
+    background:
+        #EFE3E3;
+
+    color:
+        #7A3030;
+}
+
+
+/* ======================================================
+   ROAD TO CHAMPIONSHIP — TABLET
+====================================================== */
+
+@media (max-width: 1000px) {
+
+    .home-division-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+/* ======================================================
+   ROAD TO CHAMPIONSHIP — MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .home-section-heading {
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        margin-bottom:
+            14px;
+    }
+
+
+    .division-standings-table th {
+        font-size:
+            8px;
+    }
+
+
+    .division-standings-table td {
+        font-size:
+            9px;
+    }
+
+
+    .division-team-name {
+        font-size:
+            10px !important;
+    }
+
+
+    .playoff-badge {
+        font-size:
+            6px;
+
+        white-space:
+            normal;
+    }
+
+}
+
 
 /* ======================================================
    WEEK / MATCHUPS
