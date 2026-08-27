@@ -7393,7 +7393,10 @@ font-size: 19px;
 @media (max-width: 600px) {
 
     .home-matchup-card.game-of-week {
-        padding-top: 42px;
+        border-width: 3px;
+
+        padding-top: 32px;
+        padding-bottom: 10px;
     }
 
 
