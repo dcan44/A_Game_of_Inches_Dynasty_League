@@ -7329,6 +7329,82 @@ footer p {
     grid-column: 3;
 }
 
+/* ======================================================
+   GAME OF THE WEEK
+====================================================== */
+
+.home-matchup-card.game-of-week {
+    position: relative;
+
+    border:
+        2px solid
+        #C9A227;
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, 0.10);
+
+    padding-top: 30px;
+}
+
+
+/* ======================================================
+   GAME OF THE WEEK LABEL
+====================================================== */
+
+.game-of-week-label {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    padding:
+        5px
+        10px;
+
+    background:
+        #C9A227;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+/* ======================================================
+   GAME OF THE WEEK — MOBILE
+====================================================== */
+
+@media (max-width: 600px) {
+
+    .home-matchup-card.game-of-week {
+        padding-top: 28px;
+    }
+
+
+    .game-of-week-label {
+        padding:
+            4px
+            8px;
+
+        font-size: 8px;
+
+        letter-spacing: 1px;
+    }
+
+}
 
 /* ======================================================
    SCORE
