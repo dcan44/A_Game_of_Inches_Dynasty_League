@@ -8725,3 +8725,50 @@ font-size: 19px;
 
     white-space: nowrap;
 }
+/* ======================================================
+   HEAD TO HEAD — FINAL WIDTH OVERRIDE
+====================================================== */
+
+.head-to-head-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+}
+
+
+/* Owner column */
+
+.head-to-head-table .h2h-corner,
+.head-to-head-table .h2h-row-header {
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+
+
+/* Matchup columns */
+
+.head-to-head-table .h2h-manager-header,
+.head-to-head-table td {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+}
+
+
+/* Owner names */
+
+.head-to-head-table .h2h-owner {
+    font-size: 12px !important;
+}
+
+
+/* Records */
+
+.head-to-head-table td {
+    font-size: 14px !important;
+}
