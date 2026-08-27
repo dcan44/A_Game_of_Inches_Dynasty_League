@@ -48,12 +48,12 @@
 
     <div class="home-header-info">
 
-<span
-    id="home-season-label"
-    class="home-season-label"
->
-    Loading Season...
-</span>
+        <span
+            id="home-season-label"
+            class="home-season-label"
+        >
+            Loading Season...
+        </span>
 
         <strong>
             12 Team Dynasty
@@ -67,6 +67,10 @@
 
 </header>
 
+
+<!-- ======================================================
+     MAIN NAVIGATION
+====================================================== -->
 
 <nav class="main-nav">
 
@@ -210,13 +214,19 @@
     </section>
 
 
-    <!-- CURRENT SEASON -->
+    <!-- ==================================================
+         CURRENT SEASON
+    =================================================== -->
 
     <section class="season-hero">
 
-        <p class="season-label">A Game of Inches</p>
+        <p class="season-label">
+            A Game of Inches
+        </p>
 
-        <h2>2026 Season</h2>
+        <h2 id="season-hero-title">
+            Loading Season...
+        </h2>
 
         <p class="season-subtitle">
             The Road to the Championship
@@ -226,170 +236,198 @@
 
 
     <!-- ==================================================
-         LEAGUE OVERVIEW
+         ROAD TO THE CHAMPIONSHIP
     =================================================== -->
 
-    <h2 class="section-title">League Overview</h2>
+    <section class="road-to-championship">
 
-    <div class="grid">
+        <div class="home-section-heading">
 
-      <!-- LIVE STANDINGS -->
+            <h2 class="section-title">
+                Road to the Championship
+            </h2>
 
-<div class="card standings-card">
+            <span class="live-indicator">
+                ● LIVE FROM SLEEPER
+            </span>
 
-    <div class="card-header">
-
-        <h3>
-            Current Standings
-        </h3>
-
-        <span class="live-indicator">
-            ● LIVE FROM SLEEPER
-        </span>
-
-    </div>
+        </div>
 
 
-    <table class="standings">
+        <div
+            id="home-division-standings"
+            class="home-division-grid"
+        >
 
-<thead>
-    <tr>
-        <th>Team</th>
-        <th>W</th>
-        <th>L</th>
-        <th>PF</th>
-        <th>Playoff Picture</th>
-    </tr>
-</thead>
+            <div class="card">
 
+                <p class="placeholder-text">
+                    Loading division standings...
+                </p>
 
-        <tbody id="standings-body">
+            </div>
 
-            <tr>
+        </div>
 
-                <td colspan="5">
-                    Loading standings...
-                </td>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-</div>
+    </section>
 
 
-<!-- CURRENT WEEK -->
+    <!-- ==================================================
+         THIS WEEK
+    =================================================== -->
 
-<div class="card">
+    <section class="home-this-week">
 
-    <div class="card-header">
-
-        <h3>
+        <h2 class="section-title">
             This Week
-        </h3>
-
-        <span class="live-indicator">
-            ● LIVE FROM SLEEPER
-        </span>
-
-    </div>
+        </h2>
 
 
-    <div
-        id="home-week-number"
-        class="week-number"
-    >
-        Loading Week...
-    </div>
+        <div class="card">
+
+            <div class="card-header">
+
+                <h3>
+                    Weekly Matchups
+                </h3>
+
+                <span class="live-indicator">
+                    ● LIVE FROM SLEEPER
+                </span>
+
+            </div>
 
 
-    <div
-        id="home-matchups"
-        class="home-matchups"
-    >
-        Loading matchups...
-    </div>
+            <div
+                id="home-week-number"
+                class="week-number"
+            >
+                Loading Week...
+            </div>
 
-</div>
 
-</div>
+            <div
+                id="home-matchups"
+                class="home-matchups"
+            >
+                Loading matchups...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         LEAGUE PULSE
+    =================================================== -->
+
+    <section class="league-pulse-section">
+
+        <h2 class="section-title">
+            League Pulse
+        </h2>
+
+        <div
+            id="home-league-pulse"
+            class="league-pulse-grid"
+        >
+
+            <div class="card">
+
+                <p class="placeholder-text">
+                    League Pulse coming next...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- ==================================================
          LEAGUE ACTIVITY
     =================================================== -->
 
-    <h2 class="section-title">League Activity</h2>
+    <section class="league-activity-section">
 
-    <div class="grid">
-
-<!-- ======================================================
-     RECENT TRANSACTIONS
-====================================================== -->
-
-<div class="card">
-
-    <div class="card-header">
-
-        <h3>
-            Recent Transactions
-        </h3>
-
-        <span class="live-indicator">
-            ● LIVE FROM SLEEPER
-        </span>
-
-    </div>
+        <h2 class="section-title">
+            League Activity
+        </h2>
 
 
-    <div
-        id="home-transactions"
-        class="home-transactions"
-    >
-
-        <p class="placeholder-text">
-            Loading recent transactions...
-        </p>
-
-    </div>
-
-</div>
+        <div class="grid">
 
 
-<!-- ======================================================
-     WAIVER WIRE
-====================================================== -->
+            <!-- ==========================================
+                 RECENT TRANSACTIONS
+            =========================================== -->
 
-<div class="card">
+            <div class="card">
 
-    <div class="card-header">
+                <div class="card-header">
 
-        <h3>
-            Waiver Wire
-        </h3>
+                    <h3>
+                        Recent Transactions
+                    </h3>
 
-        <span class="live-indicator">
-            ● LIVE FROM SLEEPER
-        </span>
+                    <span class="live-indicator">
+                        ● LIVE FROM SLEEPER
+                    </span>
 
-    </div>
+                </div>
 
 
-    <div
-        id="home-waivers"
-        class="home-transactions"
-    >
+                <div
+                    id="home-transactions"
+                    class="home-transactions"
+                >
 
-        <p class="placeholder-text">
-            Loading recent waiver claims...
-        </p>
+                    <p class="placeholder-text">
+                        Loading recent transactions...
+                    </p>
 
-    </div>
+                </div>
 
-</div>
+            </div>
 
+
+            <!-- ==========================================
+                 WAIVER WIRE
+            =========================================== -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Waiver Wire
+                    </h3>
+
+                    <span class="live-indicator">
+                        ● LIVE FROM SLEEPER
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="home-waivers"
+                    class="home-transactions"
+                >
+
+                    <p class="placeholder-text">
+                        Loading recent waiver activity...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </main>
 
@@ -415,7 +453,6 @@
 </footer>
 
 
-<!-- Sleeper standings -->
 <script src="league-data.js"></script>
 <script src="script.js"></script>
 
