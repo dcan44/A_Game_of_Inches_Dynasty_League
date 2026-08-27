@@ -3783,6 +3783,30 @@ footer p {
 
 }
 
+/* ======================================================
+   HEAD TO HEAD — COMPACT OWNER COLUMN
+====================================================== */
+
+.head-to-head-table .h2h-corner,
+.head-to-head-table .h2h-row-header {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+}
+
+
+.head-to-head-table .h2h-row-header {
+    padding:
+        12px
+        14px;
+
+    white-space: nowrap;
+}
+
+
+.head-to-head-table .h2h-owner {
+    font-size: 13px;
+}
 
 /* ======================================================
    STANDINGS MOBILE
