@@ -7183,13 +7183,13 @@ footer p {
 ====================================================== */
 
 .home-matchup-avatar {
-    width: 28px;
-    height: 28px;
+    width: 46px;
+    height: 46px;
 
     flex:
         0
         0
-        28px;
+        46px;
 
     display: flex;
     align-items: center;
@@ -7205,7 +7205,7 @@ footer p {
     color: white;
 
     font-family: 'Oswald', sans-serif;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -7249,7 +7249,7 @@ footer p {
         'Oswald',
         sans-serif;
 
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
 
     line-height: 1.15;
@@ -7263,7 +7263,7 @@ footer p {
 
     color: #7A8288;
 
-    font-size: 9px;
+    font-size: 11px;
     font-style: italic;
     font-weight: 400;
 }
@@ -7278,7 +7278,7 @@ footer p {
 
     align-items: center;
 
-    gap: 9px;
+    gap: 12px;
 
     min-width: 0;
 }
@@ -7286,7 +7286,7 @@ footer p {
 
 .home-matchup-left {
     grid-template-columns:
-        28px
+        46px
         minmax(0, 1fr)
         auto;
 }
@@ -7296,7 +7296,7 @@ footer p {
     grid-template-columns:
         auto
         minmax(0, 1fr)
-        28px;
+        46px;
 }
 
 
@@ -7329,6 +7329,7 @@ footer p {
     grid-column: 3;
 }
 
+
 /* ======================================================
    GAME OF THE WEEK
 ====================================================== */
@@ -7344,7 +7345,7 @@ footer p {
         0 4px 12px
         rgba(0, 0, 0, 0.10);
 
-    padding-top: 30px;
+    padding-top: 38px;
 }
 
 
@@ -7360,7 +7361,7 @@ footer p {
     right: 0;
 
     padding:
-        5px
+        7px
         10px;
 
     background:
@@ -7373,7 +7374,7 @@ footer p {
         'Oswald',
         sans-serif;
 
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
 
     letter-spacing: 1.5px;
@@ -7406,6 +7407,7 @@ footer p {
 
 }
 
+
 /* ======================================================
    SCORE
 ====================================================== */
@@ -7419,7 +7421,7 @@ footer p {
         'Oswald',
         sans-serif;
 
-    font-size: 22px;
+    font-size: 27px;
 }
 
 
@@ -7434,7 +7436,7 @@ footer p {
         'Oswald',
         sans-serif;
 
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
 
     letter-spacing: 1px;
@@ -7470,6 +7472,19 @@ footer p {
         padding:
             10px
             2px;
+    }
+
+
+    .home-matchup-avatar {
+        width: 28px;
+        height: 28px;
+
+        flex:
+            0
+            0
+            28px;
+
+        font-size: 11px;
     }
 
 
@@ -7510,7 +7525,13 @@ footer p {
         font-size: 16px;
     }
 
+
+    .home-matchup-vs {
+        font-size: 10px;
+    }
+
 }
+
 
 /* ======================================================
    HOME — WELCOME / SEASON SPACING
