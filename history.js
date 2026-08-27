@@ -1418,6 +1418,99 @@ const sixthPlace =
 
 
         /*
+ * =====================================================
+ * FINAL STANDINGS
+ * =====================================================
+ *
+ * Places 1–6:
+ * Actual championship playoff finish.
+ *
+ * Places 7–12:
+ * Regular-season standings among non-playoff teams.
+ *
+ * The Toilet Bowl / consolation bracket is NOT used.
+ */
+
+const playoffFinishers =
+    [
+        champion,
+        runnerUp,
+        thirdPlace,
+        fourthPlace,
+        fifthPlace,
+        sixthPlace
+    ]
+        .filter(
+            Boolean
+        );
+
+
+const playoffRosterIds =
+    new Set(
+        playoffFinishers.map(
+            team =>
+                Number(
+                    team.roster_id
+                )
+        )
+    );
+
+
+const nonPlayoffTeams =
+    seasonData.teams
+        .filter(
+            team =>
+                !playoffRosterIds.has(
+                    Number(
+                        team.roster_id
+                    )
+                )
+        )
+        .sort(
+            (a, b) => {
+
+                if (
+                    Number(b.wins || 0) !==
+                    Number(a.wins || 0)
+                ) {
+
+                    return (
+                        Number(b.wins || 0) -
+                        Number(a.wins || 0)
+                    );
+
+                }
+
+
+                if (
+                    Number(a.losses || 0) !==
+                    Number(b.losses || 0)
+                ) {
+
+                    return (
+                        Number(a.losses || 0) -
+                        Number(b.losses || 0)
+                    );
+
+                }
+
+
+                return (
+                    Number(b.points_for || 0) -
+                    Number(a.points_for || 0)
+                );
+
+            }
+        );
+
+
+const finalStandings =
+    [
+        ...playoffFinishers,
+        ...nonPlayoffTeams
+    ];
+
+        /*
          * =====================================================
          * BUILD SEASON PAGE
          * =====================================================
