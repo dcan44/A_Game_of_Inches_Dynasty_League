@@ -1964,6 +1964,17 @@ loadHomeTransactions();
  * ======================================================
  * HOME — LEAGUE CHAMPIONS
  * ======================================================
+ *
+ * Champions are determined automatically from Sleeper's
+ * winners bracket.
+ *
+ * The p === 1 matchup is the championship game.
+ * The roster stored in "w" is the league champion.
+ *
+ * Starting with the current league, previous_league_id
+ * is followed backwards so future seasons do not need
+ * to be manually added.
+ * ======================================================
  */
 
 async function loadHomeChampions() {
@@ -1985,14 +1996,22 @@ async function loadHomeChampions() {
 
     try {
 
-        const response =
+        const currentLeagueId =
+            "1312098239821914112";
+
+
+        /*
+         * Load our historical team data.
+         */
+
+        const historyResponse =
             await fetch(
                 '/api/history'
             );
 
 
         if (
-            !response.ok
+            !historyResponse.ok
         ) {
 
             throw new Error(
@@ -2003,27 +2022,293 @@ async function loadHomeChampions() {
 
 
         const historyData =
-            await response.json();
+            await historyResponse.json();
 
 
-        const seasons =
-            (
-                historyData.seasons ||
-                []
+        /*
+         * ==================================================
+         * BUILD SLEEPER LEAGUE HISTORY
+         * ==================================================
+         *
+         * Sleeper links each dynasty season to the
+         * previous season through previous_league_id.
+         */
+
+        const leagueHistory =
+            [];
+
+
+        let leagueId =
+            currentLeagueId;
+
+
+        const visitedLeagueIds =
+            new Set();
+
+
+        while (
+            leagueId &&
+            leagueId !== '0' &&
+            !visitedLeagueIds.has(
+                leagueId
             )
-                .filter(
-                    season =>
-                        season.champion
-                )
-                .sort(
-                    (a, b) =>
-                        Number(a.season) -
-                        Number(b.season)
+        ) {
+
+            visitedLeagueIds.add(
+                leagueId
+            );
+
+
+            const leagueResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}`
                 );
 
 
+            if (
+                !leagueResponse.ok
+            ) {
+
+                break;
+
+            }
+
+
+            const league =
+                await leagueResponse.json();
+
+
+            leagueHistory.push(
+                {
+                    league_id:
+                        leagueId,
+
+                    season:
+                        Number(
+                            league.season
+                        )
+                }
+            );
+
+
+            leagueId =
+                league.previous_league_id;
+
+        }
+
+
+        /*
+         * ==================================================
+         * FIND EACH CHAMPION
+         * ==================================================
+         */
+
+        const champions =
+            [];
+
+
+        for (
+            const leagueSeason
+            of leagueHistory
+        ) {
+
+            const bracketResponse =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueSeason.league_id}/winners_bracket`
+                );
+
+
+            if (
+                !bracketResponse.ok
+            ) {
+
+                continue;
+
+            }
+
+
+            const bracket =
+                await bracketResponse.json();
+
+
+            /*
+             * p === 1 is the league championship game.
+             */
+
+            const championshipGame =
+                bracket.find(
+                    game =>
+                        game.p === 1
+                );
+
+
+            /*
+             * Current/incomplete seasons will not have a
+             * completed championship winner yet.
+             */
+
+            if (
+                !championshipGame ||
+                !championshipGame.w
+            ) {
+
+                continue;
+
+            }
+
+
+            /*
+             * Find this season inside /api/history.
+             */
+
+            const seasonData =
+                (
+                    historyData.seasons ||
+                    []
+                )
+                    .find(
+                        season =>
+                            Number(
+                                season.season
+                            ) ===
+                            leagueSeason.season
+                    );
+
+
+            if (
+                !seasonData
+            ) {
+
+                continue;
+
+            }
+
+
+            /*
+             * Match the winning roster ID to its historical
+             * team and owner.
+             */
+
+            const championTeam =
+                (
+                    seasonData.teams ||
+                    []
+                )
+                    .find(
+                        team =>
+                            Number(
+                                team.roster_id
+                            ) ===
+                            Number(
+                                championshipGame.w
+                            )
+                    );
+
+
+            if (
+                !championTeam
+            ) {
+
+                continue;
+
+            }
+
+
+            /*
+             * Real owner name from league-data.js.
+             */
+
+            const fallbackOwner =
+                championTeam.owner ||
+                'Unknown Manager';
+
+
+            const ownerName =
+                window.LEAGUE_DATA &&
+                typeof window.LEAGUE_DATA.getOwnerName ===
+                    'function'
+                    ? window.LEAGUE_DATA.getOwnerName(
+                        championTeam.owner_id,
+                        fallbackOwner
+                      )
+                    : fallbackOwner;
+
+
+            /*
+             * Regular-season record.
+             */
+
+            const wins =
+                Number(
+                    championTeam.wins ||
+                    0
+                );
+
+
+            const losses =
+                Number(
+                    championTeam.losses ||
+                    0
+                );
+
+
+            const ties =
+                Number(
+                    championTeam.ties ||
+                    0
+                );
+
+
+            let record =
+                `${wins}-${losses}`;
+
+
+            if (
+                ties >
+                0
+            ) {
+
+                record +=
+                    `-${ties}`;
+
+            }
+
+
+            champions.push(
+                {
+
+                    season:
+                        leagueSeason.season,
+
+                    owner:
+                        ownerName,
+
+                    team_name:
+                        championTeam.team_name ||
+                        fallbackOwner,
+
+                    record:
+                        record
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Oldest champion first.
+         */
+
+        champions.sort(
+            (a, b) =>
+                a.season -
+                b.season
+        );
+
+
         if (
-            seasons.length ===
+            champions.length ===
             0
         ) {
 
@@ -2040,165 +2325,51 @@ async function loadHomeChampions() {
         }
 
 
+        /*
+         * ==================================================
+         * BUILD CHAMPIONSHIP BANNERS
+         * ==================================================
+         */
+
         container.innerHTML =
-            seasons
+            champions
                 .map(
-                    seasonData => {
+                    champion => `
 
-                        const champion =
-                            seasonData.champion;
+                        <div class="champion-banner">
 
-
-                        /*
-                         * =====================================
-                         * OWNER NAME
-                         * =====================================
-                         */
-
-                        const fallbackOwner =
-                            champion.owner ||
-                            champion.username ||
-                            'Unknown Manager';
-
-
-                        const ownerName =
-                            window.LEAGUE_DATA &&
-                            typeof window.LEAGUE_DATA.getOwnerName ===
-                                'function'
-                                ? window.LEAGUE_DATA.getOwnerName(
-                                    champion.owner_id,
-                                    fallbackOwner
-                                  )
-                                : fallbackOwner;
-
-
-                        /*
-                         * =====================================
-                         * TEAM NAME
-                         * =====================================
-                         */
-
-                        const teamName =
-                            champion.team_name ||
-                            champion.team ||
-                            'Unknown Team';
-
-
-                        /*
-                         * =====================================
-                         * CHAMPION RECORD
-                         * =====================================
-                         *
-                         * Find the champion inside that season's
-                         * team data so we can display the record.
-                         */
-
-                        const championTeam =
-                            (
-                                seasonData.teams ||
-                                []
-                            )
-                                .find(
-                                    team =>
-                                        String(
-                                            team.owner_id
-                                        ) ===
-                                        String(
-                                            champion.owner_id
-                                        )
-                                );
-
-
-                        let record =
-                            '—';
-
-
-                        if (
-                            championTeam
-                        ) {
-
-                            const wins =
-                                Number(
-                                    championTeam.wins ||
-                                    0
-                                );
-
-
-                            const losses =
-                                Number(
-                                    championTeam.losses ||
-                                    0
-                                );
-
-
-                            const ties =
-                                Number(
-                                    championTeam.ties ||
-                                    0
-                                );
-
-
-                            record =
-                                `${wins}-${losses}`;
-
-
-                            if (
-                                ties >
-                                0
-                            ) {
-
-                                record +=
-                                    `-${ties}`;
-
-                            }
-
-                        }
-
-
-                        /*
-                         * =====================================
-                         * BUILD BANNER
-                         * =====================================
-                         */
-
-                        return `
-
-                            <div class="champion-banner">
-
-                                <div class="banner-year">
-                                    ${seasonData.season}
-                                </div>
-
-
-                                <div class="banner-champion">
-                                    League Champion
-                                </div>
-
-
-                                <div class="banner-owner">
-                                    ${ownerName}
-                                </div>
-
-
-                                <div class="banner-team">
-                                    ${teamName}
-                                </div>
-
-
-                                <div class="banner-record">
-                                    ${record}
-                                </div>
-
-
-                                <div class="banner-trophy">
-                                    ★
-                                </div>
-
+                            <div class="banner-year">
+                                ${champion.season}
                             </div>
 
-                        `;
 
-                    }
+                            <div class="banner-champion">
+                                League Champion
+                            </div>
+
+
+                            <div class="banner-owner">
+                                ${champion.owner}
+                            </div>
+
+
+                            <div class="banner-team">
+                                ${champion.team_name}
+                            </div>
+
+
+                            <div class="banner-record">
+                                ${champion.record}
+                            </div>
+
+
+                            <div class="banner-trophy">
+                                ★
+                            </div>
+
+                        </div>
+
+                    `
                 )
                 .join('');
 
