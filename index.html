@@ -422,90 +422,113 @@
 
 </section>
 
+<!-- ==================================================
+     LEAGUE ACTIVITY
+=================================================== -->
 
-    <!-- ==================================================
-         LEAGUE ACTIVITY
-    =================================================== -->
+<section class="league-activity-section">
 
-    <section class="league-activity-section">
-
-        <h2 class="section-title">
-            League Activity
-        </h2>
-
-
-        <div class="grid">
+    <h2 class="section-title">
+        League Activity
+    </h2>
 
 
-            <!-- ==========================================
-                 RECENT TRANSACTIONS
-            =========================================== -->
-
-            <div class="card">
-
-                <div class="card-header">
-
-                    <h3>
-                        Recent Transactions
-                    </h3>
-
-                    <span class="live-indicator">
-                        ● LIVE FROM SLEEPER
-                    </span>
-
-                </div>
+    <div class="grid">
 
 
-                <div
-                    id="home-transactions"
-                    class="home-transactions"
-                >
+        <!-- ==========================================
+             TRADES
+        =========================================== -->
 
-                    <p class="placeholder-text">
-                        Loading recent transactions...
-                    </p>
+        <div class="card league-activity-card">
 
-                </div>
+            <div class="card-header">
+
+                <h3>
+                    Trades
+                </h3>
+
+                <span class="live-indicator">
+                    ● LIVE FROM SLEEPER
+                </span>
 
             </div>
 
 
-            <!-- ==========================================
-                 WAIVER WIRE
-            =========================================== -->
+            <div
+                id="home-trades"
+                class="home-transactions"
+            >
 
-            <div class="card">
-
-                <div class="card-header">
-
-                    <h3>
-                        Waiver Wire
-                    </h3>
-
-                    <span class="live-indicator">
-                        ● LIVE FROM SLEEPER
-                    </span>
-
-                </div>
-
-
-                <div
-                    id="home-waivers"
-                    class="home-transactions"
-                >
-
-                    <p class="placeholder-text">
-                        Loading recent waiver activity...
-                    </p>
-
-                </div>
+                <p class="placeholder-text">
+                    Loading recent trades...
+                </p>
 
             </div>
 
         </div>
 
-    </section>
 
+        <!-- ==========================================
+             WAIVER WIRE
+        =========================================== -->
+
+        <div class="card league-activity-card">
+
+            <div class="card-header">
+
+                <h3>
+                    Waiver Wire
+                </h3>
+
+                <span class="live-indicator">
+                    ● LIVE FROM SLEEPER
+                </span>
+
+            </div>
+
+
+            <!-- NEXT WAIVER COUNTDOWN -->
+
+            <div class="waiver-countdown">
+
+                <span class="waiver-countdown-label">
+                    Next Waivers Clear
+                </span>
+
+                <strong
+                    id="home-waiver-countdown"
+                    class="waiver-countdown-time"
+                >
+                    Calculating...
+                </strong>
+
+                <span class="waiver-countdown-schedule">
+                    Wednesday • 3:00 AM ET
+                </span>
+
+            </div>
+
+
+            <!-- WAIVER / FREE AGENT ACTIVITY -->
+
+            <div
+                id="home-waivers"
+                class="home-transactions"
+            >
+
+                <p class="placeholder-text">
+                    Loading recent waiver activity...
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    
 </main>
 
 
