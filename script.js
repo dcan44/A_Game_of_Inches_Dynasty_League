@@ -286,22 +286,41 @@ async function loadStandings() {
                         );
 
 
-                    return {
+                  const sleeperUsername =
+    user
+        ?.display_name ||
+    'Unknown Manager';
 
-                        roster_id:
-                            roster.roster_id,
 
-                        owner_id:
-                            roster.owner_id,
+const ownerName =
+    window.LEAGUE_DATA &&
+    typeof window.LEAGUE_DATA.getOwnerName ===
+        'function'
+        ? window.LEAGUE_DATA.getOwnerName(
+            roster.owner_id,
+            sleeperUsername
+          )
+        : sleeperUsername;
 
-                        team_name:
-                            user
-                                ?.metadata
-                                ?.team_name
-                                ?.trim() ||
-                            user
-                                ?.display_name ||
-                            `Team ${roster.roster_id}`,
+
+return {
+
+    roster_id:
+        roster.roster_id,
+
+    owner_id:
+        roster.owner_id,
+
+    owner:
+        ownerName,
+
+    team_name:
+        user
+            ?.metadata
+            ?.team_name
+            ?.trim() ||
+        sleeperUsername ||
+        `Team ${roster.roster_id}`,
 
                         wins:
                             Number(
