@@ -8619,3 +8619,45 @@ font-size: 19px;
 
     text-transform: uppercase;
 }
+
+/* ======================================================
+   HISTORY — FINAL STANDINGS
+====================================================== */
+
+.history-final-playoff {
+    background: #F4F7FA;
+}
+
+
+.history-final-playoff td:first-child {
+    color: var(--navy);
+
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+}
+
+
+.history-final-playoff:nth-child(1) {
+    border-left:
+        4px solid
+        #C9A227;
+}
+
+
+.history-final-playoff:nth-child(2) {
+    border-left:
+        4px solid
+        var(--silver);
+}
+
+
+.history-final-playoff:nth-child(3) {
+    border-left:
+        4px solid
+        #A97445;
+}
+
+
+.history-final-nonplayoff {
+    background: white;
+}
