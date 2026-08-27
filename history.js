@@ -2134,17 +2134,13 @@ const finalStandings =
                 ? '🥈 '
                 : index === 2
                     ? '🥉 '
-                    : ''
+                    : Number(team.roster_id) ===
+                      toiletBowlLoserRosterId
+                        ? '💩 '
+                        : ''
     }
 
     ${index + 1}
-
-    ${
-        Number(team.roster_id) ===
-        toiletBowlLoserRosterId
-            ? ' 💩'
-            : ''
-    }
 
 </td>
 
