@@ -1742,6 +1742,736 @@ loadHomeMatchups();
 
 /*
  * ======================================================
+ * HOME — TRADES / WAIVER WIRE
+ * ======================================================
+ */
+
+async function loadHomeTransactions() {
+
+    const tradesContainer =
+        document.getElementById(
+            'home-trades'
+        );
+
+    const waiversContainer =
+        document.getElementById(
+            'home-waivers'
+        );
+
+
+    if (
+        !tradesContainer ||
+        !waiversContainer
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const league =
+            await getCurrentHomeLeague();
+
+        const leagueId =
+            league.league_id;
+
+
+        const [
+            stateResponse,
+            usersResponse,
+            rostersResponse,
+            playersResponse
+        ] = await Promise.all([
+
+            fetch(
+                'https://api.sleeper.app/v1/state/nfl'
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/users`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+            ),
+
+            fetch(
+                'https://api.sleeper.app/v1/players/nfl'
+            )
+
+        ]);
+
+
+        if (
+            !stateResponse.ok ||
+            !usersResponse.ok ||
+            !rostersResponse.ok ||
+            !playersResponse.ok
+        ) {
+
+            throw new Error(
+                'Unable to retrieve league activity.'
+            );
+
+        }
+
+
+        const nflState =
+            await stateResponse.json();
+
+        const users =
+            await usersResponse.json();
+
+        const rosters =
+            await rostersResponse.json();
+
+        const players =
+            await playersResponse.json();
+
+
+        /*
+         * USER LOOKUP
+         */
+
+        const userMap = {};
+
+
+        users.forEach(
+            user => {
+
+                userMap[user.user_id] =
+                    user;
+
+            }
+        );
+
+
+        /*
+         * ROSTER LOOKUP
+         */
+
+        const rosterMap = {};
+
+
+        rosters.forEach(
+            roster => {
+
+                const user =
+                    userMap[
+                        roster.owner_id
+                    ];
+
+
+                const sleeperUsername =
+                    user?.display_name ||
+                    'Unknown Manager';
+
+
+                const ownerName =
+                    window.LEAGUE_DATA &&
+                    typeof window.LEAGUE_DATA.getOwnerName ===
+                        'function'
+                        ? window.LEAGUE_DATA.getOwnerName(
+                            roster.owner_id,
+                            sleeperUsername
+                          )
+                        : sleeperUsername;
+
+
+                rosterMap[
+                    roster.roster_id
+                ] = {
+
+                    roster_id:
+                        roster.roster_id,
+
+                    owner:
+                        ownerName,
+
+                    team_name:
+                        user
+                            ?.metadata
+                            ?.team_name
+                            ?.trim() ||
+                        sleeperUsername ||
+                        `Team ${roster.roster_id}`
+
+                };
+
+            }
+        );
+
+
+        /*
+         * CURRENT TRANSACTION WEEK
+         */
+
+        let currentWeek =
+            Number(
+                nflState.week ||
+                1
+            );
+
+
+        if (
+            nflState.season_type !==
+            'regular'
+        ) {
+
+            currentWeek =
+                1;
+
+        }
+
+
+        if (
+            currentWeek < 1
+        ) {
+
+            currentWeek =
+                1;
+
+        }
+
+
+        /*
+         * LOAD RECENT TRANSACTIONS
+         */
+
+        const allTransactions = [];
+
+
+        for (
+            let week = currentWeek;
+            week >= Math.max(
+                1,
+                currentWeek - 4
+            );
+            week--
+        ) {
+
+            const response =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/transactions/${week}`
+                );
+
+
+            if (
+                !response.ok
+            ) {
+                continue;
+            }
+
+
+            const transactions =
+                await response.json();
+
+
+            transactions.forEach(
+                transaction => {
+
+                    allTransactions.push(
+                        {
+                            ...transaction,
+                            week
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        allTransactions.sort(
+            (a, b) =>
+                Number(b.created || 0) -
+                Number(a.created || 0)
+        );
+
+
+        /*
+         * HELPERS
+         */
+
+        function getPlayerName(
+            playerId
+        ) {
+
+            const player =
+                players[playerId];
+
+
+            if (!player) {
+                return playerId;
+            }
+
+
+            return (
+                player.full_name ||
+                `${player.first_name || ''} ${player.last_name || ''}`.trim() ||
+                playerId
+            );
+
+        }
+
+
+        function getRoster(
+            rosterId
+        ) {
+
+            return (
+                rosterMap[rosterId] ||
+                {
+                    owner:
+                        'Unknown Manager',
+
+                    team_name:
+                        'Unknown Team'
+                }
+            );
+
+        }
+
+
+        /*
+         * TRADE DISPLAY
+         */
+
+        function buildTradeHTML(
+            transaction
+        ) {
+
+            const rosterIds =
+                transaction.roster_ids ||
+                [];
+
+            const adds =
+                transaction.adds ||
+                {};
+
+            const draftPicks =
+                transaction.draft_picks ||
+                [];
+
+
+            const sides =
+                rosterIds
+                    .map(
+                        rosterId => {
+
+                            const roster =
+                                getRoster(
+                                    rosterId
+                                );
+
+
+                            const receivedPlayers =
+                                Object.entries(
+                                    adds
+                                )
+                                    .filter(
+                                        (
+                                            [
+                                                playerId,
+                                                receivingRosterId
+                                            ]
+                                        ) =>
+                                            Number(
+                                                receivingRosterId
+                                            ) ===
+                                            Number(
+                                                rosterId
+                                            )
+                                    )
+                                    .map(
+                                        ([playerId]) =>
+                                            getPlayerName(
+                                                playerId
+                                            )
+                                    );
+
+
+                            const receivedPicks =
+                                draftPicks
+                                    .filter(
+                                        pick =>
+                                            Number(
+                                                pick.roster_id
+                                            ) ===
+                                            Number(
+                                                rosterId
+                                            )
+                                    )
+                                    .map(
+                                        pick =>
+                                            `${pick.season} Round ${pick.round} Pick`
+                                    );
+
+
+                            const assets =
+                                [
+                                    ...receivedPlayers,
+                                    ...receivedPicks
+                                ];
+
+
+                            return `
+
+                                <div class="home-trade-side">
+
+                                    <div class="home-trade-team">
+
+                                        <strong>
+                                            ${roster.owner}
+                                        </strong>
+
+                                        <span>
+                                            ${roster.team_name}
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="home-trade-received">
+
+                                        <small>
+                                            Receives
+                                        </small>
+
+                                        ${
+                                            assets.length
+                                                ? assets
+                                                    .map(
+                                                        asset => `
+                                                            <div class="home-trade-asset">
+                                                                ${asset}
+                                                            </div>
+                                                        `
+                                                    )
+                                                    .join('')
+                                                : `
+                                                    <div class="home-trade-asset">
+                                                        —
+                                                    </div>
+                                                  `
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    )
+                    .join(
+                        `
+                            <div class="home-trade-arrow">
+                                ⇄
+                            </div>
+                        `
+                    );
+
+
+            return `
+
+                <div class="
+                    home-transaction-item
+                    home-trade-item
+                ">
+
+                    <div class="home-transaction-main">
+
+                        <div class="home-trade-layout">
+                            ${sides}
+                        </div>
+
+                        <div class="home-transaction-meta">
+                            Week ${transaction.week}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /*
+         * WAIVER / FREE AGENT DISPLAY
+         */
+
+        function buildWaiverHTML(
+            transaction
+        ) {
+
+            const adds =
+                transaction.adds ||
+                {};
+
+            const drops =
+                transaction.drops ||
+                {};
+
+
+            const involvedRosterIds =
+                new Set([
+                    ...Object.values(adds),
+                    ...Object.values(drops)
+                ]);
+
+
+            const rosterId =
+                [...involvedRosterIds][0];
+
+
+            const roster =
+                getRoster(
+                    rosterId
+                );
+
+
+            const addedPlayers =
+                Object.keys(adds)
+                    .map(
+                        getPlayerName
+                    );
+
+
+            const droppedPlayers =
+                Object.keys(drops)
+                    .map(
+                        getPlayerName
+                    );
+
+
+            const label =
+                transaction.type ===
+                    'waiver'
+                    ? 'Waiver'
+                    : 'Free Agent';
+
+
+            const faabBid =
+                Number(
+                    transaction
+                        ?.settings
+                        ?.waiver_bid ||
+                    0
+                );
+
+
+            return `
+
+                <div class="home-transaction-item">
+
+                    <div class="home-transaction-type">
+                        ${label}
+                    </div>
+
+
+                    <div class="home-transaction-main">
+
+                        <div class="home-transaction-team">
+
+                            <strong>
+                                ${roster.owner}
+                            </strong>
+
+                            <span>
+                                ${roster.team_name}
+                            </span>
+
+                        </div>
+
+
+                        ${
+                            addedPlayers.length
+                                ? `
+                                    <div class="
+                                        home-transaction-action
+                                        add
+                                    ">
+
+                                        <span>
+                                            Added
+                                        </span>
+
+                                        <strong>
+                                            ${addedPlayers.join(', ')}
+                                        </strong>
+
+                                    </div>
+                                  `
+                                : ''
+                        }
+
+
+                        ${
+                            droppedPlayers.length
+                                ? `
+                                    <div class="
+                                        home-transaction-action
+                                        drop
+                                    ">
+
+                                        <span>
+                                            Dropped
+                                        </span>
+
+                                        <strong>
+                                            ${droppedPlayers.join(', ')}
+                                        </strong>
+
+                                    </div>
+                                  `
+                                : ''
+                        }
+
+
+                        ${
+                            transaction.type ===
+                                'waiver'
+                                ? `
+                                    <div class="home-waiver-faab">
+
+                                        FAAB:
+                                        <strong>
+                                            $${faabBid}
+                                        </strong>
+
+                                    </div>
+                                  `
+                                : ''
+                        }
+
+
+                        <div class="home-transaction-meta">
+                            Week ${transaction.week}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /*
+         * TRADES ONLY
+         */
+
+        const recentTrades =
+            allTransactions
+                .filter(
+                    transaction =>
+                        transaction.status ===
+                            'complete' &&
+                        transaction.type ===
+                            'trade'
+                )
+                .slice(
+                    0,
+                    5
+                );
+
+
+        tradesContainer.innerHTML =
+            recentTrades.length
+                ? recentTrades
+                    .map(
+                        buildTradeHTML
+                    )
+                    .join('')
+                : `
+                    <p class="placeholder-text">
+                        No recent trades.
+                    </p>
+                  `;
+
+
+        /*
+         * WAIVERS + FREE AGENTS
+         */
+
+        const recentWaivers =
+            allTransactions
+                .filter(
+                    transaction =>
+                        transaction.status ===
+                            'complete' &&
+                        (
+                            transaction.type ===
+                                'waiver' ||
+                            transaction.type ===
+                                'free_agent'
+                        ) &&
+                        transaction.adds &&
+                        Object.keys(
+                            transaction.adds
+                        ).length > 0
+                )
+                .slice(
+                    0,
+                    5
+                );
+
+
+        waiversContainer.innerHTML =
+            recentWaivers.length
+                ? recentWaivers
+                    .map(
+                        buildWaiverHTML
+                    )
+                    .join('')
+                : `
+                    <p class="placeholder-text">
+                        No recent waiver or free-agent activity.
+                    </p>
+                  `;
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Error loading league activity:',
+            error
+        );
+
+
+        tradesContainer.innerHTML = `
+
+            <p class="placeholder-text">
+                Unable to load recent trades.
+            </p>
+
+        `;
+
+
+        waiversContainer.innerHTML = `
+
+            <p class="placeholder-text">
+                Unable to load waiver activity.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+loadHomeTransactions();
+
+/*
+ * ======================================================
  * HOME — WAIVER COUNTDOWN
  * ======================================================
  *
