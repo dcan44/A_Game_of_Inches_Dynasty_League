@@ -2433,7 +2433,7 @@ const receivedPicks =
                 )
                 .slice(
                     0,
-                    5
+                    10
                 );
 
 
