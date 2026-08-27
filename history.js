@@ -1986,7 +1986,7 @@ const finalStandings =
     Final Standings
 </h3>
 
-<div class="head-to-head-note">
+<div class="history-final-standings-note">
 
     Final positions 1–6 reflect playoff results.
     Positions 7–12 are ranked by regular-season record,
