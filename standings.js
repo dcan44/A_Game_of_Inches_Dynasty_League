@@ -397,6 +397,34 @@ async function loadStandingsPage() {
             );
 
 
+        /*
+ * =====================================================
+ * TOILET BOWL BYES
+ * =====================================================
+ *
+ * The bottom two teams in the overall regular-season
+ * standings receive a first-round Toilet Bowl bye.
+ */
+
+const toiletBowlByeIds =
+    new Set(
+        [
+            ...teams
+        ]
+            .sort(
+                standingsSort
+            )
+            .slice(
+                -2
+            )
+            .map(
+                team =>
+                    String(
+                        team.roster_id
+                    )
+            )
+    );
+
         function getPlayoffStatus(
             team
         ) {
