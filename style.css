@@ -7183,13 +7183,13 @@ footer p {
 ====================================================== */
 
 .home-matchup-avatar {
-    width: 46px;
-    height: 46px;
+width: 60px;
+height: 60px;
 
-    flex:
-        0
-        0
-        46px;
+flex:
+    0
+    0
+    60px;
 
     display: flex;
     align-items: center;
@@ -7205,7 +7205,7 @@ footer p {
     color: white;
 
     font-family: 'Oswald', sans-serif;
-    font-size: 14px;
+font-size: 16px;
     font-weight: 700;
 }
 
