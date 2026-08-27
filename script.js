@@ -2770,6 +2770,67 @@ function startHomeWaiverCountdown() {
 
     }
 
+    /*
+ * Do not show the waiver countdown
+ * until the NFL regular season begins.
+ */
+
+async function checkSeasonStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                'https://api.sleeper.app/v1/state/nfl'
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            return true;
+
+        }
+
+
+        const nflState =
+            await response.json();
+
+
+        if (
+            nflState.season_type !== 'regular'
+        ) {
+
+            countdown.textContent =
+                'Begins Week 1';
+
+            countdown.classList.add(
+                'waiver-countdown-inactive'
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Unable to determine season status:',
+            error
+        );
+
+        return true;
+
+    }
+
+}
+
 
     const timeZone =
         'America/New_York';
@@ -3182,20 +3243,29 @@ function startHomeWaiverCountdown() {
     }
 
 
-    updateCountdown();
+checkSeasonStatus()
+    .then(
+        seasonIsActive => {
+
+            if (
+                !seasonIsActive
+            ) {
+
+                return;
+
+            }
 
 
-    /*
-     * Refresh every 30 seconds so the displayed minute
-     * remains current.
-     */
+            updateCountdown();
 
-    setInterval(
-        updateCountdown,
-        30000
+
+            setInterval(
+                updateCountdown,
+                30000
+            );
+
+        }
     );
-
-}
 
 
 startHomeWaiverCountdown();
