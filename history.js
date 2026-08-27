@@ -267,10 +267,10 @@ let toiletBowlLoserRosterId =
 
 try {
 
-    const losersBracketResponse =
-        await fetch(
-            `https://api.sleeper.app/v1/league/${seasonData.league_id}/losers_bracket`
-        );
+const losersBracketResponse =
+    await fetch(
+        `https://api.sleeper.app/v1/league/${leagueId}/losers_bracket`
+    );
 
 
     if (
