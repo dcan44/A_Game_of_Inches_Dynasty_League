@@ -2104,8 +2104,23 @@ const receivedPicks =
                 )
         )
         .map(
-            pick =>
-                `${pick.season} Round ${pick.round} Pick`
+            pick => {
+
+                const originalRoster =
+                    getRoster(
+                        pick.roster_id
+                    );
+
+
+                const originalOwner =
+                    originalRoster.owner;
+
+
+                return (
+                    `${pick.season} Round ${pick.round} Pick (${originalOwner})`
+                );
+
+            }
         );
 
 
