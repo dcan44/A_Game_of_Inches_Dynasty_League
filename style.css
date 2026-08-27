@@ -7344,7 +7344,7 @@ font-size: 19px;
         0 4px 12px
         rgba(0, 0, 0, 0.10);
 
-    padding-top: 38px;
+    padding-top: 28px;
 }
 
 
@@ -7390,7 +7390,7 @@ font-size: 19px;
 @media (max-width: 600px) {
 
     .home-matchup-card.game-of-week {
-        padding-top: 38px;
+        padding-top: 42px;
     }
 
 
