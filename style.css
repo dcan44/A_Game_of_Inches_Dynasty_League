@@ -8677,3 +8677,13 @@ font-size: 19px;
     font-size: 12px;
     line-height: 1.5;
 }
+
+.history-final-rank {
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
