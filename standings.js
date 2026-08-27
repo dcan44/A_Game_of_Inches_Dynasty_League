@@ -398,32 +398,39 @@ async function loadStandingsPage() {
 
 
         /*
- * =====================================================
- * TOILET BOWL BYES
- * =====================================================
- *
- * The bottom two teams in the overall regular-season
- * standings receive a first-round Toilet Bowl bye.
- */
+         * =====================================================
+         * TOILET BOWL BYES
+         * =====================================================
+         *
+         * The bottom two teams in the overall regular-season
+         * standings receive a first-round Toilet Bowl bye.
+         */
 
-const toiletBowlByeIds =
-    new Set(
-        [
-            ...teams
-        ]
-            .sort(
-                standingsSort
-            )
-            .slice(
-                -2
-            )
-            .map(
-                team =>
-                    String(
-                        team.roster_id
+        const toiletBowlByeIds =
+            new Set(
+                [
+                    ...teams
+                ]
+                    .sort(
+                        standingsSort
                     )
-            )
-    );
+                    .slice(
+                        -2
+                    )
+                    .map(
+                        team =>
+                            String(
+                                team.roster_id
+                            )
+                    )
+            );
+
+
+        /*
+         * =====================================================
+         * PLAYOFF STATUS
+         * =====================================================
+         */
 
         function getPlayoffStatus(
             team
@@ -432,6 +439,12 @@ const toiletBowlByeIds =
             const id =
                 String(
                     team.owner_id
+                );
+
+
+            const rosterId =
+                String(
+                    team.roster_id
                 );
 
 
@@ -495,12 +508,32 @@ const toiletBowlByeIds =
             }
 
 
+            if (
+                toiletBowlByeIds.has(
+                    rosterId
+                )
+            ) {
+
+                return {
+                    label:
+                        'Toilet Bowl • Bye',
+
+                    order:
+                        4,
+
+                    className:
+                        'playoff-toilet-bye'
+                };
+
+            }
+
+
             return {
                 label:
                     'Toilet Bowl',
 
                 order:
-                    4,
+                    5,
 
                 className:
                     'playoff-toilet'
@@ -527,35 +560,35 @@ const toiletBowlByeIds =
          * =====================================================
          */
 
-/*
- * Assign each team its true standings rank.
- * This rank remains attached to the team
- * even when the table is sorted by another column.
- */
+        /*
+         * Assign each team its true standings rank.
+         * This rank remains attached to the team
+         * even when the table is sorted by another column.
+         */
 
-const officialStandings =
-    [
-        ...teams
-    ]
-        .sort(
-            standingsSort
+        const officialStandings =
+            [
+                ...teams
+            ]
+                .sort(
+                    standingsSort
+                );
+
+
+        officialStandings.forEach(
+            (team, index) => {
+
+                team.officialRank =
+                    index + 1;
+
+            }
         );
 
 
-officialStandings.forEach(
-    (team, index) => {
-
-        team.officialRank =
-            index + 1;
-
-    }
-);
-
-
-let displayedTeams =
-    [
-        ...officialStandings
-    ];
+        let displayedTeams =
+            [
+                ...officialStandings
+            ];
 
 
         let currentSort =
@@ -596,9 +629,9 @@ let displayedTeams =
 
                     row.innerHTML = `
 
-<td class="standing-rank">
-    ${formatRank(team.officialRank)}
-</td>
+                        <td class="standing-rank">
+                            ${formatRank(team.officialRank)}
+                        </td>
 
                         <td class="standings-team-name">
                             ${team.team_name}
