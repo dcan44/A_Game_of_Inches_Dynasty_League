@@ -3800,16 +3800,16 @@ footer p {
 
 .head-to-head-table .h2h-corner,
 .head-to-head-table .h2h-row-header {
-    width: 110px;
-    min-width: 110px;
-    max-width: 110px;
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
 }
 
 
 .head-to-head-table .h2h-row-header {
     padding:
         12px
-        14px;
+        6px;
 
     white-space: nowrap;
 }
@@ -3817,6 +3817,13 @@ footer p {
 
 .head-to-head-table .h2h-owner {
     font-size: 13px;
+}
+
+
+/* Slightly larger head-to-head records */
+
+.head-to-head-table td {
+    font-size: 14px;
 }
 
 /* ======================================================
