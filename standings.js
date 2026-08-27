@@ -1,3 +1,9 @@
+/*
+ * ======================================================
+ * STANDINGS PAGE
+ * ======================================================
+ */
+
 async function loadStandingsPage() {
 
     const standingsBody =
@@ -12,7 +18,33 @@ async function loadStandingsPage() {
         );
 
 
+    const seasonTitle =
+        document.getElementById(
+            'standings-season-title'
+        );
+
+
     try {
+
+        /*
+         * =====================================================
+         * CURRENT SEASON
+         * =====================================================
+         */
+
+        const currentSeason =
+            new Date().getFullYear();
+
+
+        if (
+            seasonTitle
+        ) {
+
+            seasonTitle.textContent =
+                `${currentSeason} Standings`;
+
+        }
+
 
         /*
          * =====================================================
@@ -20,54 +52,48 @@ async function loadStandingsPage() {
          * =====================================================
          */
 
+        const seasons =
+            [];
+
+
+        for (
+            let season = 2023;
+            season <= currentSeason;
+            season++
+        ) {
+
+            seasons.push(
+                season
+            );
+
+        }
+
+
         const [
             teamsResponse,
-            matchups2023Response,
-            matchups2024Response,
-            matchups2025Response,
-            matchups2026Response
+            ...matchupResponses
         ] = await Promise.all([
 
-            fetch('/api/teams'),
-
             fetch(
-                '/api/matchup-history?season=2023'
+                '/api/teams'
             ),
 
-            fetch(
-                '/api/matchup-history?season=2024'
-            ),
-
-            fetch(
-                '/api/matchup-history?season=2025'
-            ),
-
-            fetch(
-                '/api/matchup-history?season=2026'
+            ...seasons.map(
+                season =>
+                    fetch(
+                        `/api/matchup-history?season=${season}`
+                    )
             )
 
         ]);
 
 
-        const responses = [
-
-            teamsResponse,
-            matchups2023Response,
-            matchups2024Response,
-            matchups2025Response,
-            matchups2026Response
-
-        ];
-
-
         if (
-            responses.some(
-                response => !response.ok
-            )
+            !teamsResponse.ok
         ) {
 
             throw new Error(
-                'Unable to retrieve standings data.'
+                'Unable to retrieve standings.'
             );
 
         }
@@ -77,20 +103,9 @@ async function loadStandingsPage() {
             await teamsResponse.json();
 
 
-        const matchupData = [
-
-            await matchups2023Response.json(),
-
-            await matchups2024Response.json(),
-
-            await matchups2025Response.json(),
-
-            await matchups2026Response.json()
-
-        ];
-
-
-        if (!teamsData.teams) {
+        if (
+            !teamsData.teams
+        ) {
 
             throw new Error(
                 'No teams returned.'
@@ -100,119 +115,716 @@ async function loadStandingsPage() {
 
 
         /*
+         * Historical matchup endpoints may not have data
+         * yet for the current/incomplete season.
+         */
+
+        const matchupData =
+            [];
+
+
+        for (
+            let index = 0;
+            index < matchupResponses.length;
+            index++
+        ) {
+
+            const response =
+                matchupResponses[
+                    index
+                ];
+
+
+            if (
+                !response.ok
+            ) {
+
+                continue;
+
+            }
+
+
+            matchupData.push(
+                await response.json()
+            );
+
+        }
+
+
+        /*
          * =====================================================
-         * CURRENT STANDINGS
+         * NORMALIZE CURRENT TEAMS
          * =====================================================
          */
 
         const teams =
-            [...teamsData.teams];
+            teamsData.teams.map(
+                team => {
+
+                    const fallbackOwner =
+                        team.owner ||
+                        'Unknown Manager';
+
+
+                    const ownerName =
+                        window.LEAGUE_DATA &&
+                        typeof window.LEAGUE_DATA.getOwnerName ===
+                            'function'
+                            ? window.LEAGUE_DATA.getOwnerName(
+                                team.owner_id,
+                                fallbackOwner
+                              )
+                            : fallbackOwner;
+
+
+                    return {
+
+                        ...team,
+
+                        owner:
+                            ownerName,
+
+                        wins:
+                            Number(
+                                team.wins ||
+                                0
+                            ),
+
+                        losses:
+                            Number(
+                                team.losses ||
+                                0
+                            ),
+
+                        ties:
+                            Number(
+                                team.ties ||
+                                0
+                            ),
+
+                        points_for:
+                            Number(
+                                team.points_for ||
+                                0
+                            )
+
+                    };
+
+                }
+            );
 
 
         /*
-         * Sort by:
-         *
-         * 1. Wins
-         * 2. Fewer losses
-         * 3. Points For
+         * =====================================================
+         * DEFAULT STANDINGS SORT
+         * =====================================================
          */
 
-        teams.sort(
-            (a, b) => {
+        function standingsSort(
+            a,
+            b
+        ) {
 
-                if (
-                    b.wins !==
-                    a.wins
-                ) {
-
-                    return (
-                        b.wins -
-                        a.wins
-                    );
-
-                }
-
-
-                if (
-                    a.losses !==
-                    b.losses
-                ) {
-
-                    return (
-                        a.losses -
-                        b.losses
-                    );
-
-                }
-
+            if (
+                b.wins !==
+                a.wins
+            ) {
 
                 return (
-                    b.points_for -
-                    a.points_for
+                    b.wins -
+                    a.wins
+                );
+
+            }
+
+
+            if (
+                a.losses !==
+                b.losses
+            ) {
+
+                return (
+                    a.losses -
+                    b.losses
+                );
+
+            }
+
+
+            return (
+                b.points_for -
+                a.points_for
+            );
+
+        }
+
+
+        /*
+         * =====================================================
+         * PLAYOFF PICTURE
+         * =====================================================
+         */
+
+        const divisionGroups =
+            {};
+
+
+        teams.forEach(
+            team => {
+
+                const division =
+                    team.division ||
+                    'No Division';
+
+
+                if (
+                    !divisionGroups[
+                        division
+                    ]
+                ) {
+
+                    divisionGroups[
+                        division
+                    ] =
+                        [];
+
+                }
+
+
+                divisionGroups[
+                    division
+                ].push(
+                    team
                 );
 
             }
         );
 
 
-        standingsBody.innerHTML = '';
+        /*
+         * Projected division winners.
+         */
+
+        const divisionWinners =
+            Object.values(
+                divisionGroups
+            )
+                .map(
+                    divisionTeams =>
+                        [
+                            ...divisionTeams
+                        ]
+                            .sort(
+                                standingsSort
+                            )[0]
+                )
+                .filter(
+                    Boolean
+                );
+
+
+        /*
+         * Top two division winners receive byes.
+         */
+
+        const rankedDivisionWinners =
+            [
+                ...divisionWinners
+            ]
+                .sort(
+                    standingsSort
+                );
+
+
+        const byeIds =
+            new Set(
+                rankedDivisionWinners
+                    .slice(
+                        0,
+                        2
+                    )
+                    .map(
+                        team =>
+                            String(
+                                team.owner_id
+                            )
+                    )
+            );
+
+
+        const divisionWinnerIds =
+            new Set(
+                divisionWinners.map(
+                    team =>
+                        String(
+                            team.owner_id
+                        )
+                )
+            );
+
+
+        /*
+         * Three best remaining teams are Wild Cards.
+         */
+
+        const wildCards =
+            teams
+                .filter(
+                    team =>
+                        !divisionWinnerIds.has(
+                            String(
+                                team.owner_id
+                            )
+                        )
+                )
+                .sort(
+                    standingsSort
+                )
+                .slice(
+                    0,
+                    3
+                );
+
+
+        const wildCardIds =
+            new Set(
+                wildCards.map(
+                    team =>
+                        String(
+                            team.owner_id
+                        )
+                )
+            );
+
+
+        function getPlayoffStatus(
+            team
+        ) {
+
+            const id =
+                String(
+                    team.owner_id
+                );
+
+
+            if (
+                byeIds.has(
+                    id
+                )
+            ) {
+
+                return {
+                    label:
+                        'Division Winner • Bye',
+
+                    order:
+                        1,
+
+                    className:
+                        'playoff-bye'
+                };
+
+            }
+
+
+            if (
+                divisionWinnerIds.has(
+                    id
+                )
+            ) {
+
+                return {
+                    label:
+                        'Division Winner',
+
+                    order:
+                        2,
+
+                    className:
+                        'playoff-division'
+                };
+
+            }
+
+
+            if (
+                wildCardIds.has(
+                    id
+                )
+            ) {
+
+                return {
+                    label:
+                        'Wild Card',
+
+                    order:
+                        3,
+
+                    className:
+                        'playoff-wildcard'
+                };
+
+            }
+
+
+            return {
+                label:
+                    'Toilet Bowl',
+
+                order:
+                    4,
+
+                className:
+                    'playoff-toilet'
+            };
+
+        }
 
 
         teams.forEach(
-            (team, index) => {
+            team => {
 
-
-                const record =
-                    formatRecord(
-                        team.wins,
-                        team.losses,
-                        team.ties
+                team.playoff =
+                    getPlayoffStatus(
+                        team
                     );
 
+            }
+        );
 
-                const row =
-                    document.createElement(
-                        'tr'
+
+        /*
+         * =====================================================
+         * TABLE RENDERING
+         * =====================================================
+         */
+
+        let displayedTeams =
+            [
+                ...teams
+            ]
+                .sort(
+                    standingsSort
+                );
+
+
+        let currentSort =
+            {
+                column:
+                    'rank',
+
+                direction:
+                    'asc'
+            };
+
+
+        function renderStandings() {
+
+            standingsBody.innerHTML =
+                '';
+
+
+            displayedTeams.forEach(
+                (
+                    team,
+                    index
+                ) => {
+
+                    const record =
+                        formatRecord(
+                            team.wins,
+                            team.losses,
+                            team.ties
+                        );
+
+
+                    const row =
+                        document.createElement(
+                            'tr'
+                        );
+
+
+                    row.innerHTML = `
+
+                        <td class="standing-rank">
+                            ${formatRank(index + 1)}
+                        </td>
+
+                        <td class="standings-team-name">
+                            ${team.team_name}
+                        </td>
+
+                        <td class="standings-owner-name">
+                            ${team.owner}
+                        </td>
+
+                        <td>
+                            ${team.division || '—'}
+                        </td>
+
+                        <td>
+                            ${record}
+                        </td>
+
+                        <td>
+                            ${team.points_for.toFixed(2)}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="
+                                    playoff-badge
+                                    ${team.playoff.className}
+                                "
+                            >
+                                ${team.playoff.label}
+                            </span>
+
+                        </td>
+
+                    `;
+
+
+                    standingsBody.appendChild(
+                        row
                     );
 
+                }
+            );
 
-                const rank =
-                    index + 1;
-
-
-                row.innerHTML = `
-
-                    <td class="standing-rank">
-                        ${formatRank(rank)}
-                    </td>
-
-                    <td class="standings-team-name">
-                        ${team.team_name}
-                    </td>
-
-                    <td>
-                        ${team.owner}
-                    </td>
-
-                    <td>
-                        ${team.division || '—'}
-                    </td>
-
-                    <td>
-                        ${record}
-                    </td>
-
-                    <td>
-                        ${Number(
-                            team.points_for || 0
-                        ).toFixed(2)}
-                    </td>
-
-                `;
+        }
 
 
-                standingsBody.appendChild(
-                    row
+        renderStandings();
+
+
+        /*
+         * =====================================================
+         * SORTABLE COLUMNS
+         * =====================================================
+         */
+
+        const sortableHeaders =
+            document.querySelectorAll(
+                '.standings-page-table th[data-sort]'
+            );
+
+
+        sortableHeaders.forEach(
+            header => {
+
+                header.classList.add(
+                    'sortable-column'
+                );
+
+
+                header.addEventListener(
+                    'click',
+                    () => {
+
+                        const column =
+                            header.dataset.sort;
+
+
+                        if (
+                            currentSort.column ===
+                            column
+                        ) {
+
+                            currentSort.direction =
+                                currentSort.direction ===
+                                    'asc'
+                                    ? 'desc'
+                                    : 'asc';
+
+                        }
+
+                        else {
+
+                            currentSort.column =
+                                column;
+
+                            currentSort.direction =
+                                column ===
+                                    'pf'
+                                    ? 'desc'
+                                    : 'asc';
+
+                        }
+
+
+                        /*
+                         * Rank resets to official standings.
+                         */
+
+                        if (
+                            column ===
+                            'rank'
+                        ) {
+
+                            displayedTeams =
+                                [
+                                    ...teams
+                                ]
+                                    .sort(
+                                        standingsSort
+                                    );
+
+
+                            if (
+                                currentSort.direction ===
+                                'desc'
+                            ) {
+
+                                displayedTeams.reverse();
+
+                            }
+
+                        }
+
+                        else {
+
+                            displayedTeams =
+                                [
+                                    ...teams
+                                ];
+
+
+                            displayedTeams.sort(
+                                (
+                                    a,
+                                    b
+                                ) => {
+
+                                    let result =
+                                        0;
+
+
+                                    if (
+                                        column ===
+                                        'team'
+                                    ) {
+
+                                        result =
+                                            a.team_name.localeCompare(
+                                                b.team_name
+                                            );
+
+                                    }
+
+
+                                    else if (
+                                        column ===
+                                        'owner'
+                                    ) {
+
+                                        result =
+                                            a.owner.localeCompare(
+                                                b.owner
+                                            );
+
+                                    }
+
+
+                                    else if (
+                                        column ===
+                                        'division'
+                                    ) {
+
+                                        result =
+                                            String(
+                                                a.division ||
+                                                ''
+                                            )
+                                                .localeCompare(
+                                                    String(
+                                                        b.division ||
+                                                        ''
+                                                    )
+                                                );
+
+                                    }
+
+
+                                    else if (
+                                        column ===
+                                        'record'
+                                    ) {
+
+                                        result =
+                                            standingsSort(
+                                                a,
+                                                b
+                                            );
+
+                                    }
+
+
+                                    else if (
+                                        column ===
+                                        'pf'
+                                    ) {
+
+                                        result =
+                                            a.points_for -
+                                            b.points_for;
+
+                                    }
+
+
+                                    else if (
+                                        column ===
+                                        'playoff'
+                                    ) {
+
+                                        result =
+                                            a.playoff.order -
+                                            b.playoff.order;
+
+                                    }
+
+
+                                    return (
+                                        currentSort.direction ===
+                                            'asc'
+                                            ? result
+                                            : -result
+                                    );
+
+                                }
+                            );
+
+                        }
+
+
+                        /*
+                         * Update arrows.
+                         */
+
+                        sortableHeaders.forEach(
+                            item => {
+
+                                item.classList.remove(
+                                    'sort-asc',
+                                    'sort-desc'
+                                );
+
+                            }
+                        );
+
+
+                        header.classList.add(
+                            currentSort.direction ===
+                                'asc'
+                                ? 'sort-asc'
+                                : 'sort-desc'
+                        );
+
+
+                        renderStandings();
+
+                    }
                 );
 
             }
@@ -229,6 +841,7 @@ async function loadStandingsPage() {
             teams
                 .map(
                     team => ({
+
                         owner_id:
                             team.owner_id,
 
@@ -237,6 +850,7 @@ async function loadStandingsPage() {
 
                         team_name:
                             team.team_name
+
                     })
                 )
                 .sort(
@@ -262,27 +876,21 @@ async function loadStandingsPage() {
          * =====================================================
          */
 
-        const headToHead = {};
+        const headToHead =
+            {};
 
-
-        /*
-         * Create every possible current-manager pairing.
-         */
 
         currentManagers.forEach(
             manager => {
 
                 headToHead[
                     manager.owner_id
-                ] = {};
+                ] =
+                    {};
 
             }
         );
 
-
-        /*
-         * Process every historical game.
-         */
 
         matchupData.forEach(
             seasonData => {
@@ -300,25 +908,20 @@ async function loadStandingsPage() {
                     game => {
 
                         /*
-                         * Head-to-head matrix is
-                         * regular-season only.
+                         * Count regular season and championship
+                         * bracket playoff games.
+                         *
+                         * Exclude consolation / placement games.
                          */
 
-/*
- * Count regular-season games AND
- * championship-bracket playoff games.
- *
- * Exclude consolation and placement games.
- */
+                        if (
+                            game.playoff &&
+                            !game.championship_playoff
+                        ) {
 
-if (
-    game.playoff &&
-    !game.championship_playoff
-) {
+                            return;
 
-    return;
-
-}
+                        }
 
 
                         const first =
@@ -338,11 +941,6 @@ if (
 
                         }
 
-
-                        /*
-                         * Only include managers who are
-                         * currently in the league.
-                         */
 
                         if (
                             !currentOwnerIds.has(
@@ -388,10 +986,6 @@ if (
                             ];
 
 
-                        /*
-                         * Total scoring
-                         */
-
                         firstSeries.points_for +=
                             first.points;
 
@@ -406,20 +1000,16 @@ if (
                             first.points;
 
 
-                        /*
-                         * Win / loss / tie
-                         */
-
                         if (
                             first.points >
                             second.points
                         ) {
 
                             firstSeries.wins++;
-
                             secondSeries.losses++;
 
                         }
+
 
                         else if (
                             second.points >
@@ -427,64 +1017,53 @@ if (
                         ) {
 
                             secondSeries.wins++;
-
                             firstSeries.losses++;
 
                         }
 
-else {
 
-    /*
-     * Do not count tied scores in the all-time
-     * head-to-head table.
-     */
+                        else {
 
-    return;
+                            /*
+                             * Preserve your current rule:
+                             * tied scores are ignored.
+                             */
 
-}
+                            return;
+
+                        }
 
 
-                        /*
-                         * Most recent meeting
-                         */
+                        const meeting =
+                            {
 
-                        const meeting = {
+                                season:
+                                    game.season,
 
-                            season:
-                                game.season,
+                                week:
+                                    game.week,
 
-                            week:
-                                game.week,
+                                first_score:
+                                    first.points,
 
-                            first_score:
-                                first.points,
+                                second_score:
+                                    second.points
 
-                            second_score:
-                                second.points
-
-                        };
+                            };
 
 
                         firstSeries.latest =
                             meeting;
 
-
                         secondSeries.latest =
                             meeting;
 
                     }
-
                 );
 
             }
         );
 
-
-        /*
-         * =====================================================
-         * BUILD HEAD-TO-HEAD MATRIX
-         * =====================================================
-         */
 
         buildHeadToHeadTable(
             headToHeadTable,
@@ -493,7 +1072,9 @@ else {
         );
 
 
-    } catch (error) {
+    } catch (
+        error
+    ) {
 
         console.error(
             'Error loading standings:',
@@ -506,7 +1087,7 @@ else {
             <tr>
 
                 <td
-                    colspan="6"
+                    colspan="7"
                     class="records-error"
                 >
                     Unable to load standings.
@@ -558,14 +1139,16 @@ function buildHeadToHeadTable(
             <tr>
 
                 <th class="h2h-corner">
-                    Manager
+                    Owner
                 </th>
 
     `;
 
 
     /*
-     * Column headers
+     * COLUMN HEADERS
+     *
+     * Use true owner names instead of team names.
      */
 
     managers.forEach(
@@ -601,7 +1184,7 @@ function buildHeadToHeadTable(
 
 
     /*
-     * Rows
+     * ROWS
      */
 
     managers.forEach(
@@ -617,10 +1200,6 @@ function buildHeadToHeadTable(
                             ${rowManager.owner}
                         </span>
 
-                        <small>
-                            ${rowManager.team_name}
-                        </small>
-
                     </th>
 
             `;
@@ -628,10 +1207,6 @@ function buildHeadToHeadTable(
 
             managers.forEach(
                 columnManager => {
-
-                    /*
-                     * Same manager.
-                     */
 
                     if (
                         rowManager.owner_id ===
@@ -659,7 +1234,9 @@ function buildHeadToHeadTable(
                         ];
 
 
-                    if (!series) {
+                    if (
+                        !series
+                    ) {
 
                         html += `
 
@@ -832,6 +1409,21 @@ function formatRecord(
     ties
 ) {
 
+    if (
+        Number(
+            ties ||
+            0
+        ) >
+        0
+    ) {
+
+        return (
+            `${wins}-${losses}-${ties}`
+        );
+
+    }
+
+
     return `${wins}-${losses}`;
 
 }
@@ -848,13 +1440,6 @@ function formatRank(
     rank
 ) {
 
-    if (rank === 1) {
-
-        return '1';
-
-    }
-
-
     return rank;
 
 }
@@ -863,7 +1448,7 @@ function formatRank(
 
 /*
  * ======================================================
- * SHORT MANAGER NAME
+ * SHORT OWNER NAME
  * ======================================================
  */
 
@@ -871,15 +1456,23 @@ function shortManagerName(
     name
 ) {
 
-    if (!name) {
+    if (
+        !name
+    ) {
 
         return '—';
 
     }
 
 
+    /*
+     * Owner names are generally short enough that
+     * we can allow slightly more room than before.
+     */
+
     if (
-        name.length <= 9
+        name.length <=
+        12
     ) {
 
         return name;
@@ -890,7 +1483,7 @@ function shortManagerName(
     return (
         name.substring(
             0,
-            8
+            11
         ) +
         '…'
     );
