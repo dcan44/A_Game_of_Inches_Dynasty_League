@@ -3795,20 +3795,28 @@ footer p {
 }
 
 /* ======================================================
-   HEAD TO HEAD — COMPACT OWNER COLUMN
+   HEAD TO HEAD — COMPACT TABLE
 ====================================================== */
+
+.head-to-head-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+
+/* Owner column */
 
 .head-to-head-table .h2h-corner,
 .head-to-head-table .h2h-row-header {
-    width: 75px;
-    min-width: 75px;
-    max-width: 75px;
+    width: 68px;
+    min-width: 68px;
+    max-width: 68px;
 }
 
 
 .head-to-head-table .h2h-row-header {
     padding:
-        12px
+        10px
         3px;
 
     white-space: nowrap;
@@ -3820,7 +3828,19 @@ footer p {
 }
 
 
-/* Slightly larger head-to-head records */
+/* Manager matchup columns */
+
+.head-to-head-table .h2h-manager-header,
+.head-to-head-table td {
+    width: auto;
+    min-width: 0;
+    padding:
+        10px
+        3px;
+}
+
+
+/* Head-to-head records */
 
 .head-to-head-table td {
     font-size: 14px;
