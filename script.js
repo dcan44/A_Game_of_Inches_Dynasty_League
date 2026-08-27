@@ -1742,1019 +1742,17 @@ loadHomeMatchups();
 
 /*
  * ======================================================
- * HOME — TRADES / WAIVER WIRE
- * ======================================================
- */
-
-async function loadHomeTransactions() {
-
-    const tradesContainer =
-        document.getElementById(
-            'home-trades'
-        );
-
-
-    const waiversContainer =
-        document.getElementById(
-            'home-waivers'
-        );
-
-
-    if (
-        !tradesContainer ||
-        !waiversContainer
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        /*
-         * ==================================================
-         * CURRENT LEAGUE
-         * ==================================================
-         *
-         * Uses the same automatic current-season lookup as
-         * the standings and weekly matchups.
-         */
-
-        const league =
-            await getCurrentHomeLeague();
-
-
-        const leagueId =
-            league.league_id;
-
-
-        /*
-         * ==================================================
-         * LOAD SLEEPER DATA
-         * ==================================================
-         */
-
-        const [
-            stateResponse,
-            usersResponse,
-            rostersResponse,
-            playersResponse
-        ] = await Promise.all([
-
-            fetch(
-                'https://api.sleeper.app/v1/state/nfl'
-            ),
-
-            fetch(
-                `https://api.sleeper.app/v1/league/${leagueId}/users`
-            ),
-
-            fetch(
-                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
-            ),
-
-            fetch(
-                'https://api.sleeper.app/v1/players/nfl'
-            )
-
-        ]);
-
-
-        if (
-            !stateResponse.ok ||
-            !usersResponse.ok ||
-            !rostersResponse.ok ||
-            !playersResponse.ok
-        ) {
-
-            throw new Error(
-                'Unable to retrieve league activity.'
-            );
-
-        }
-
-
-        const nflState =
-            await stateResponse.json();
-
-
-        const users =
-            await usersResponse.json();
-
-
-        const rosters =
-            await rostersResponse.json();
-
-
-        const players =
-            await playersResponse.json();
-
-
-        /*
-         * ==================================================
-         * USER LOOKUP
-         * ==================================================
-         */
-
-        const userMap =
-            {};
-
-
-        users.forEach(
-            user => {
-
-                userMap[
-                    user.user_id
-                ] =
-                    user;
-
-            }
-        );
-
-
-        /*
-         * ==================================================
-         * ROSTER LOOKUP
-         * ==================================================
-         */
-
-        const rosterMap =
-            {};
-
-
-        rosters.forEach(
-            roster => {
-
-                const user =
-                    userMap[
-                        roster.owner_id
-                    ];
-
-
-                const sleeperUsername =
-                    user
-                        ?.display_name ||
-                    'Unknown Manager';
-
-
-                const ownerName =
-                    window.LEAGUE_DATA &&
-                    typeof window.LEAGUE_DATA.getOwnerName ===
-                        'function'
-                        ? window.LEAGUE_DATA.getOwnerName(
-                            roster.owner_id,
-                            sleeperUsername
-                          )
-                        : sleeperUsername;
-
-
-                rosterMap[
-                    roster.roster_id
-                ] = {
-
-                    roster_id:
-                        roster.roster_id,
-
-                    owner_id:
-                        roster.owner_id,
-
-                    owner:
-                        ownerName,
-
-                    team_name:
-                        user
-                            ?.metadata
-                            ?.team_name
-                            ?.trim() ||
-                        sleeperUsername ||
-                        `Team ${roster.roster_id}`
-
-                };
-
-            }
-        );
-
-
-        /*
-         * ==================================================
-         * LOAD RECENT TRANSACTIONS
-         * ==================================================
-         */
-
-        let currentWeek =
-            Number(
-                nflState.week ||
-                1
-            );
-
-
-        /*
-         * During preseason/offseason, Sleeper may report
-         * an NFL week that does not match the fantasy
-         * transaction week.
-         */
-
-        if (
-            nflState.season_type !==
-            'regular'
-        ) {
-
-            currentWeek =
-                1;
-
-        }
-
-
-        if (
-            currentWeek < 1
-        ) {
-
-            currentWeek =
-                1;
-
-        }
-
-
-        const allTransactions =
-            [];
-
-
-        /*
-         * Load the current week and up to four prior weeks.
-         */
-
-        for (
-            let week = currentWeek;
-            week >= Math.max(
-                1,
-                currentWeek - 4
-            );
-            week--
-        ) {
-
-            const response =
-                await fetch(
-                    `https://api.sleeper.app/v1/league/${leagueId}/transactions/${week}`
-                );
-
-
-            if (
-                !response.ok
-            ) {
-
-                continue;
-
-            }
-
-
-            const weekTransactions =
-                await response.json();
-
-
-            weekTransactions.forEach(
-                transaction => {
-
-                    allTransactions.push(
-                        {
-                            ...transaction,
-                            week:
-                                week
-                        }
-                    );
-
-                }
-            );
-
-        }
-
-
-        /*
-         * Newest first.
-         */
-
-        allTransactions.sort(
-            (a, b) =>
-                Number(
-                    b.created ||
-                    0
-                ) -
-                Number(
-                    a.created ||
-                    0
-                )
-        );
-
-
-        /*
-         * ==================================================
-         * HELPERS
-         * ==================================================
-         */
-
-        function getPlayerName(
-            playerId
-        ) {
-
-            const player =
-                players[
-                    playerId
-                ];
-
-
-            if (
-                !player
-            ) {
-
-                return playerId;
-
-            }
-
-
-            return (
-                player.full_name ||
-                `${player.first_name || ''} ${player.last_name || ''}`.trim() ||
-                playerId
-            );
-
-        }
-
-
-        function getRoster(
-            rosterId
-        ) {
-
-            return rosterMap[
-                rosterId
-            ] || {
-
-                owner:
-                    'Unknown Manager',
-
-                team_name:
-                    'Unknown Team'
-
-            };
-
-        }
-
-
-        /*
-         * ==================================================
-         * TRADE CARD
-         * ==================================================
-         */
-
-        function buildTradeHTML(
-            transaction
-        ) {
-
-            const rosterIds =
-                transaction.roster_ids ||
-                [];
-
-
-            const adds =
-                transaction.adds ||
-                {};
-
-
-            const draftPicks =
-                transaction.draft_picks ||
-                [];
-
-
-            const waiverBudget =
-                transaction.waiver_budget ||
-                [];
-
-
-            /*
-             * Build one side of the trade for every
-             * participating roster.
-             */
-
-            const tradeSides =
-                rosterIds
-                    .map(
-                        rosterId => {
-
-                            const roster =
-                                getRoster(
-                                    rosterId
-                                );
-
-
-                            /*
-                             * Players received by this roster.
-                             */
-
-                            const receivedPlayers =
-                                Object.entries(
-                                    adds
-                                )
-                                    .filter(
-                                        (
-                                            [
-                                                playerId,
-                                                receivingRosterId
-                                            ]
-                                        ) =>
-                                            Number(
-                                                receivingRosterId
-                                            ) ===
-                                            Number(
-                                                rosterId
-                                            )
-                                    )
-                                    .map(
-                                        (
-                                            [
-                                                playerId
-                                            ]
-                                        ) =>
-                                            getPlayerName(
-                                                playerId
-                                            )
-                                    );
-
-
-                            /*
-                             * Draft picks received.
-                             */
-
-                            const receivedPicks =
-                                draftPicks
-                                    .filter(
-                                        pick =>
-                                            Number(
-                                                pick.roster_id
-                                            ) ===
-                                            Number(
-                                                rosterId
-                                            )
-                                    )
-                                    .map(
-                                        pick => {
-
-                                            const round =
-                                                Number(
-                                                    pick.round
-                                                );
-
-
-                                            let suffix =
-                                                'th';
-
-
-                                            if (
-                                                round === 1
-                                            ) {
-
-                                                suffix =
-                                                    'st';
-
-                                            }
-
-                                            else if (
-                                                round === 2
-                                            ) {
-
-                                                suffix =
-                                                    'nd';
-
-                                            }
-
-                                            else if (
-                                                round === 3
-                                            ) {
-
-                                                suffix =
-                                                    'rd';
-
-                                            }
-
-
-                                            return (
-                                                `${pick.season} ${round}${suffix} Round Pick`
-                                            );
-
-                                        }
-                                    );
-
-
-                            /*
-                             * FAAB received as part of trade.
-                             */
-
-                            const receivedFAAB =
-                                waiverBudget
-                                    .filter(
-                                        budget =>
-                                            Number(
-                                                budget.receiver
-                                            ) ===
-                                            Number(
-                                                rosterId
-                                            )
-                                    )
-                                    .reduce(
-                                        (
-                                            total,
-                                            budget
-                                        ) =>
-                                            total +
-                                            Number(
-                                                budget.amount ||
-                                                0
-                                            ),
-                                        0
-                                    );
-
-
-                            const assets =
-                                [
-                                    ...receivedPlayers,
-                                    ...receivedPicks
-                                ];
-
-
-                            if (
-                                receivedFAAB >
-                                0
-                            ) {
-
-                                assets.push(
-                                    `$${receivedFAAB} FAAB`
-                                );
-
-                            }
-
-
-                            const assetsHTML =
-                                assets.length >
-                                0
-                                    ? assets
-                                        .map(
-                                            asset => `
-
-                                                <div class="home-trade-asset">
-                                                    ${asset}
-                                                </div>
-
-                                            `
-                                        )
-                                        .join('')
-                                    : `
-
-                                        <div class="home-trade-asset home-trade-none">
-                                            No listed assets
-                                        </div>
-
-                                      `;
-
-
-                            return `
-
-                                <div class="home-trade-side">
-
-                                    <div class="home-trade-team">
-
-                                        <strong>
-                                            ${roster.owner}
-                                        </strong>
-
-                                        <span>
-                                            ${roster.team_name}
-                                        </span>
-
-                                    </div>
-
-
-                                    <div class="home-trade-received">
-
-                                        <small>
-                                            Receives
-                                        </small>
-
-                                        ${assetsHTML}
-
-                                    </div>
-
-                                </div>
-
-                            `;
-
-                        }
-                    )
-                    .join(
-                        `
-
-                            <div class="home-trade-arrow">
-                                ⇄
-                            </div>
-
-                        `
-                    );
-
-
-            return `
-
-                <div class="home-transaction-item home-trade-item">
-
-                    <div class="home-transaction-main">
-
-                        <div class="home-trade-layout">
-
-                            ${tradeSides}
-
-                        </div>
-
-
-                        <div class="home-transaction-meta">
-                            Week ${transaction.week}
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        /*
-         * ==================================================
-         * WAIVER / FREE AGENT CARD
-         * ==================================================
-         */
-
-        function buildWaiverHTML(
-            transaction
-        ) {
-
-            const type =
-                transaction.type;
-
-
-            const adds =
-                transaction.adds ||
-                {};
-
-
-            const drops =
-                transaction.drops ||
-                {};
-
-
-            const involvedRosterIds =
-                new Set();
-
-
-            Object.values(
-                adds
-            ).forEach(
-                rosterId =>
-                    involvedRosterIds.add(
-                        rosterId
-                    )
-            );
-
-
-            Object.values(
-                drops
-            ).forEach(
-                rosterId =>
-                    involvedRosterIds.add(
-                        rosterId
-                    )
-            );
-
-
-            const firstRosterId =
-                [
-                    ...involvedRosterIds
-                ][0];
-
-
-            const roster =
-                getRoster(
-                    firstRosterId
-                );
-
-
-            const addedPlayers =
-                Object.keys(
-                    adds
-                )
-                    .map(
-                        getPlayerName
-                    );
-
-
-            const droppedPlayers =
-                Object.keys(
-                    drops
-                )
-                    .map(
-                        getPlayerName
-                    );
-
-
-            let actionHTML =
-                '';
-
-
-            if (
-                addedPlayers.length >
-                0
-            ) {
-
-                actionHTML += `
-
-                    <div class="home-transaction-action add">
-
-                        <span>
-                            Added
-                        </span>
-
-                        <strong>
-                            ${addedPlayers.join(', ')}
-                        </strong>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            if (
-                droppedPlayers.length >
-                0
-            ) {
-
-                actionHTML += `
-
-                    <div class="home-transaction-action drop">
-
-                        <span>
-                            Dropped
-                        </span>
-
-                        <strong>
-                            ${droppedPlayers.join(', ')}
-                        </strong>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            /*
-             * Sleeper stores the winning FAAB bid in settings.
-             */
-
-            const faabBid =
-                Number(
-                    transaction
-                        ?.settings
-                        ?.waiver_bid ||
-                    0
-                );
-
-
-            let faabHTML =
-                '';
-
-
-            if (
-                type === 'waiver'
-            ) {
-
-                faabHTML = `
-
-                    <div class="home-waiver-faab">
-
-                        FAAB:
-                        <strong>
-                            $${faabBid}
-                        </strong>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            const transactionLabel =
-                type ===
-                'waiver'
-                    ? 'Waiver'
-                    : 'Free Agent';
-
-
-            return `
-
-                <div class="home-transaction-item">
-
-                    <div class="home-transaction-type">
-                        ${transactionLabel}
-                    </div>
-
-
-                    <div class="home-transaction-main">
-
-                        <div class="home-transaction-team">
-
-                            <strong>
-                                ${roster.owner}
-                            </strong>
-
-                            <span>
-                                ${roster.team_name}
-                            </span>
-
-                        </div>
-
-
-                        ${actionHTML}
-
-                        ${faabHTML}
-
-
-                        <div class="home-transaction-meta">
-                            Week ${transaction.week}
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        /*
-         * ==================================================
-         * RECENT TRADES
-         * ==================================================
-         */
-
-        const recentTrades =
-            allTransactions
-                .filter(
-                    transaction =>
-                        transaction.status ===
-                            'complete' &&
-                        transaction.type ===
-                            'trade'
-                )
-                .slice(
-                    0,
-                    5
-                );
-
-
-        if (
-            recentTrades.length >
-            0
-        ) {
-
-            tradesContainer.innerHTML =
-                recentTrades
-                    .map(
-                        buildTradeHTML
-                    )
-                    .join('');
-
-        }
-
-        else {
-
-            tradesContainer.innerHTML = `
-
-                <p class="placeholder-text">
-                    No recent trades.
-                </p>
-
-            `;
-
-        }
-
-
-        /*
-         * ==================================================
-         * WAIVER WIRE
-         * ==================================================
-         */
-
-        const recentWaivers =
-            allTransactions
-                .filter(
-                    transaction =>
-                        transaction.status ===
-                            'complete' &&
-                        (
-                            transaction.type ===
-                                'waiver' ||
-                            transaction.type ===
-                                'free_agent'
-                        ) &&
-                        transaction.adds &&
-                        Object.keys(
-                            transaction.adds
-                        ).length >
-                            0
-                )
-                .slice(
-                    0,
-                    5
-                );
-
-
-        if (
-            recentWaivers.length >
-            0
-        ) {
-
-            waiversContainer.innerHTML =
-                recentWaivers
-                    .map(
-                        buildWaiverHTML
-                    )
-                    .join('');
-
-        }
-
-        else {
-
-            waiversContainer.innerHTML = `
-
-                <p class="placeholder-text">
-                    No recent waiver or free-agent activity.
-                </p>
-
-            `;
-
-        }
-
-
-    } catch (
-        error
-    ) {
-
-        console.error(
-            'Error loading home league activity:',
-            error
-        );
-
-
-        tradesContainer.innerHTML = `
-
-            <p class="placeholder-text">
-                Unable to load recent trades.
-            </p>
-
-        `;
-
-
-        waiversContainer.innerHTML = `
-
-            <p class="placeholder-text">
-                Unable to load waiver activity.
-            </p>
-
-        `;
-
-    }
-
-}
-
-
-loadHomeTransactions();
-
-
-
-/*
- * ======================================================
  * HOME — WAIVER COUNTDOWN
  * ======================================================
  *
- * League waivers clear every Wednesday at 3:00 AM
- * America/New_York.
+ * Waivers clear every Wednesday at 3:00 AM Eastern.
  *
- * The America/New_York timezone is used so daylight
- * saving time is handled automatically.
+ * During the offseason / preseason, the countdown is
+ * disabled and displays "Begins Week 1".
  * ======================================================
  */
 
-function startHomeWaiverCountdown() {
+async function startHomeWaiverCountdown() {
 
     const countdown =
         document.getElementById(
@@ -2770,74 +1768,81 @@ function startHomeWaiverCountdown() {
 
     }
 
-    /*
- * Do not show the waiver countdown
- * until the NFL regular season begins.
- */
 
-async function checkSeasonStatus() {
+    /*
+     * ==================================================
+     * CHECK NFL SEASON STATUS
+     * ==================================================
+     */
 
     try {
 
-        const response =
+        const stateResponse =
             await fetch(
                 'https://api.sleeper.app/v1/state/nfl'
             );
 
 
         if (
-            !response.ok
+            stateResponse.ok
         ) {
 
-            return true;
+            const nflState =
+                await stateResponse.json();
+
+
+            /*
+             * Do not run the countdown until the
+             * NFL regular season begins.
+             */
+
+            if (
+                nflState.season_type !==
+                'regular'
+            ) {
+
+                countdown.textContent =
+                    'Begins Week 1';
+
+                countdown.classList.add(
+                    'waiver-countdown-inactive'
+                );
+
+                return;
+
+            }
 
         }
-
-
-        const nflState =
-            await response.json();
-
-
-        if (
-            nflState.season_type !== 'regular'
-        ) {
-
-            countdown.textContent =
-                'Begins Week 1';
-
-            countdown.classList.add(
-                'waiver-countdown-inactive'
-            );
-
-            return false;
-
-        }
-
-
-        return true;
 
     } catch (
         error
     ) {
 
         console.error(
-            'Unable to determine season status:',
+            'Unable to determine waiver countdown season status:',
             error
         );
 
-        return true;
+        /*
+         * If Sleeper state cannot be loaded, continue
+         * with the countdown rather than breaking the page.
+         */
 
     }
 
-}
 
+    /*
+     * ==================================================
+     * WAIVER COUNTDOWN
+     * ==================================================
+     */
 
     const timeZone =
         'America/New_York';
 
 
     /*
-     * Return the timezone's UTC offset for a specific Date.
+     * Get the UTC offset for Eastern Time.
      */
 
     function getEasternOffsetMinutes(
@@ -2883,10 +1888,6 @@ async function checkSeasonStatus() {
             !match
         ) {
 
-            /*
-             * Eastern Standard Time fallback.
-             */
-
             return -300;
 
         }
@@ -2926,8 +1927,7 @@ async function checkSeasonStatus() {
 
 
     /*
-     * Convert an Eastern local date/time into an actual
-     * JavaScript Date.
+     * Convert an Eastern local date/time to UTC.
      */
 
     function easternDateToUTC(
@@ -2972,7 +1972,7 @@ async function checkSeasonStatus() {
 
 
     /*
-     * Get the current calendar values in Eastern Time.
+     * Read calendar information in Eastern Time.
      */
 
     function getEasternParts(
@@ -3065,22 +2065,16 @@ async function checkSeasonStatus() {
             hour:
                 Number(
                     values.hour
-                ),
-
-            minute:
-                Number(
-                    values.minute
-                ),
-
-            second:
-                Number(
-                    values.second
                 )
 
         };
 
     }
 
+
+    /*
+     * Find the next Wednesday at 3:00 AM Eastern.
+     */
 
     function getNextWaiverTime() {
 
@@ -3106,7 +2100,7 @@ async function checkSeasonStatus() {
             };
 
 
-        const currentDayNumber =
+        const currentDay =
             weekdayNumbers[
                 eastern.weekday
             ];
@@ -3115,15 +2109,15 @@ async function checkSeasonStatus() {
         let daysUntilWednesday =
             (
                 3 -
-                currentDayNumber +
+                currentDay +
                 7
             ) %
             7;
 
 
         /*
-         * If it is already Wednesday at or after 3 AM,
-         * target next Wednesday instead.
+         * If it is already Wednesday after 3 AM,
+         * move to next Wednesday.
          */
 
         if (
@@ -3140,11 +2134,11 @@ async function checkSeasonStatus() {
 
 
         /*
-         * Work from Eastern noon to avoid DST/calendar
-         * rollover edge cases when adding days.
+         * Use noon as the starting point to avoid
+         * daylight-saving rollover problems.
          */
 
-        const easternTodayNoon =
+        const todayNoon =
             easternDateToUTC(
                 eastern.year,
                 eastern.month,
@@ -3154,9 +2148,9 @@ async function checkSeasonStatus() {
             );
 
 
-        const targetDay =
+        const targetDate =
             new Date(
-                easternTodayNoon.getTime() +
+                todayNoon.getTime() +
                 daysUntilWednesday *
                 24 *
                 60 *
@@ -3167,7 +2161,7 @@ async function checkSeasonStatus() {
 
         const targetParts =
             getEasternParts(
-                targetDay
+                targetDate
             );
 
 
@@ -3182,13 +2176,17 @@ async function checkSeasonStatus() {
     }
 
 
+    /*
+     * Update the visible countdown.
+     */
+
     function updateCountdown() {
 
         const now =
             new Date();
 
 
-        let nextWaiver =
+        const nextWaiver =
             getNextWaiverTime();
 
 
@@ -3243,32 +2241,23 @@ async function checkSeasonStatus() {
     }
 
 
-checkSeasonStatus()
-    .then(
-        seasonIsActive => {
-
-            if (
-                !seasonIsActive
-            ) {
-
-                return;
-
-            }
+    updateCountdown();
 
 
-            updateCountdown();
+    /*
+     * Refresh every 30 seconds.
+     */
 
-
-            setInterval(
-                updateCountdown,
-                30000
-            );
-
-        }
+    setInterval(
+        updateCountdown,
+        30000
     );
+
+}
 
 
 startHomeWaiverCountdown();
+
 /*
  * ======================================================
  * HOME — LEAGUE CHAMPIONS
