@@ -819,14 +819,77 @@ const formerManagersContainer =
          * =====================================================
          */
 
-        const teams =
-            [
-                ...teamsData.teams
-            ].sort(
-                (a, b) =>
-                    a.roster_id -
-                    b.roster_id
+const divisionOrder =
+    [
+        'Kermit Frogs',
+        'BMS Mountain G.O.A.T.s',
+        'Mount Doom'
+    ];
+
+
+const teams =
+    [
+        ...teamsData.teams
+    ].sort(
+        (a, b) => {
+
+            const firstDivision =
+                divisionOrder.indexOf(
+                    a.division
+                );
+
+
+            const secondDivision =
+                divisionOrder.indexOf(
+                    b.division
+                );
+
+
+            const firstDivisionOrder =
+                firstDivision === -1
+                    ? 999
+                    : firstDivision;
+
+
+            const secondDivisionOrder =
+                secondDivision === -1
+                    ? 999
+                    : secondDivision;
+
+
+            if (
+                firstDivisionOrder !==
+                secondDivisionOrder
+            ) {
+
+                return (
+                    firstDivisionOrder -
+                    secondDivisionOrder
+                );
+
+            }
+
+
+            const firstOwner =
+                getLeagueOwnerName(
+                    a.owner_id,
+                    a.owner
+                );
+
+
+            const secondOwner =
+                getLeagueOwnerName(
+                    b.owner_id,
+                    b.owner
+                );
+
+
+            return firstOwner.localeCompare(
+                secondOwner
             );
+
+        }
+    );
 
 
         grid.innerHTML =
