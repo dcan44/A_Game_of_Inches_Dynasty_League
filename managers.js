@@ -1316,201 +1316,203 @@ const teams =
                  * =============================================
                  */
 
-                card.innerHTML = `
+               card.innerHTML = `
 
-                    <div class="manager-card-top">
+    <div class="manager-card-top">
 
-                        ${avatar}
+        ${avatar}
 
-                        <div class="manager-identity">
+        <div class="manager-identity">
 
-                            <span class="manager-number">
+            <h2>
+                ${ownerName}
+            </h2>
 
-                                FRANCHISE ${String(
-                                    team.roster_id
-                                ).padStart(
-                                    2,
-                                    '0'
-                                )}
+            <p class="manager-team-name">
+                ${team.team_name}
+            </p>
 
-                            </span>
+            <small class="manager-sleeper-username">
+                ${team.owner}
+            </small>
 
-                            <h2>
-                                ${team.team_name}
-                            </h2>
+        </div>
 
-                            <p class="manager-owner-name">
-                                ${ownerName}
-                            </p>
 
-                            <small class="manager-sleeper-username">
-                                ${team.owner}
-                            </small>
+        <button
+            type="button"
+            class="manager-collapse-button"
+            aria-expanded="true"
+            aria-label="Collapse ${ownerName}"
+        >
+            ▲
+        </button>
 
-                        </div>
+    </div>
 
-                    </div>
 
+    <div class="manager-card-body">
 
-                    <div class="manager-division">
+        <div class="manager-division">
 
-                        ${
-                            team.division ||
-                            'Division'
-                        }
+            ${
+                team.division ||
+                'Division'
+            }
 
-                    </div>
+        </div>
 
 
-                    <div class="trophy-case">
+        <div class="trophy-case">
 
-                        <div class="trophy-case-title">
-                            Trophy Case
-                        </div>
+            <div class="trophy-case-title">
+                Trophy Case
+            </div>
 
-                        <div class="trophy-case-grid">
+            <div class="trophy-case-grid">
 
-                            ${trophyHTML}
+                ${trophyHTML}
 
-                        </div>
+            </div>
 
-                    </div>
+        </div>
 
 
-                    <div class="manager-stats">
+        <div class="manager-stats">
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                2026 Record
-                            </span>
+                <span>
+                    2026 Record
+                </span>
 
-                            <strong>
-                                ${currentRecord}
-                            </strong>
+                <strong>
+                    ${currentRecord}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Seasons
-                            </span>
+                <span>
+                    Seasons
+                </span>
 
-                            <strong>
+                <strong>
 
-                                ${
-                                    career
-                                        ? career.seasons
-                                        : '—'
-                                }
+                    ${
+                        career
+                            ? career.seasons
+                            : '—'
+                    }
 
-                            </strong>
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Regular Season
-                            </span>
+                <span>
+                    Regular Season
+                </span>
 
-                            <strong>
-                                ${regularRecord}
-                            </strong>
+                <strong>
+                    ${regularRecord}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Win %
-                            </span>
+                <span>
+                    Win %
+                </span>
 
-                            <strong>
-                                ${winningPercentage}
-                            </strong>
+                <strong>
+                    ${winningPercentage}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Playoffs
-                            </span>
+                <span>
+                    Playoffs
+                </span>
 
-                            <strong>
-                                ${playoffRecord}
-                            </strong>
+                <strong>
+                    ${playoffRecord}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Career PPG
-                            </span>
+                <span>
+                    Career PPG
+                </span>
 
-                            <strong>
-                                ${careerPPG}
-                            </strong>
+                <strong>
+                    ${careerPPG}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Championships
-                            </span>
+                <span>
+                    Championships
+                </span>
 
-                            <strong>
-                                ${championshipYears.length}
-                            </strong>
+                <strong>
+                    ${championshipYears.length}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                        <div class="manager-stat">
+            <div class="manager-stat">
 
-                            <span>
-                                Division Titles
-                            </span>
+                <span>
+                    Division Titles
+                </span>
 
-                            <strong>
-                                ${managerDivisionTitles.length}
-                            </strong>
+                <strong>
+                    ${managerDivisionTitles.length}
+                </strong>
 
-                        </div>
+            </div>
 
 
-                    </div>
+        </div>
 
 
-                    <div class="manager-records">
+        <div class="manager-records">
 
-                        <div>
+            <div>
 
-                            <span>
-                                Highest Team Score
-                            </span>
+                <span>
+                    Highest Team Score
+                </span>
 
-                            <strong>
-                                ${highestTeamScore}
-                            </strong>
+                <strong>
+                    ${highestTeamScore}
+                </strong>
 
-                        </div>
+            </div>
 
-                    </div>
+        </div>
 
-                `;
+    </div>
 
+`;
 
                 grid.appendChild(
                     card
