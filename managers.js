@@ -2068,21 +2068,17 @@ const teams =
 
                             <div class="manager-identity">
 
-                                <span class="manager-number">
-                                    FORMER MANAGER
-                                </span>
+<h2>
+    ${ownerName}
+</h2>
 
-                                <h2>
-                                    ${ownerName}
-                                </h2>
+<p class="manager-team-name">
+    ${lastTeamName}
+</p>
 
-                                <p class="manager-owner-name">
-                                    ${lastTeamName}
-                                </p>
-
-                                <small class="manager-sleeper-username">
-                                    ${career.owner}
-                                </small>
+<small class="manager-sleeper-username">
+    ${career.owner}
+</small>
 
                             </div>
 
