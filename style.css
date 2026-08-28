@@ -8854,3 +8854,30 @@ font-size: 19px;
     font-size: 13px;
     font-weight: 600;
 }
+
+/* ======================================================
+   HOME CHAMPIONSHIP BANNERS — MOBILE STAR FIX
+====================================================== */
+
+@media (max-width: 700px) {
+
+    .champion-banner {
+        height: 240px;
+        min-height: 240px;
+
+        padding:
+            16px
+            12px
+            44px;
+    }
+
+
+    .banner-trophy {
+        margin-top: 7px;
+
+        font-size: 18px;
+
+        line-height: 1;
+    }
+
+}
