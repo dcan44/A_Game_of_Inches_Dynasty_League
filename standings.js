@@ -627,46 +627,46 @@ async function loadStandingsPage() {
                         );
 
 
-                    row.innerHTML = `
+row.innerHTML = `
 
-                        <td class="standing-rank">
-                            ${formatRank(team.officialRank)}
-                        </td>
+    <td class="standings-owner-name">
+        ${team.owner}
+    </td>
 
-                        <td class="standings-team-name">
-                            ${team.team_name}
-                        </td>
+    <td class="standing-rank">
+        ${formatRank(team.officialRank)}
+    </td>
 
-                        <td class="standings-owner-name">
-                            ${team.owner}
-                        </td>
+    <td class="standings-team-name">
+        ${team.team_name}
+    </td>
 
-                        <td>
-                            ${team.division || '—'}
-                        </td>
+    <td>
+        ${team.division || '—'}
+    </td>
 
-                        <td>
-                            ${record}
-                        </td>
+    <td>
+        ${record}
+    </td>
 
-                        <td>
-                            ${team.points_for.toFixed(2)}
-                        </td>
+    <td>
+        ${team.points_for.toFixed(2)}
+    </td>
 
-                        <td>
+    <td>
 
-                            <span
-                                class="
-                                    playoff-badge
-                                    ${team.playoff.className}
-                                "
-                            >
-                                ${team.playoff.label}
-                            </span>
+        <span
+            class="
+                playoff-badge
+                ${team.playoff.className}
+            "
+        >
+            ${team.playoff.label}
+        </span>
 
-                        </td>
+    </td>
 
-                    `;
+`;
 
 
                     standingsBody.appendChild(
