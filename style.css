@@ -9565,3 +9565,78 @@ font-size: 19px;
 
     display: none;
 }
+
+/* ======================================================
+   ORIGINAL DRAFT ORDER — MOBILE COLLAPSE
+====================================================== */
+
+.draft-order-heading {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+}
+
+
+.draft-order-toggle {
+
+    display: none;
+
+}
+
+
+@media (max-width: 650px) {
+
+    .draft-order-toggle {
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        width: 32px;
+        height: 32px;
+
+        padding: 0;
+
+        background:
+            rgba(4, 30, 66, .08);
+
+        border:
+            1px solid
+            rgba(4, 30, 66, .20);
+
+        border-radius: 4px;
+
+        color:
+            var(--navy);
+
+        font-size: 11px;
+
+        cursor: pointer;
+
+    }
+
+
+    .draft-order-grid.mobile-collapsed {
+
+        display: none;
+
+    }
+
+}
+
+
+/* Desktop always stays open */
+
+@media (min-width: 651px) {
+
+    .draft-order-grid.mobile-collapsed {
+
+        display: grid;
+
+    }
+
+}
