@@ -524,11 +524,19 @@ function buildDraftBoard(
                     </span>
 
 
-                    <small>
+<small>
 
-                        ${pick.manager}
+    ${
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName === 'function'
+            ? window.LEAGUE_DATA.getOwnerName(
+                pick.picked_by,
+                pick.manager
+              )
+            : pick.manager
+    }
 
-                    </small>
+</small>
 
                 `;
 
