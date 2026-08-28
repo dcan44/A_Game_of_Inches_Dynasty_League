@@ -10015,21 +10015,50 @@ td:first-child {
 }
 
 /* ======================================================
-   HISTORY — MOBILE CHAMPION RIGHT EDGE
+   HISTORY — MOBILE CHAMPION WIDTH / EDGE FIX
 ====================================================== */
 
 @media (max-width: 650px) {
 
     .history-champions {
 
+        width: 100% !important;
+
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        padding-left: 0 !important;
         padding-right: 0 !important;
 
+        justify-content: flex-start !important;
+
+        scroll-padding-left: 0 !important;
         scroll-padding-right: 0 !important;
 
     }
 
 
-    .history-champions
+    .history-champion-pennant {
+
+        flex: 0 0 165px !important;
+
+        width: 165px !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+    }
+
+
+    .history-champion-pennant:first-child {
+
+        margin-left: 0 !important;
+
+    }
+
+
     .history-champion-pennant:last-child {
 
         margin-right: 0 !important;
