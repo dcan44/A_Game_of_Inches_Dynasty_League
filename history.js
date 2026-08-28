@@ -3209,35 +3209,38 @@ function scrollHistoryBannersToNewest() {
     }
 
 
-    requestAnimationFrame(
+    /*
+     * Wait briefly for dynamically generated cards,
+     * fonts, widths, and gaps to finish laying out
+     * before calculating the far-right position.
+     */
+
+    setTimeout(
         () => {
 
-            requestAnimationFrame(
-                () => {
+            if (
+                historyChampions
+            ) {
 
-                    if (
-                        historyChampions
-                    ) {
+                historyChampions.scrollLeft =
+                    historyChampions.scrollWidth -
+                    historyChampions.clientWidth;
 
-                        historyChampions.scrollLeft =
-                            historyChampions.scrollWidth;
-
-                    }
+            }
 
 
-                    if (
-                        hallOfShame
-                    ) {
+            if (
+                hallOfShame
+            ) {
 
-                        hallOfShame.scrollLeft =
-                            hallOfShame.scrollWidth;
+                hallOfShame.scrollLeft =
+                    hallOfShame.scrollWidth -
+                    hallOfShame.clientWidth;
 
-                    }
+            }
 
-                }
-            );
-
-        }
+        },
+        100
     );
 
 }
