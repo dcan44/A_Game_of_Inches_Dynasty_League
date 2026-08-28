@@ -274,28 +274,37 @@ matchupScoreLookup[
 };
 
 
-                matchupScoreLookup[
-                    `${season}-${week}-${team2OwnerId}`
-                ] = {
+            matchupScoreLookup[
+    `${season}-${week}-${team2OwnerId}`
+] = {
 
-                    points:
-                        Number(
-                            team2.points ||
-                            0
-                        ),
+    points:
+        Number(
+            team2.points ||
+            0
+        ),
 
-                    opponent_points:
-                        Number(
-                            team1.points ||
-                            0
-                        ),
+    opponent_points:
+        Number(
+            team1.points ||
+            0
+        ),
 
-                    opponent:
-                        team1.owner ||
-                        'Unknown'
+    opponent:
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName ===
+        'function'
+            ? window.LEAGUE_DATA.getOwnerName(
+                team1.owner_id,
+                team1.owner ||
+                'Unknown'
+              )
+            : (
+                team1.owner ||
+                'Unknown'
+              )
 
-                };
-
+};
             }
         );
 
