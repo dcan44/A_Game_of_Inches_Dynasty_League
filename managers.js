@@ -2035,201 +2035,215 @@ const teams =
                         'Former Franchise';
 
 
-                    /*
-                     * =========================================
-                     * CARD
-                     * =========================================
-                     */
+/*
+ * =========================================
+ * CARD
+ * =========================================
+ */
 
-                    const card =
-                        document.createElement(
-                            'article'
-                        );
+const card =
+    document.createElement(
+        'article'
+    );
 
 
-                    card.className =
-                        'manager-card former-manager-card';
+card.className =
+    'manager-card former-manager-card';
 
 
-                    card.innerHTML = `
+card.innerHTML = `
 
-                        <div class="manager-card-top">
+    <div class="manager-card-top">
 
-                            <div
-                                class="
-                                    manager-avatar
-                                    manager-avatar-placeholder
-                                    former-manager-avatar
-                                "
-                            >
-                                ${ownerName.charAt(0)}
-                            </div>
+        <div
+            class="
+                manager-avatar
+                manager-avatar-placeholder
+                former-manager-avatar
+            "
+        >
+            ${ownerName.charAt(0)}
+        </div>
 
 
-                            <div class="manager-identity">
+        <div class="manager-identity">
 
-<h2>
-    ${ownerName}
-</h2>
+            <h2>
+                ${ownerName}
+            </h2>
 
-<p class="manager-team-name">
-    ${lastTeamName}
-</p>
+            <p class="manager-team-name">
+                ${lastTeamName}
+            </p>
 
-<small class="manager-sleeper-username">
-    ${career.owner}
-</small>
+            <small class="manager-sleeper-username">
+                ${career.owner}
+            </small>
 
-                            </div>
+        </div>
 
-                        </div>
 
+        <button
+            type="button"
+            class="manager-collapse-button"
+            aria-expanded="false"
+            aria-label="Expand ${ownerName}"
+        >
+            ▼
+        </button>
 
-                        <div class="former-manager-tenure">
+    </div>
 
-                            Last Active:
-                            ${
-                                career.last_season ||
-                                '—'
-                            }
 
-                        </div>
+    <div class="manager-card-body mobile-collapsed">
 
+        <div class="former-manager-tenure">
 
-                        <div class="trophy-case">
+            Last Active:
+            ${
+                career.last_season ||
+                '—'
+            }
 
-                            <div class="trophy-case-title">
-                                Trophy Case
-                            </div>
+        </div>
 
-                            <div class="trophy-case-grid">
 
-                                ${trophyHTML}
+        <div class="trophy-case">
 
-                            </div>
+            <div class="trophy-case-title">
+                Trophy Case
+            </div>
 
-                        </div>
+            <div class="trophy-case-grid">
 
+                ${trophyHTML}
 
-                        <div class="manager-stats">
+            </div>
 
+        </div>
 
-                            <div class="manager-stat">
 
-                                <span>
-                                    Seasons
-                                </span>
+        <div class="manager-stats">
 
-                                <strong>
-                                    ${career.seasons}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Seasons
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${career.seasons}
+                </strong>
 
-                                <span>
-                                    Regular Season
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${regularRecord}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Regular Season
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${regularRecord}
+                </strong>
 
-                                <span>
-                                    Win %
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${winningPercentage}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Win %
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${winningPercentage}
+                </strong>
 
-                                <span>
-                                    Playoffs
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${playoffRecord}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Playoffs
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${playoffRecord}
+                </strong>
 
-                                <span>
-                                    Career PPG
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${careerPPG}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Career PPG
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${careerPPG}
+                </strong>
 
-                                <span>
-                                    Championships
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${championshipYears.length}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Championships
+                </span>
 
-                            <div class="manager-stat">
+                <strong>
+                    ${championshipYears.length}
+                </strong>
 
-                                <span>
-                                    Division Titles
-                                </span>
+            </div>
 
-                                <strong>
-                                    ${managerDivisionTitles.length}
-                                </strong>
 
-                            </div>
+            <div class="manager-stat">
 
+                <span>
+                    Division Titles
+                </span>
 
-                        </div>
+                <strong>
+                    ${managerDivisionTitles.length}
+                </strong>
 
+            </div>
 
-                        <div class="manager-records">
 
-                            <div>
+        </div>
 
-                                <span>
-                                    Highest Team Score
-                                </span>
 
-                                <strong>
-                                    ${highestTeamScore}
-                                </strong>
+        <div class="manager-records">
 
-                            </div>
+            <div>
 
-                        </div>
+                <span>
+                    Highest Team Score
+                </span>
 
-                    `;
+                <strong>
+                    ${highestTeamScore}
+                </strong>
 
+            </div>
 
-                    formerGrid.appendChild(
-                        card
-                    );
+        </div>
+
+    </div>
+
+`;
+
+
+formerGrid.appendChild(
+    card
+);
 
                 }
             );
