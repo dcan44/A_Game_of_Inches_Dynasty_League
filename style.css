@@ -8778,7 +8778,7 @@ font-size: 19px;
 ====================================================== */
 
 .draft-pick-card.draft-position-qb {
-    background: #C96F9D;
+    background: #B84F62;
 }
 
 .draft-pick-card.draft-position-rb {
@@ -8798,7 +8798,7 @@ font-size: 19px;
 }
 
 .draft-pick-card.draft-position-lb {
-    background: #8993CE;
+    background: #7067A8;
 }
 
 .draft-pick-card.draft-position-db {
@@ -8807,4 +8807,50 @@ font-size: 19px;
 
 .draft-pick-card.draft-position-k {
     background: #9295D0;
+}
+
+
+/* ======================================================
+   DRAFT BOARD — TEXT READABILITY
+====================================================== */
+
+/* Pick number */
+
+.draft-pick-card .draft-pick-number {
+    color: #041E42;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* Player name */
+
+.draft-pick-card .draft-player-name {
+    color: #041E42;
+}
+
+
+/* Position + NFL team */
+
+.draft-pick-card .draft-player-detail {
+    color: #243754;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* Fantasy team name */
+
+.draft-pick-card .draft-picker {
+    color: #041E42;
+    font-weight: 700;
+}
+
+
+/* Owner name */
+
+.draft-pick-card small {
+    color: #243754;
+    font-size: 13px;
+    font-weight: 600;
 }
