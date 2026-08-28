@@ -9898,3 +9898,81 @@ td:first-child {
     }
 
 }
+
+/* ======================================================
+   HISTORY — MOBILE HORIZONTAL BANNER SCROLL
+====================================================== */
+
+@media (max-width: 650px) {
+
+    /*
+       League Champions
+    */
+
+    .history-champions {
+
+        display: flex !important;
+
+        flex-wrap: nowrap !important;
+
+        justify-content: flex-start !important;
+
+        gap: 14px;
+
+        width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        padding-bottom: 12px;
+
+        -webkit-overflow-scrolling: touch;
+
+    }
+
+
+    .history-champion-pennant {
+
+        flex: 0 0 165px;
+
+        width: 165px;
+
+    }
+
+
+    /*
+       Hall of Shame
+    */
+
+    .hall-of-shame-grid {
+
+        display: flex !important;
+
+        flex-wrap: nowrap !important;
+
+        justify-content: flex-start !important;
+
+        gap: 14px;
+
+        width: 100%;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        padding-bottom: 12px;
+
+        -webkit-overflow-scrolling: touch;
+
+    }
+
+
+    .hall-of-shame-grid
+    .shame-card {
+
+        flex: 0 0 165px;
+
+        width: 165px;
+
+    }
+
+}
