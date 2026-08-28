@@ -8772,3 +8772,39 @@ font-size: 19px;
 .head-to-head-table td {
     font-size: 14px !important;
 }
+
+/* ======================================================
+   DRAFT BOARD — POSITION COLORS
+====================================================== */
+
+.draft-pick-card.draft-position-qb {
+    background: #C96F9D;
+}
+
+.draft-pick-card.draft-position-rb {
+    background: #72C6AA;
+}
+
+.draft-pick-card.draft-position-wr {
+    background: #43A6CE;
+}
+
+.draft-pick-card.draft-position-te {
+    background: #D79A50;
+}
+
+.draft-pick-card.draft-position-dl {
+    background: #CE7C4B;
+}
+
+.draft-pick-card.draft-position-lb {
+    background: #8993CE;
+}
+
+.draft-pick-card.draft-position-db {
+    background: #C77FA5;
+}
+
+.draft-pick-card.draft-position-k {
+    background: #9295D0;
+}
