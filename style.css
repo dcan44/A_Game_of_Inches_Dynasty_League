@@ -9487,3 +9487,18 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   FORMER MANAGERS — DEFAULT COLLAPSED ON MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .former-manager-card
+    .manager-card-body.mobile-collapsed {
+
+        display: none !important;
+
+    }
+
+}
