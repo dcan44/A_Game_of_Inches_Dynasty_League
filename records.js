@@ -11,6 +11,10 @@ async function loadRecords() {
             'manager-records-body'
         );
 
+    const formerManagerRecordsBody =
+    document.getElementById(
+        'former-manager-records-body'
+    );
 
     try {
 
