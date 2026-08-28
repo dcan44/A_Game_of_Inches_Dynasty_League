@@ -1,10 +1,8 @@
 async function loadRecords() {
-
     const recordsGrid =
         document.getElementById(
             'league-records-grid'
         );
-
 
     const managerRecordsBody =
         document.getElementById(
@@ -12,9 +10,10 @@ async function loadRecords() {
         );
 
     const formerManagerRecordsBody =
-    document.getElementById(
-        'former-manager-records-body'
-    );
+        document.getElementById(
+            'former-manager-records-body'
+        );
+
 
     try {
 
@@ -40,9 +39,13 @@ async function loadRecords() {
 
         ] = await Promise.all([
 
-            fetch('/api/teams'),
+            fetch(
+                '/api/teams'
+            ),
 
-            fetch('/api/history'),
+            fetch(
+                '/api/history'
+            ),
 
             fetch(
                 '/api/manager-performance?season=2023'
@@ -139,28 +142,32 @@ async function loadRecords() {
         const matchupData = [
 
             {
-                season: 2023,
+                season:
+                    2023,
 
                 data:
                     await matchups2023Response.json()
             },
 
             {
-                season: 2024,
+                season:
+                    2024,
 
                 data:
                     await matchups2024Response.json()
             },
 
             {
-                season: 2025,
+                season:
+                    2025,
 
                 data:
                     await matchups2025Response.json()
             },
 
             {
-                season: 2026,
+                season:
+                    2026,
 
                 data:
                     await matchups2026Response.json()
@@ -168,148 +175,129 @@ async function loadRecords() {
 
         ];
 
+
         /*
- * =====================================================
- * MATCHUP SCORE LOOKUP
- * =====================================================
- *
- * The manager-performance API correctly identifies the
- * biggest win and margin, but historical score fields can
- * be missing.
- *
- * This lookup lets us recover the actual score from the
- * matchup-history API using:
- *
- * season + week + owner ID
- * =====================================================
- */
+         * =====================================================
+         * MATCHUP SCORE LOOKUP
+         * =====================================================
+         *
+         * Used to recover actual scores for Biggest Blowout.
+         */
 
-const matchupScoreLookup =
-    {};
+        const matchupScoreLookup =
+            {};
 
 
-matchupData.forEach(
-    seasonEntry => {
+        matchupData.forEach(
+            seasonEntry => {
 
-        const season =
-            Number(
-                seasonEntry.season
-            );
-
-
-        const games =
-            seasonEntry.data.games ||
-            [];
-
-
-        games.forEach(
-            game => {
-
-                const team1 =
-                    game.team_1;
-
-
-                const team2 =
-                    game.team_2;
-
-
-                if (
-                    !team1 ||
-                    !team2
-                ) {
-
-                    return;
-
-                }
-
-
-                const week =
+                const season =
                     Number(
-                        game.week
+                        seasonEntry.season
                     );
 
 
-                const team1OwnerId =
-                    String(
-                        team1.owner_id
-                    );
+                const games =
+                    seasonEntry.data.games ||
+                    [];
 
 
-                const team2OwnerId =
-                    String(
-                        team2.owner_id
-                    );
+                games.forEach(
+                    game => {
+
+                        const team1 =
+                            game.team_1;
 
 
-matchupScoreLookup[
-    `${season}-${week}-${team1OwnerId}`
-] = {
-
-    points:
-        Number(
-            team1.points ||
-            0
-        ),
-
-    opponent_points:
-        Number(
-            team2.points ||
-            0
-        ),
-
-    opponent:
-        window.LEAGUE_DATA &&
-        typeof window.LEAGUE_DATA.getOwnerName ===
-        'function'
-            ? window.LEAGUE_DATA.getOwnerName(
-                team2.owner_id,
-                team2.owner ||
-                'Unknown'
-              )
-            : (
-                team2.owner ||
-                'Unknown'
-              )
-
-};
+                        const team2 =
+                            game.team_2;
 
 
-            matchupScoreLookup[
-    `${season}-${week}-${team2OwnerId}`
-] = {
+                        if (
+                            !team1 ||
+                            !team2
+                        ) {
 
-    points:
-        Number(
-            team2.points ||
-            0
-        ),
+                            return;
 
-    opponent_points:
-        Number(
-            team1.points ||
-            0
-        ),
+                        }
 
-    opponent:
-        window.LEAGUE_DATA &&
-        typeof window.LEAGUE_DATA.getOwnerName ===
-        'function'
-            ? window.LEAGUE_DATA.getOwnerName(
-                team1.owner_id,
-                team1.owner ||
-                'Unknown'
-              )
-            : (
-                team1.owner ||
-                'Unknown'
-              )
 
-};
+                        const week =
+                            Number(
+                                game.week
+                            );
+
+
+                        const team1OwnerId =
+                            String(
+                                team1.owner_id
+                            );
+
+
+                        const team2OwnerId =
+                            String(
+                                team2.owner_id
+                            );
+
+
+                        matchupScoreLookup[
+                            `${season}-${week}-${team1OwnerId}`
+                        ] = {
+
+                            points:
+                                Number(
+                                    team1.points ||
+                                    0
+                                ),
+
+                            opponent_points:
+                                Number(
+                                    team2.points ||
+                                    0
+                                ),
+
+                            opponent:
+                                getRealOwnerName(
+                                    team2.owner_id,
+                                    team2.owner ||
+                                    'Unknown'
+                                )
+
+                        };
+
+
+                        matchupScoreLookup[
+                            `${season}-${week}-${team2OwnerId}`
+                        ] = {
+
+                            points:
+                                Number(
+                                    team2.points ||
+                                    0
+                                ),
+
+                            opponent_points:
+                                Number(
+                                    team1.points ||
+                                    0
+                                ),
+
+                            opponent:
+                                getRealOwnerName(
+                                    team1.owner_id,
+                                    team1.owner ||
+                                    'Unknown'
+                                )
+
+                        };
+
+                    }
+                );
+
             }
         );
 
-    }
-);
 
         /*
          * =====================================================
@@ -322,7 +310,7 @@ matchupScoreLookup[
 
 
         /*
-         * Add current managers first.
+         * Add current managers.
          */
 
         (
@@ -359,9 +347,6 @@ matchupScoreLookup[
 
         /*
          * Add historical managers.
-         *
-         * This makes sure former managers remain in
-         * the all-time Records page.
          */
 
         (
@@ -455,10 +440,23 @@ matchupScoreLookup[
                             ];
 
 
+                        const regularSeason =
+                            manager.regular_season ||
+                            {};
+
+
+                        const playoffs =
+                            manager.playoffs ||
+                            {};
+
+
+                        const scoring =
+                            manager.scoring ||
+                            {};
+
+
                         /*
-                         * =====================================
-                         * SEASONS PLAYED
-                         * =====================================
+                         * Seasons played.
                          */
 
                         career.seasons.add(
@@ -467,15 +465,8 @@ matchupScoreLookup[
 
 
                         /*
-                         * =====================================
-                         * REGULAR-SEASON RECORD
-                         * =====================================
+                         * Regular-season record.
                          */
-
-                        const regularSeason =
-                            manager.regular_season ||
-                            {};
-
 
                         career.regular_wins +=
                             Number(
@@ -506,15 +497,8 @@ matchupScoreLookup[
 
 
                         /*
-                         * =====================================
-                         * PLAYOFF RECORD
-                         * =====================================
+                         * Playoff record.
                          */
-
-                        const playoffs =
-                            manager.playoffs ||
-                            {};
-
 
                         career.playoff_wins +=
                             Number(
@@ -545,15 +529,8 @@ matchupScoreLookup[
 
 
                         /*
-                         * =====================================
-                         * SCORING
-                         * =====================================
+                         * Scoring.
                          */
-
-                        const scoring =
-                            manager.scoring ||
-                            {};
-
 
                         career.points_for +=
                             Number(
@@ -570,9 +547,7 @@ matchupScoreLookup[
 
 
                         /*
-                         * =====================================
-                         * HIGHEST TEAM SCORE
-                         * =====================================
+                         * Highest team score.
                          */
 
                         if (
@@ -618,97 +593,97 @@ matchupScoreLookup[
                         }
 
 
-/*
- * =====================================
- * BIGGEST WIN
- * =====================================
- */
+                        /*
+                         * Biggest win.
+                         */
 
-if (
-    manager.biggest_win
-) {
+                        if (
+                            manager.biggest_win
+                        ) {
 
-    const margin =
-        Number(
-            manager
-                .biggest_win
-                .margin ||
-            0
-        );
+                            const margin =
+                                Number(
+                                    manager
+                                        .biggest_win
+                                        .margin ||
+                                    0
+                                );
 
 
-    const biggestWinWeek =
-        Number(
-            manager
-                .biggest_win
-                .week
-        );
+                            const biggestWinWeek =
+                                Number(
+                                    manager
+                                        .biggest_win
+                                        .week
+                                );
 
 
-    const matchupScore =
-        matchupScoreLookup[
-            `${season}-${biggestWinWeek}-${ownerId}`
-        ];
+                            const matchupScore =
+                                matchupScoreLookup[
+                                    `${season}-${biggestWinWeek}-${ownerId}`
+                                ];
 
 
-    if (
-        !career.biggest_win ||
-        margin >
-        career.biggest_win.margin
-    ) {
+                            if (
+                                !career.biggest_win ||
+                                margin >
+                                career
+                                    .biggest_win
+                                    .margin
+                            ) {
 
-        career.biggest_win = {
+                                career.biggest_win = {
 
-            margin:
-                margin,
+                                    margin:
+                                        margin,
 
-            points:
-                matchupScore
-                    ? matchupScore.points
-                    : Number(
-                        manager
-                            .biggest_win
-                            .points ||
-                        manager
-                            .biggest_win
-                            .score ||
-                        0
-                      ),
+                                    points:
+                                        matchupScore
+                                            ? matchupScore.points
+                                            : Number(
+                                                manager
+                                                    .biggest_win
+                                                    .points ||
+                                                manager
+                                                    .biggest_win
+                                                    .score ||
+                                                0
+                                              ),
 
-            opponent_points:
-                matchupScore
-                    ? matchupScore.opponent_points
-                    : Number(
-                        manager
-                            .biggest_win
-                            .opponent_points ||
-                        manager
-                            .biggest_win
-                            .opponent_score ||
-                        0
-                      ),
+                                    opponent_points:
+                                        matchupScore
+                                            ? matchupScore.opponent_points
+                                            : Number(
+                                                manager
+                                                    .biggest_win
+                                                    .opponent_points ||
+                                                manager
+                                                    .biggest_win
+                                                    .opponent_score ||
+                                                0
+                                              ),
 
-            opponent:
-                matchupScore
-                    ? matchupScore.opponent
-                    : (
-                        manager
-                            .biggest_win
-                            .opponent ||
-                        'Unknown'
-                    ),
+                                    opponent:
+                                        matchupScore
+                                            ? matchupScore.opponent
+                                            : (
+                                                manager
+                                                    .biggest_win
+                                                    .opponent ||
+                                                'Unknown'
+                                              ),
 
-            week:
-                biggestWinWeek,
+                                    week:
+                                        biggestWinWeek,
 
-            season:
-                season
+                                    season:
+                                        season
 
-        };
+                                };
 
-    }
+                            }
 
-}
+                        }
 
                     }
                 );
@@ -721,16 +696,6 @@ if (
          * =====================================================
          * LONGEST REGULAR-SEASON WINNING STREAK
          * =====================================================
-         *
-         * IMPORTANT:
-         *
-         * This is intentionally OUTSIDE the performanceData
-         * loop above. It therefore runs only once.
-         *
-         * Each season is evaluated independently.
-         * Playoff games are excluded.
-         * A loss or tie ends the streak.
-         * =====================================================
          */
 
         const winningStreaks =
@@ -741,7 +706,9 @@ if (
             seasonEntry => {
 
                 const season =
-                    seasonEntry.season;
+                    Number(
+                        seasonEntry.season
+                    );
 
 
                 const games =
@@ -815,7 +782,10 @@ if (
                                     team1.owner_id,
 
                                 owner:
-                                    team1.owner,
+                                    getRealOwnerName(
+                                        team1.owner_id,
+                                        team1.owner
+                                    ),
 
                                 results:
                                     []
@@ -839,7 +809,10 @@ if (
                                     team2.owner_id,
 
                                 owner:
-                                    team2.owner,
+                                    getRealOwnerName(
+                                        team2.owner_id,
+                                        team2.owner
+                                    ),
 
                                 results:
                                     []
@@ -863,6 +836,12 @@ if (
                             );
 
 
+                        const week =
+                            Number(
+                                game.week
+                            );
+
+
                         if (
                             team1Points >
                             team2Points
@@ -873,9 +852,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'W'
@@ -888,9 +865,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'L'
@@ -909,9 +884,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'L'
@@ -924,9 +897,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'W'
@@ -942,9 +913,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'T'
@@ -957,9 +926,7 @@ if (
                             ].results.push(
                                 {
                                     week:
-                                        Number(
-                                            game.week
-                                        ),
+                                        week,
 
                                     result:
                                         'T'
@@ -1100,13 +1067,14 @@ if (
 
 
         const longestWinningStreak =
-            winningStreaks.length > 0
+            winningStreaks.length >
+            0
                 ? Math.max(
                     ...winningStreaks.map(
                         streak =>
                             streak.streak
                     )
-                )
+                  )
                 : 0;
 
 
@@ -1124,16 +1092,16 @@ if (
          * =====================================================
          */
 
-            const champions = {
+        const champions = {
 
             2023:
-                "978544154789699584",
+                '978544154789699584',
 
             2024:
-                "978815135223525376",
+                '978815135223525376',
 
             2025:
-                "1060373241799262208"
+                '1060373241799262208'
 
         };
 
@@ -1143,30 +1111,28 @@ if (
         ).forEach(
             ([year, ownerId]) => {
 
-                const key =
-                    String(
-                        ownerId
-                    );
+                const manager =
+                    managerMap[
+                        String(
+                            ownerId
+                        )
+                    ];
 
 
                 if (
-                    managerMap[
-                        key
-                    ]
+                    manager
                 ) {
 
-                    managerMap[
-                        key
-                    ].championships++;
+                    manager.championships++;
 
 
-                    managerMap[
-                        key
-                    ].championship_years.push(
-                        Number(
-                            year
-                        )
-                    );
+                    manager
+                        .championship_years
+                        .push(
+                            Number(
+                                year
+                            )
+                        );
 
                 }
 
@@ -1183,18 +1149,18 @@ if (
         const historicalDivisionChampions = {
 
             2023: [
-                "978544154789699584",
-                "984495671757611008"
+                '978544154789699584',
+                '984495671757611008'
             ],
 
             2024: [
-                "978544154789699584",
-                "978815135223525376"
+                '978544154789699584',
+                '978815135223525376'
             ],
 
             2025: [
-                "978544154789699584",
-                "1060373241799262208"
+                '978544154789699584',
+                '1060373241799262208'
             ]
 
         };
@@ -1208,30 +1174,28 @@ if (
                 ownerIds.forEach(
                     ownerId => {
 
-                        const key =
-                            String(
-                                ownerId
-                            );
+                        const manager =
+                            managerMap[
+                                String(
+                                    ownerId
+                                )
+                            ];
 
 
                         if (
-                            managerMap[
-                                key
-                            ]
+                            manager
                         ) {
 
-                            managerMap[
-                                key
-                            ].division_titles++;
+                            manager.division_titles++;
 
 
-                            managerMap[
-                                key
-                            ].division_title_years.push(
-                                Number(
-                                    year
-                                )
-                            );
+                            manager
+                                .division_title_years
+                                .push(
+                                    Number(
+                                        year
+                                    )
+                                );
 
                         }
 
@@ -1288,36 +1252,32 @@ if (
 
 
                         manager.win_percentage =
-                            manager.regular_games > 0
+                            manager.regular_games >
+                            0
                                 ? (
+                                    manager.regular_wins +
                                     (
-                                        manager.regular_wins +
-                                        (
-                                            manager.regular_ties *
-                                            0.5
-                                        )
+                                        manager.regular_ties *
+                                        0.5
                                     )
-                                    /
-                                    manager.regular_games
-                                  )
+                                  ) /
+                                  manager.regular_games
                                 : 0;
 
 
                         manager.ppg =
-                            manager.regular_games > 0
-                                ? (
-                                    manager.points_for /
-                                    manager.regular_games
-                                  )
+                            manager.regular_games >
+                            0
+                                ? manager.points_for /
+                                  manager.regular_games
                                 : 0;
 
 
                         manager.papg =
-                            manager.regular_games > 0
-                                ? (
-                                    manager.points_against /
-                                    manager.regular_games
-                                  )
+                            manager.regular_games >
+                            0
+                                ? manager.points_against /
+                                  manager.regular_games
                                 : 0;
 
 
@@ -1328,17 +1288,12 @@ if (
 
 
         /*
-         * =====================================================
-         * SORT MANAGER TABLE
-         * =====================================================
+         * Default order:
+         * current first, then Win %, then wins.
          */
 
         managers.sort(
             (a, b) => {
-
-                /*
-                 * Current managers first.
-                 */
 
                 if (
                     a.current !==
@@ -1351,10 +1306,6 @@ if (
 
                 }
 
-
-                /*
-                 * Then by win percentage.
-                 */
 
                 if (
                     b.win_percentage !==
@@ -1369,10 +1320,6 @@ if (
                 }
 
 
-                /*
-                 * Then by wins.
-                 */
-
                 return (
                     b.regular_wins -
                     a.regular_wins
@@ -1382,135 +1329,80 @@ if (
         );
 
 
-       /*
- * =====================================================
- * BUILD MANAGER TABLES
- * =====================================================
- */
+        /*
+         * =====================================================
+         * MANAGER TABLES
+         * =====================================================
+         */
 
-managerRecordsBody.innerHTML =
-    '';
+        const currentManagers =
+            managers.filter(
+                manager =>
+                    manager.current
+            );
 
 
-formerManagerRecordsBody.innerHTML =
-    '';
+        const formerManagers =
+            managers.filter(
+                manager =>
+                    !manager.current
+            );
 
 
-/*
- * Reusable row builder.
- */
-
-function buildManagerRecordRow(
-    manager
-) {
-
-    const regularRecord =
-        formatRecord(
-            manager.regular_wins,
-            manager.regular_losses,
-            manager.regular_ties
+        renderManagerTable(
+            managerRecordsBody,
+            currentManagers
         );
 
 
-    const playoffRecord =
-        formatRecord(
-            manager.playoff_wins,
-            manager.playoff_losses,
-            manager.playoff_ties
+        if (
+            formerManagers.length >
+            0
+        ) {
+
+            renderManagerTable(
+                formerManagerRecordsBody,
+                formerManagers
+            );
+
+        }
+
+        else {
+
+            formerManagerRecordsBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        class="records-empty"
+                    >
+                        No former managers.
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        /*
+         * Activate sorting independently
+         * for each manager table.
+         */
+
+        setupSortableManagerTable(
+            managerRecordsBody,
+            currentManagers
         );
 
 
-    const highestCareerGame =
-        manager.highest_team_score
-            ? manager
-                .highest_team_score
-                .points
-                .toFixed(2)
-            : '—';
-
-
-    const row =
-        document.createElement(
-            'tr'
+        setupSortableManagerTable(
+            formerManagerRecordsBody,
+            formerManagers
         );
 
-
-    row.innerHTML = `
-
-        <td class="records-manager-name">
-            ${manager.owner}
-        </td>
-
-        <td>
-            ${manager.season_count}
-        </td>
-
-        <td>
-            ${regularRecord}
-        </td>
-
-        <td>
-            ${
-                (
-                    manager.win_percentage *
-                    100
-                ).toFixed(1)
-            }%
-        </td>
-
-        <td>
-            ${manager.ppg.toFixed(2)}
-        </td>
-
-        <td>
-            ${manager.points_for.toFixed(2)}
-        </td>
-
-        <td>
-            ${highestCareerGame}
-        </td>
-
-        <td>
-            ${manager.championships}
-        </td>
-
-        <td>
-            ${manager.division_titles}
-        </td>
-
-        <td>
-            ${playoffRecord}
-        </td>
-
-    `;
-
-
-    return row;
-
-}
-
-
-if (
-    formerManagers.length ===
-    0
-) {
-
-    formerManagerRecordsBody.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="10"
-                class="records-empty"
-            >
-                No former managers.
-            </td>
-
-        </tr>
-
-    `;
-
-}
 
         /*
          * =====================================================
@@ -1521,16 +1413,18 @@ if (
         const managersWithGames =
             managers.filter(
                 manager =>
-                    manager.regular_games > 0
+                    manager.regular_games >
+                    0
             );
 
 
         /*
-         * Most regular-season wins
+         * Most Wins
          */
 
         const mostWinsRecord =
-            managersWithGames.length > 0
+            managersWithGames.length >
+            0
                 ? Math.max(
                     ...managersWithGames.map(
                         manager =>
@@ -1549,11 +1443,12 @@ if (
 
 
         /*
-         * Best winning percentage
+         * Best Win %
          */
 
         const bestWinPercentageRecord =
-            managersWithGames.length > 0
+            managersWithGames.length >
+            0
                 ? Math.max(
                     ...managersWithGames.map(
                         manager =>
@@ -1575,11 +1470,12 @@ if (
 
 
         /*
-         * Highest career PPG
+         * Highest Career PPG
          */
 
         const highestPPGRecord =
-            managersWithGames.length > 0
+            managersWithGames.length >
+            0
                 ? Math.max(
                     ...managersWithGames.map(
                         manager =>
@@ -1601,7 +1497,7 @@ if (
 
 
         /*
-         * Highest team score ever
+         * Highest Team Score
          */
 
         const managersWithHighScore =
@@ -1612,7 +1508,8 @@ if (
 
 
         const highestTeamScoreRecord =
-            managersWithHighScore.length > 0
+            managersWithHighScore.length >
+            0
                 ? Math.max(
                     ...managersWithHighScore.map(
                         manager =>
@@ -1638,7 +1535,7 @@ if (
 
 
         /*
-         * Biggest blowout
+         * Biggest Blowout
          */
 
         const managersWithBiggestWin =
@@ -1649,7 +1546,8 @@ if (
 
 
         const biggestBlowoutRecord =
-            managersWithBiggestWin.length > 0
+            managersWithBiggestWin.length >
+            0
                 ? Math.max(
                     ...managersWithBiggestWin.map(
                         manager =>
@@ -1675,11 +1573,12 @@ if (
 
 
         /*
-         * Most championships
+         * Championships
          */
 
         const championshipRecord =
-            managers.length > 0
+            managers.length >
+            0
                 ? Math.max(
                     ...managers.map(
                         manager =>
@@ -1694,16 +1593,18 @@ if (
                 manager =>
                     manager.championships ===
                     championshipRecord &&
-                    championshipRecord > 0
+                    championshipRecord >
+                    0
             );
 
 
         /*
-         * Most division titles
+         * Division Titles
          */
 
         const divisionTitleRecord =
-            managers.length > 0
+            managers.length >
+            0
                 ? Math.max(
                     ...managers.map(
                         manager =>
@@ -1718,7 +1619,8 @@ if (
                 manager =>
                     manager.division_titles ===
                     divisionTitleRecord &&
-                    divisionTitleRecord > 0
+                    divisionTitleRecord >
+                    0
             );
 
 
@@ -1737,11 +1639,13 @@ if (
 
             'Most Wins',
 
-            mostWinsRecord > 0
+            mostWinsRecord >
+            0
                 ? mostWinsRecord
                 : '—',
 
-            mostWinsLeaders.length > 0
+            mostWinsLeaders.length >
+            0
                 ? mostWinsLeaders
                     .map(
                         manager =>
@@ -1759,15 +1663,19 @@ if (
 
             'Best Win %',
 
-            bestWinPercentageLeaders.length > 0
+            bestWinPercentageLeaders.length >
+            0
                 ? (
                     bestWinPercentageRecord *
                     100
-                  ).toFixed(1) +
+                  ).toFixed(
+                    1
+                  ) +
                   '%'
                 : '—',
 
-            bestWinPercentageLeaders.length > 0
+            bestWinPercentageLeaders.length >
+            0
                 ? bestWinPercentageLeaders
                     .map(
                         manager =>
@@ -1785,11 +1693,15 @@ if (
 
             'Highest Career PPG',
 
-            highestPPGLeaders.length > 0
-                ? highestPPGRecord.toFixed(2)
+            highestPPGLeaders.length >
+            0
+                ? highestPPGRecord.toFixed(
+                    2
+                  )
                 : '—',
 
-            highestPPGLeaders.length > 0
+            highestPPGLeaders.length >
+            0
                 ? highestPPGLeaders
                     .map(
                         manager =>
@@ -1802,35 +1714,33 @@ if (
         );
 
 
-        /*
-         * Part 3 continues with:
-         *
-         * Highest Team Score
-         * Biggest Blowout
-         * Longest Winning Streak
-         * Most Championships
-         * Most Division Titles
-         */
-
-            addRecordCard(
+        addRecordCard(
             recordsGrid,
 
             'Highest Team Score',
 
-            highestTeamScoreLeaders.length > 0
-                ? highestTeamScoreRecord.toFixed(2)
+            highestTeamScoreLeaders.length >
+            0
+                ? highestTeamScoreRecord.toFixed(
+                    2
+                  )
                 : '—',
 
-            highestTeamScoreLeaders.length > 0
+            highestTeamScoreLeaders.length >
+            0
                 ? highestTeamScoreLeaders
                     .map(
                         manager => {
 
                             return `
+
                                 ${manager.owner}
+
                                 • Week
                                 ${manager.highest_team_score.week},
+
                                 ${manager.highest_team_score.season}
+
                             `;
 
                         }
@@ -1847,11 +1757,15 @@ if (
 
             'Biggest Blowout',
 
-            biggestBlowoutLeaders.length > 0
-                ? biggestBlowoutRecord.toFixed(2)
+            biggestBlowoutLeaders.length >
+            0
+                ? biggestBlowoutRecord.toFixed(
+                    2
+                  )
                 : '—',
 
-            biggestBlowoutLeaders.length > 0
+            biggestBlowoutLeaders.length >
+            0
                 ? biggestBlowoutLeaders
                     .map(
                         manager => {
@@ -1861,16 +1775,26 @@ if (
 
 
                             return `
+
                                 ${manager.owner}
+
                                 over
+
                                 ${win.opponent || 'Unknown'}
+
                                 •
+
                                 ${win.points.toFixed(2)}
+
                                 -
+
                                 ${win.opponent_points.toFixed(2)}
+
                                 • Week
                                 ${win.week},
+
                                 ${win.season}
+
                             `;
 
                         }
@@ -1882,39 +1806,21 @@ if (
         );
 
 
-        /*
-         * =====================================================
-         * LONGEST WINNING STREAK
-         * =====================================================
-         */
-
         addRecordCard(
             recordsGrid,
 
             'Longest Winning Streak',
 
-            longestWinningStreak > 0
+            longestWinningStreak >
+            0
                 ? `${longestWinningStreak} Games`
                 : '—',
 
-            longestWinningStreakLeaders.length > 0
+            longestWinningStreakLeaders.length >
+            0
                 ? longestWinningStreakLeaders
                     .map(
                         streak => {
-
-                            const manager =
-                                managerMap[
-                                    String(
-                                        streak.owner_id
-                                    )
-                                ];
-
-
-                            const owner =
-                                manager
-                                    ? manager.owner
-                                    : streak.owner;
-
 
                             const weeks =
                                 streak.start_week ===
@@ -1924,9 +1830,16 @@ if (
 
 
                             return `
-                                ${owner}
+
+                                ${getRealOwnerName(
+                                    streak.owner_id,
+                                    streak.owner
+                                )}
+
                                 • ${streak.season}
+
                                 • ${weeks}
+
                             `;
 
                         }
@@ -1943,11 +1856,13 @@ if (
 
             'Most Championships',
 
-            championshipRecord > 0
+            championshipRecord >
+            0
                 ? championshipRecord
                 : '—',
 
-            championshipLeaders.length > 0
+            championshipLeaders.length >
+            0
                 ? championshipLeaders
                     .map(
                         manager =>
@@ -1965,11 +1880,13 @@ if (
 
             'Most Division Titles',
 
-            divisionTitleRecord > 0
+            divisionTitleRecord >
+            0
                 ? divisionTitleRecord
                 : '—',
 
-            divisionTitleLeaders.length > 0
+            divisionTitleLeaders.length >
+            0
                 ? divisionTitleLeaders
                     .map(
                         manager =>
@@ -1981,8 +1898,9 @@ if (
                 : '—'
         );
 
+    }
 
-    } catch (
+    catch (
         error
     ) {
 
@@ -2013,26 +1931,27 @@ if (
 
         }
 
-                if (
-    formerManagerRecordsBody
-) {
 
-    formerManagerRecordsBody.innerHTML = `
+        if (
+            formerManagerRecordsBody
+        ) {
 
-        <tr>
+            formerManagerRecordsBody.innerHTML = `
 
-            <td
-                colspan="10"
-                class="records-error"
-            >
-                Unable to load former manager records.
-            </td>
+                <tr>
 
-        </tr>
+                    <td
+                        colspan="10"
+                        class="records-error"
+                    >
+                        Unable to load former manager records.
+                    </td>
 
-    `;
+                </tr>
 
-}
+            `;
+
+        }
 
 
         if (
@@ -2058,6 +1977,37 @@ if (
 
 }
 
+
+/*
+ * ======================================================
+ * OWNER NAME HELPER
+ * ======================================================
+ */
+
+function getRealOwnerName(
+    ownerId,
+    fallback = 'Unknown Manager'
+) {
+
+    if (
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName ===
+        'function'
+    ) {
+
+        return window.LEAGUE_DATA.getOwnerName(
+            ownerId,
+            fallback
+        );
+
+    }
+
+
+    return fallback;
+
+}
+
+
 /*
  * ======================================================
  * CREATE MANAGER
@@ -2069,24 +2019,16 @@ function createManager(
     owner
 ) {
 
-    const realOwnerName =
-        window.LEAGUE_DATA &&
-        typeof window.LEAGUE_DATA.getOwnerName ===
-        'function'
-            ? window.LEAGUE_DATA.getOwnerName(
-                ownerId,
-                owner
-              )
-            : owner;
-
-
     return {
 
         owner_id:
             ownerId,
 
         owner:
-            realOwnerName,
+            getRealOwnerName(
+                ownerId,
+                owner
+            ),
 
         current:
             false,
@@ -2159,7 +2101,6 @@ function createManager(
 }
 
 
-
 /*
  * ======================================================
  * FORMAT RECORD
@@ -2191,6 +2132,638 @@ function formatRecord(
 
 }
 
+
+/*
+ * ======================================================
+ * BUILD MANAGER ROW
+ * ======================================================
+ */
+
+function buildManagerRecordRow(
+    manager
+) {
+
+    const regularRecord =
+        formatRecord(
+            manager.regular_wins,
+            manager.regular_losses,
+            manager.regular_ties
+        );
+
+
+    const playoffRecord =
+        formatRecord(
+            manager.playoff_wins,
+            manager.playoff_losses,
+            manager.playoff_ties
+        );
+
+
+    const highestCareerGame =
+        manager.highest_team_score
+            ? manager
+                .highest_team_score
+                .points
+                .toFixed(
+                    2
+                )
+            : '—';
+
+
+    const row =
+        document.createElement(
+            'tr'
+        );
+
+
+    row.innerHTML = `
+
+        <td class="records-manager-name">
+            ${manager.owner}
+        </td>
+
+        <td>
+            ${manager.season_count}
+        </td>
+
+        <td>
+            ${regularRecord}
+        </td>
+
+        <td>
+            ${
+                (
+                    manager.win_percentage *
+                    100
+                ).toFixed(
+                    1
+                )
+            }%
+        </td>
+
+        <td>
+            ${manager.ppg.toFixed(2)}
+        </td>
+
+        <td>
+            ${manager.points_for.toFixed(2)}
+        </td>
+
+        <td>
+            ${highestCareerGame}
+        </td>
+
+        <td>
+            ${manager.championships}
+        </td>
+
+        <td>
+            ${manager.division_titles}
+        </td>
+
+        <td>
+            ${playoffRecord}
+        </td>
+
+    `;
+
+
+    return row;
+
+}
+
+
+/*
+ * ======================================================
+ * RENDER MANAGER TABLE
+ * ======================================================
+ */
+
+function renderManagerTable(
+    body,
+    managerList
+) {
+
+    body.innerHTML =
+        '';
+
+
+    managerList.forEach(
+        manager => {
+
+            body.appendChild(
+                buildManagerRecordRow(
+                    manager
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/*
+ * ======================================================
+ * MANAGER TABLE SORTING
+ * ======================================================
+ */
+
+function compareManagerRows(
+    a,
+    b,
+    columnIndex,
+    direction
+) {
+
+    let comparison =
+        0;
+
+
+    switch (
+        columnIndex
+    ) {
+
+
+        /*
+         * Manager
+         */
+
+        case 0:
+
+            comparison =
+                a.owner.localeCompare(
+                    b.owner
+                );
+
+            break;
+
+
+        /*
+         * Seasons
+         */
+
+        case 1:
+
+            comparison =
+                a.season_count -
+                b.season_count;
+
+            break;
+
+
+        /*
+         * Regular Season
+         *
+         * Wins first.
+         * Then fewer losses.
+         * Then ties.
+         */
+
+        case 2:
+
+            comparison =
+                a.regular_wins -
+                b.regular_wins;
+
+
+            if (
+                comparison ===
+                0
+            ) {
+
+                comparison =
+                    b.regular_losses -
+                    a.regular_losses;
+
+            }
+
+
+            if (
+                comparison ===
+                0
+            ) {
+
+                comparison =
+                    a.regular_ties -
+                    b.regular_ties;
+
+            }
+
+            break;
+
+
+        /*
+         * Win %
+         */
+
+        case 3:
+
+            comparison =
+                a.win_percentage -
+                b.win_percentage;
+
+            break;
+
+
+        /*
+         * PPG
+         */
+
+        case 4:
+
+            comparison =
+                a.ppg -
+                b.ppg;
+
+            break;
+
+
+        /*
+         * Total PF
+         */
+
+        case 5:
+
+            comparison =
+                a.points_for -
+                b.points_for;
+
+            break;
+
+
+        /*
+         * Highest Career Game
+         */
+
+        case 6: {
+
+            const aScore =
+                a.highest_team_score
+                    ? a
+                        .highest_team_score
+                        .points
+                    : 0;
+
+
+            const bScore =
+                b.highest_team_score
+                    ? b
+                        .highest_team_score
+                        .points
+                    : 0;
+
+
+            comparison =
+                aScore -
+                bScore;
+
+            break;
+
+        }
+
+
+        /*
+         * Titles
+         */
+
+        case 7:
+
+            comparison =
+                a.championships -
+                b.championships;
+
+            break;
+
+
+        /*
+         * Division Titles
+         */
+
+        case 8:
+
+            comparison =
+                a.division_titles -
+                b.division_titles;
+
+            break;
+
+
+        /*
+         * Playoffs
+         *
+         * Wins first.
+         * Then fewer losses.
+         * Then ties.
+         */
+
+        case 9:
+
+            comparison =
+                a.playoff_wins -
+                b.playoff_wins;
+
+
+            if (
+                comparison ===
+                0
+            ) {
+
+                comparison =
+                    b.playoff_losses -
+                    a.playoff_losses;
+
+            }
+
+
+            if (
+                comparison ===
+                0
+            ) {
+
+                comparison =
+                    a.playoff_ties -
+                    b.playoff_ties;
+
+            }
+
+            break;
+
+
+        default:
+
+            comparison =
+                0;
+
+    }
+
+
+    /*
+     * Alphabetical tiebreaker.
+     */
+
+    if (
+        comparison ===
+        0
+    ) {
+
+        comparison =
+            a.owner.localeCompare(
+                b.owner
+            );
+
+    }
+
+
+    return direction ===
+        'asc'
+            ? comparison
+            : -comparison;
+
+}
+
+
+/*
+ * ======================================================
+ * ACTIVATE SORTING FOR A MANAGER TABLE
+ * ======================================================
+ */
+
+function setupSortableManagerTable(
+    body,
+    managerList
+) {
+
+    const table =
+        body.closest(
+            '.manager-records-table'
+        );
+
+
+    if (
+        !table
+    ) {
+
+        return;
+
+    }
+
+
+    const headers =
+        Array.from(
+            table.querySelectorAll(
+                'thead th'
+            )
+        );
+
+
+    const labels =
+        headers.map(
+            header =>
+                header.textContent.trim()
+        );
+
+
+    let activeColumn =
+        null;
+
+
+    let direction =
+        null;
+
+
+    headers.forEach(
+        (
+            header,
+            columnIndex
+        ) => {
+
+            header.style.cursor =
+                'pointer';
+
+
+            header.setAttribute(
+                'role',
+                'button'
+            );
+
+
+            header.setAttribute(
+                'tabindex',
+                '0'
+            );
+
+
+            header.setAttribute(
+                'aria-sort',
+                'none'
+            );
+
+
+            const sortColumn =
+                () => {
+
+                    /*
+                     * Same column:
+                     * reverse direction.
+                     */
+
+                    if (
+                        activeColumn ===
+                        columnIndex
+                    ) {
+
+                        direction =
+                            direction ===
+                            'asc'
+                                ? 'desc'
+                                : 'asc';
+
+                    }
+
+
+                    /*
+                     * New column:
+                     *
+                     * Manager starts A-Z.
+                     * Statistics start high-low.
+                     */
+
+                    else {
+
+                        activeColumn =
+                            columnIndex;
+
+
+                        direction =
+                            columnIndex ===
+                            0
+                                ? 'asc'
+                                : 'desc';
+
+                    }
+
+
+                    const sortedManagers =
+                        [
+                            ...managerList
+                        ]
+                            .sort(
+                                (
+                                    a,
+                                    b
+                                ) =>
+                                    compareManagerRows(
+                                        a,
+                                        b,
+                                        columnIndex,
+                                        direction
+                                    )
+                            );
+
+
+                    renderManagerTable(
+                        body,
+                        sortedManagers
+                    );
+
+
+                    /*
+                     * Reset all header labels.
+                     */
+
+                    headers.forEach(
+                        (
+                            currentHeader,
+                            index
+                        ) => {
+
+                            currentHeader.textContent =
+                                labels[
+                                    index
+                                ];
+
+
+                            currentHeader.setAttribute(
+                                'aria-sort',
+
+                                index ===
+                                activeColumn
+
+                                    ? (
+                                        direction ===
+                                        'asc'
+
+                                            ? 'ascending'
+
+                                            : 'descending'
+                                      )
+
+                                    : 'none'
+                            );
+
+                        }
+                    );
+
+
+                    /*
+                     * Add arrow to active column.
+                     */
+
+                    header.textContent =
+                        `${
+                            labels[
+                                columnIndex
+                            ]
+                        } ${
+                            direction ===
+                            'asc'
+                                ? '▲'
+                                : '▼'
+                        }`;
+
+                };
+
+
+            /*
+             * Mouse click.
+             */
+
+            header.addEventListener(
+                'click',
+                sortColumn
+            );
+
+
+            /*
+             * Keyboard support.
+             */
+
+            header.addEventListener(
+                'keydown',
+                event => {
+
+                    if (
+                        event.key ===
+                            'Enter' ||
+                        event.key ===
+                            ' '
+                    ) {
+
+                        event.preventDefault();
+
+
+                        sortColumn();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
 
 
 /*
@@ -2238,7 +2811,6 @@ function addRecordCard(
     );
 
 }
-
 
 
 /*
