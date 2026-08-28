@@ -241,27 +241,37 @@ matchupData.forEach(
                     );
 
 
-                matchupScoreLookup[
-                    `${season}-${week}-${team1OwnerId}`
-                ] = {
+matchupScoreLookup[
+    `${season}-${week}-${team1OwnerId}`
+] = {
 
-                    points:
-                        Number(
-                            team1.points ||
-                            0
-                        ),
+    points:
+        Number(
+            team1.points ||
+            0
+        ),
 
-                    opponent_points:
-                        Number(
-                            team2.points ||
-                            0
-                        ),
+    opponent_points:
+        Number(
+            team2.points ||
+            0
+        ),
 
-                    opponent:
-                        team2.owner ||
-                        'Unknown'
+    opponent:
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName ===
+        'function'
+            ? window.LEAGUE_DATA.getOwnerName(
+                team2.owner_id,
+                team2.owner ||
+                'Unknown'
+              )
+            : (
+                team2.owner ||
+                'Unknown'
+              )
 
-                };
+};
 
 
                 matchupScoreLookup[
