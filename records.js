@@ -2103,13 +2103,24 @@ function createManager(
     owner
 ) {
 
+    const realOwnerName =
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName ===
+        'function'
+            ? window.LEAGUE_DATA.getOwnerName(
+                ownerId,
+                owner
+              )
+            : owner;
+
+
     return {
 
         owner_id:
             ownerId,
 
         owner:
-            owner,
+            realOwnerName,
 
         current:
             false,
