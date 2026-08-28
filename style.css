@@ -9050,3 +9050,164 @@ font-size: 19px;
     }
 
 }
+/* ======================================================
+   CURRENT STANDINGS — STICKY OWNER COLUMN
+====================================================== */
+
+
+/* ======================================================
+   OWNER COLUMN
+====================================================== */
+
+.standings-page-table th:first-child,
+.standings-page-table td:first-child {
+
+    position: sticky;
+
+    left: 0;
+
+    width: 105px;
+    min-width: 105px;
+
+}
+
+
+/* Owner header */
+
+.standings-page-table th:first-child {
+
+    z-index: 4;
+
+    background:
+        var(--dark-navy);
+
+    text-align: left;
+
+}
+
+
+/* Owner cells */
+
+.standings-page-table td:first-child {
+
+    z-index: 3;
+
+    background:
+        white;
+
+    text-align: left;
+
+    box-shadow:
+        3px
+        0
+        4px
+        rgba(0,0,0,.08);
+
+}
+
+
+/* Preserve background while hovering a row */
+
+.standings-page-table tbody tr:hover td:first-child {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+/* ======================================================
+   OWNER NAME — PRIMARY IDENTIFIER
+====================================================== */
+
+.standings-owner-name {
+
+    color:
+        var(--navy) !important;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        14px !important;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ======================================================
+   TEAM NAME — SECONDARY IDENTIFIER
+====================================================== */
+
+.standings-team-name {
+
+    color:
+        #697178 !important;
+
+    font-family:
+        'Roboto',
+        sans-serif;
+
+    font-size:
+        12px !important;
+
+    font-weight:
+        400;
+
+    text-transform:
+        none;
+
+}
+
+
+/* ======================================================
+   COLUMN ALIGNMENT
+====================================================== */
+
+/* Owner, Team and Division */
+
+.standings-page-table th:nth-child(1),
+.standings-page-table td:nth-child(1),
+.standings-page-table th:nth-child(3),
+.standings-page-table td:nth-child(3),
+.standings-page-table th:nth-child(4),
+.standings-page-table td:nth-child(4) {
+
+    text-align:
+        left;
+
+}
+
+
+/* Rank remains centered */
+
+.standings-page-table th:nth-child(2),
+.standings-page-table td:nth-child(2) {
+
+    text-align:
+        center;
+
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .standings-page-table th:first-child,
+    .standings-page-table td:first-child {
+
+        width: 90px;
+        min-width: 90px;
+
+    }
+
+}
