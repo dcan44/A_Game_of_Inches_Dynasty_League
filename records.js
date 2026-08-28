@@ -1490,58 +1490,6 @@ function buildManagerRecordRow(
 }
 
 
-/*
- * Current managers.
- */
-
-const currentManagers =
-    managers.filter(
-        manager =>
-            manager.current
-    );
-
-
-currentManagers.forEach(
-    manager => {
-
-        managerRecordsBody.appendChild(
-            buildManagerRecordRow(
-                manager
-            )
-        );
-
-    }
-);
-
-
-/*
- * Former managers.
- */
-
-const formerManagers =
-    managers.filter(
-        manager =>
-            !manager.current
-    );
-
-
-formerManagers.forEach(
-    manager => {
-
-        formerManagerRecordsBody.appendChild(
-            buildManagerRecordRow(
-                manager
-            )
-        );
-
-    }
-);
-
-
-/*
- * Empty former-manager state.
- */
-
 if (
     formerManagers.length ===
     0
@@ -1563,7 +1511,6 @@ if (
     `;
 
 }
-
 
         /*
          * =====================================================
