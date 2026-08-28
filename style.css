@@ -9211,3 +9211,279 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   MANAGERS — OWNER-FIRST IDENTITY + MOBILE COLLAPSE
+====================================================== */
+
+
+/* ======================================================
+   CARD HEADER
+====================================================== */
+
+.manager-card-top {
+
+    position: relative;
+
+}
+
+
+/* ======================================================
+   OWNER — PRIMARY NAME
+====================================================== */
+
+.manager-identity h2 {
+
+    margin:
+        0
+        0
+        5px;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        26px;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.05;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+/* Former cards use a dark header */
+
+.former-manager-card .manager-identity h2 {
+
+    color:
+        #FFFFFF;
+
+}
+
+
+/* ======================================================
+   TEAM NAME — SECONDARY
+====================================================== */
+
+.manager-team-name {
+
+    margin:
+        0
+        0
+        3px !important;
+
+    color:
+        #56636D;
+
+    font-family:
+        'Roboto',
+        sans-serif;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1.25;
+
+}
+
+
+/* Former cards */
+
+.former-manager-card .manager-team-name {
+
+    color:
+        #D7D9DC;
+
+}
+
+
+/* ======================================================
+   SLEEPER USERNAME
+====================================================== */
+
+.manager-sleeper-username {
+
+    display: block;
+
+    color:
+        #7C858C;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.2;
+
+}
+
+
+/* Former cards */
+
+.former-manager-card .manager-sleeper-username {
+
+    color:
+        #AEB5BA;
+
+}
+
+
+/* ======================================================
+   COLLAPSE BUTTON
+====================================================== */
+
+.manager-collapse-button {
+
+    display: none;
+
+}
+
+
+/* ======================================================
+   DESKTOP / TABLET
+====================================================== */
+
+/*
+   Even though former managers receive the
+   mobile-collapsed class, never collapse them
+   outside the mobile layout.
+*/
+
+.manager-card-body {
+
+    display: block;
+
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .manager-card-top {
+
+        min-height:
+            100px;
+
+        padding-right:
+            58px;
+
+    }
+
+
+    .manager-identity h2 {
+
+        font-size:
+            27px;
+
+    }
+
+
+    .manager-team-name {
+
+        font-size:
+            14px;
+
+    }
+
+
+    .manager-sleeper-username {
+
+        font-size:
+            11px;
+
+    }
+
+
+    .manager-collapse-button {
+
+        position:
+            absolute;
+
+        top:
+            50%;
+
+        right:
+            16px;
+
+        transform:
+            translateY(-50%);
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        width:
+            32px;
+
+        height:
+            32px;
+
+        padding:
+            0;
+
+        background:
+            rgba(4, 30, 66, .08);
+
+        border:
+            1px solid
+            rgba(4, 30, 66, .20);
+
+        border-radius:
+            4px;
+
+        color:
+            var(--navy);
+
+        font-size:
+            11px;
+
+        cursor:
+            pointer;
+
+    }
+
+
+    .former-manager-card
+    .manager-collapse-button {
+
+        background:
+            rgba(255,255,255,.10);
+
+        border-color:
+            rgba(255,255,255,.24);
+
+        color:
+            #FFFFFF;
+
+    }
+
+
+    .manager-card-body.mobile-collapsed {
+
+        display:
+            none;
+
+    }
+
+}
