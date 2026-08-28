@@ -290,9 +290,17 @@ function buildDraftOrder(
                         ${team.team_name}
                     </strong>
 
-                    <small>
-                        ${team.owner}
-                    </small>
+<small>
+    ${
+        window.LEAGUE_DATA &&
+        typeof window.LEAGUE_DATA.getOwnerName === 'function'
+            ? window.LEAGUE_DATA.getOwnerName(
+                team.owner_id,
+                team.owner
+              )
+            : team.owner
+    }
+</small>
 
                 </div>
 
