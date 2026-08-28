@@ -290,17 +290,18 @@ function buildDraftOrder(
                         ${team.team_name}
                     </strong>
 
-<small>
-    ${
-        window.LEAGUE_DATA &&
-        typeof window.LEAGUE_DATA.getOwnerName === 'function'
-            ? window.LEAGUE_DATA.getOwnerName(
-                team.owner_id,
-                team.owner
-              )
-            : team.owner
-    }
-</small>
+                    <small>
+                        ${
+                            window.LEAGUE_DATA &&
+                            typeof window.LEAGUE_DATA.getOwnerName ===
+                                'function'
+                                ? window.LEAGUE_DATA.getOwnerName(
+                                    team.owner_id,
+                                    team.owner
+                                  )
+                                : team.owner
+                        }
+                    </small>
 
                 </div>
 
@@ -480,6 +481,42 @@ function buildDraftBoard(
 
             else {
 
+                /*
+                 * =================================================
+                 * POSITION COLOR CLASS
+                 * =================================================
+                 *
+                 * Examples:
+                 *
+                 * QB -> draft-position-qb
+                 * RB -> draft-position-rb
+                 * WR -> draft-position-wr
+                 * TE -> draft-position-te
+                 * DL -> draft-position-dl
+                 * LB -> draft-position-lb
+                 * DB -> draft-position-db
+                 * K  -> draft-position-k
+                 */
+
+                const position =
+                    (
+                        pick.position ||
+                        ''
+                    )
+                        .toUpperCase();
+
+
+                if (
+                    position
+                ) {
+
+                    cell.classList.add(
+                        `draft-position-${position.toLowerCase()}`
+                    );
+
+                }
+
+
                 const playerName =
                     `${pick.first_name} ${pick.last_name}`
                         .trim();
@@ -524,19 +561,20 @@ function buildDraftBoard(
                     </span>
 
 
-<small>
+                    <small>
 
-    ${
-        window.LEAGUE_DATA &&
-        typeof window.LEAGUE_DATA.getOwnerName === 'function'
-            ? window.LEAGUE_DATA.getOwnerName(
-                pick.picked_by,
-                pick.manager
-              )
-            : pick.manager
-    }
+                        ${
+                            window.LEAGUE_DATA &&
+                            typeof window.LEAGUE_DATA.getOwnerName ===
+                                'function'
+                                ? window.LEAGUE_DATA.getOwnerName(
+                                    pick.picked_by,
+                                    pick.manager
+                                  )
+                                : pick.manager
+                        }
 
-</small>
+                    </small>
 
                 `;
 
