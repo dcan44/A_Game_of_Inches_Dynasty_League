@@ -138,23 +138,38 @@
          ORIGINAL DRAFT ORDER
     =================================================== -->
 
-    <section>
+<section>
+
+    <div class="draft-order-heading">
 
         <h2 class="section-title">
             Original Draft Order
         </h2>
 
-
-        <div
-            id="draft-order-grid"
-            class="draft-order-grid"
+        <button
+            type="button"
+            id="draft-order-toggle"
+            class="draft-order-toggle"
+            aria-expanded="false"
+            aria-controls="draft-order-grid"
+            aria-label="Expand Original Draft Order"
         >
+            ▼
+        </button>
 
-            Loading draft order...
+    </div>
 
-        </div>
 
-    </section>
+    <div
+        id="draft-order-grid"
+        class="draft-order-grid mobile-collapsed"
+    >
+
+        Loading draft order...
+
+    </div>
+
+</section>
 
 
     <!-- ==================================================
