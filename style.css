@@ -9640,3 +9640,261 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   RECORDS — STICKY MANAGER COLUMN
+   FORMER MANAGER COLLAPSE
+   MOBILE LEAGUE LEADERS
+====================================================== */
+
+
+/* ======================================================
+   STICKY MANAGER COLUMN
+====================================================== */
+
+/*
+   Both the Current Managers and Former Managers
+   tables use .manager-records-table, so this
+   automatically applies to both.
+*/
+
+.manager-records-table th:first-child,
+.manager-records-table td:first-child {
+
+    position: sticky;
+
+    left: 0;
+
+    width: 110px;
+    min-width: 110px;
+
+}
+
+
+/* Header */
+
+.manager-records-table th:first-child {
+
+    z-index: 4;
+
+    background:
+        var(--dark-navy);
+
+    text-align: left;
+
+}
+
+
+/* Manager-name cells */
+
+.manager-records-table td:first-child {
+
+    z-index: 3;
+
+    background:
+        #FFFFFF;
+
+    text-align: left;
+
+    box-shadow:
+        3px
+        0
+        4px
+        rgba(0,0,0,.08);
+
+}
+
+
+/* Preserve row-hover appearance */
+
+.manager-records-table tbody tr:hover
+td:first-child {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+/* Keep manager names on one line */
+
+.records-manager-name {
+
+    white-space: nowrap;
+
+}
+
+
+/* ======================================================
+   FORMER MANAGERS COLLAPSE
+====================================================== */
+
+.former-records-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.former-records-heading
+.section-title {
+
+    margin-bottom: 0;
+
+}
+
+
+.former-records-toggle {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    background:
+        rgba(4, 30, 66, .08);
+
+    border:
+        1px solid
+        rgba(4, 30, 66, .20);
+
+    border-radius: 4px;
+
+    color:
+        var(--navy);
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+}
+
+
+.former-records-content {
+
+    margin-top: 15px;
+
+}
+
+
+.former-records-content.records-collapsed {
+
+    display: none;
+
+}
+
+
+/* ======================================================
+   MOBILE LEAGUE LEADERS
+====================================================== */
+
+@media (max-width: 650px) {
+
+    /*
+       Keep two League Leader cards per row.
+
+       Eight records =
+       four rows of two.
+    */
+
+    .league-records-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            ) !important;
+
+        gap:
+            10px !important;
+
+    }
+
+
+    /*
+       Make the cards slightly more compact so two
+       comfortably fit beside one another.
+    */
+
+    .league-record-card {
+
+        min-width: 0;
+
+        padding:
+            15px
+            10px;
+
+    }
+
+
+    .league-record-label {
+
+        font-size:
+            9px;
+
+        line-height:
+            1.25;
+
+    }
+
+
+    .league-record-value {
+
+        margin:
+            6px
+            0;
+
+        font-size:
+            24px;
+
+        line-height:
+            1;
+
+    }
+
+
+    .league-record-holder {
+
+        font-size:
+            10px;
+
+        line-height:
+            1.35;
+
+        overflow-wrap:
+            anywhere;
+
+    }
+
+
+    /*
+       Slightly narrower pinned manager column
+       on phones.
+    */
+
+    .manager-records-table th:first-child,
+    .manager-records-table td:first-child {
+
+        width:
+            90px;
+
+        min-width:
+            90px;
+
+    }
+
+}
