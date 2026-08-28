@@ -1357,111 +1357,187 @@ if (
         );
 
 
-        /*
-         * =====================================================
-         * BUILD MANAGER TABLE
-         * =====================================================
-         */
+       /*
+ * =====================================================
+ * BUILD MANAGER TABLES
+ * =====================================================
+ */
 
-        managerRecordsBody.innerHTML =
-            '';
-
-
-        managers.forEach(
-            manager => {
-
-                const regularRecord =
-                    formatRecord(
-                        manager.regular_wins,
-                        manager.regular_losses,
-                        manager.regular_ties
-                    );
+managerRecordsBody.innerHTML =
+    '';
 
 
-                const playoffRecord =
-                    formatRecord(
-                        manager.playoff_wins,
-                        manager.playoff_losses,
-                        manager.playoff_ties
-                    );
+formerManagerRecordsBody.innerHTML =
+    '';
 
 
-                const status =
-                    manager.current
-                        ? `
-                            <span class="manager-status current">
-                                Current
-                            </span>
-                          `
-                        : `
-                            <span class="manager-status former">
-                                Former
-                            </span>
-                          `;
+/*
+ * Reusable row builder.
+ */
 
+function buildManagerRecordRow(
+    manager
+) {
 
-                const row =
-                    document.createElement(
-                        'tr'
-                    );
-
-
-                row.innerHTML = `
-
-                    <td class="records-manager-name">
-                        ${manager.owner}
-                    </td>
-
-                    <td>
-                        ${status}
-                    </td>
-
-                    <td>
-                        ${manager.season_count}
-                    </td>
-
-                    <td>
-                        ${regularRecord}
-                    </td>
-
-                    <td>
-                        ${
-                            (
-                                manager.win_percentage *
-                                100
-                            ).toFixed(1)
-                        }%
-                    </td>
-
-                    <td>
-                        ${manager.ppg.toFixed(2)}
-                    </td>
-
-                    <td>
-                        ${manager.papg.toFixed(2)}
-                    </td>
-
-                    <td>
-                        ${manager.championships}
-                    </td>
-
-                    <td>
-                        ${manager.division_titles}
-                    </td>
-
-                    <td>
-                        ${playoffRecord}
-                    </td>
-
-                `;
-
-
-                managerRecordsBody.appendChild(
-                    row
-                );
-
-            }
+    const regularRecord =
+        formatRecord(
+            manager.regular_wins,
+            manager.regular_losses,
+            manager.regular_ties
         );
+
+
+    const playoffRecord =
+        formatRecord(
+            manager.playoff_wins,
+            manager.playoff_losses,
+            manager.playoff_ties
+        );
+
+
+    const highestCareerGame =
+        manager.highest_team_score
+            ? manager
+                .highest_team_score
+                .points
+                .toFixed(2)
+            : '—';
+
+
+    const row =
+        document.createElement(
+            'tr'
+        );
+
+
+    row.innerHTML = `
+
+        <td class="records-manager-name">
+            ${manager.owner}
+        </td>
+
+        <td>
+            ${manager.season_count}
+        </td>
+
+        <td>
+            ${regularRecord}
+        </td>
+
+        <td>
+            ${
+                (
+                    manager.win_percentage *
+                    100
+                ).toFixed(1)
+            }%
+        </td>
+
+        <td>
+            ${manager.ppg.toFixed(2)}
+        </td>
+
+        <td>
+            ${manager.points_for.toFixed(2)}
+        </td>
+
+        <td>
+            ${highestCareerGame}
+        </td>
+
+        <td>
+            ${manager.championships}
+        </td>
+
+        <td>
+            ${manager.division_titles}
+        </td>
+
+        <td>
+            ${playoffRecord}
+        </td>
+
+    `;
+
+
+    return row;
+
+}
+
+
+/*
+ * Current managers.
+ */
+
+const currentManagers =
+    managers.filter(
+        manager =>
+            manager.current
+    );
+
+
+currentManagers.forEach(
+    manager => {
+
+        managerRecordsBody.appendChild(
+            buildManagerRecordRow(
+                manager
+            )
+        );
+
+    }
+);
+
+
+/*
+ * Former managers.
+ */
+
+const formerManagers =
+    managers.filter(
+        manager =>
+            !manager.current
+    );
+
+
+formerManagers.forEach(
+    manager => {
+
+        formerManagerRecordsBody.appendChild(
+            buildManagerRecordRow(
+                manager
+            )
+        );
+
+    }
+);
+
+
+/*
+ * Empty former-manager state.
+ */
+
+if (
+    formerManagers.length ===
+    0
+) {
+
+    formerManagerRecordsBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="10"
+                class="records-empty"
+            >
+                No former managers.
+            </td>
+
+        </tr>
+
+    `;
+
+}
 
 
         /*
