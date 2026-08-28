@@ -728,6 +728,58 @@ seasonSelect.addEventListener(
  * Load current archive.
  */
 
+/*
+ * ======================================================
+ * MOBILE ORIGINAL DRAFT ORDER COLLAPSE
+ * ======================================================
+ */
+
+const draftOrderToggle =
+    document.getElementById(
+        'draft-order-toggle'
+    );
+
+
+if (
+    draftOrderToggle
+) {
+
+    draftOrderToggle.addEventListener(
+        'click',
+        () => {
+
+            const isCollapsed =
+                draftOrderGrid.classList.toggle(
+                    'mobile-collapsed'
+                );
+
+
+            draftOrderToggle.textContent =
+                isCollapsed
+                    ? '▼'
+                    : '▲';
+
+
+            draftOrderToggle.setAttribute(
+                'aria-expanded',
+                String(
+                    !isCollapsed
+                )
+            );
+
+
+            draftOrderToggle.setAttribute(
+                'aria-label',
+                isCollapsed
+                    ? 'Expand Original Draft Order'
+                    : 'Collapse Original Draft Order'
+            );
+
+        }
+    );
+
+}
+
 loadDraft(
     seasonSelect.value
 );
