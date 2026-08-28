@@ -2815,6 +2815,68 @@ function addRecordCard(
 
 /*
  * ======================================================
+ * FORMER MANAGERS COLLAPSE
+ * ======================================================
+ */
+
+const formerRecordsToggle =
+    document.getElementById(
+        'former-records-toggle'
+    );
+
+
+const formerRecordsContent =
+    document.getElementById(
+        'former-records-content'
+    );
+
+
+if (
+    formerRecordsToggle &&
+    formerRecordsContent
+) {
+
+    formerRecordsToggle.addEventListener(
+        'click',
+        () => {
+
+            const isCollapsed =
+                formerRecordsContent
+                    .classList
+                    .toggle(
+                        'records-collapsed'
+                    );
+
+
+            formerRecordsToggle.textContent =
+                isCollapsed
+                    ? '▼'
+                    : '▲';
+
+
+            formerRecordsToggle.setAttribute(
+                'aria-expanded',
+                String(
+                    !isCollapsed
+                )
+            );
+
+
+            formerRecordsToggle.setAttribute(
+                'aria-label',
+                isCollapsed
+                    ? 'Expand Former Managers'
+                    : 'Collapse Former Managers'
+            );
+
+        }
+    );
+
+}
+
+
+/*
+ * ======================================================
  * INITIAL LOAD
  * ======================================================
  */
