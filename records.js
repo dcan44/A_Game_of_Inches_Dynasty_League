@@ -168,6 +168,129 @@ async function loadRecords() {
 
         ];
 
+        /*
+ * =====================================================
+ * MATCHUP SCORE LOOKUP
+ * =====================================================
+ *
+ * The manager-performance API correctly identifies the
+ * biggest win and margin, but historical score fields can
+ * be missing.
+ *
+ * This lookup lets us recover the actual score from the
+ * matchup-history API using:
+ *
+ * season + week + owner ID
+ * =====================================================
+ */
+
+const matchupScoreLookup =
+    {};
+
+
+matchupData.forEach(
+    seasonEntry => {
+
+        const season =
+            Number(
+                seasonEntry.season
+            );
+
+
+        const games =
+            seasonEntry.data.games ||
+            [];
+
+
+        games.forEach(
+            game => {
+
+                const team1 =
+                    game.team_1;
+
+
+                const team2 =
+                    game.team_2;
+
+
+                if (
+                    !team1 ||
+                    !team2
+                ) {
+
+                    return;
+
+                }
+
+
+                const week =
+                    Number(
+                        game.week
+                    );
+
+
+                const team1OwnerId =
+                    String(
+                        team1.owner_id
+                    );
+
+
+                const team2OwnerId =
+                    String(
+                        team2.owner_id
+                    );
+
+
+                matchupScoreLookup[
+                    `${season}-${week}-${team1OwnerId}`
+                ] = {
+
+                    points:
+                        Number(
+                            team1.points ||
+                            0
+                        ),
+
+                    opponent_points:
+                        Number(
+                            team2.points ||
+                            0
+                        ),
+
+                    opponent:
+                        team2.owner ||
+                        'Unknown'
+
+                };
+
+
+                matchupScoreLookup[
+                    `${season}-${week}-${team2OwnerId}`
+                ] = {
+
+                    points:
+                        Number(
+                            team2.points ||
+                            0
+                        ),
+
+                    opponent_points:
+                        Number(
+                            team1.points ||
+                            0
+                        ),
+
+                    opponent:
+                        team1.owner ||
+                        'Unknown'
+
+                };
+
+            }
+        );
+
+    }
+);
 
         /*
          * =====================================================
