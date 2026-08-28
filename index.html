@@ -8,6 +8,103 @@
     <title>A Game of Inches | Dynasty Fantasy Football</title>
 
 <link rel="stylesheet" href="style.css?v=20260828">
+
+<style>
+/* ======================================================
+   HOME — MOBILE COLLAPSIBLE SECTIONS
+====================================================== */
+
+.mobile-collapse-heading {
+    position: relative;
+}
+
+.mobile-collapse-button,
+.mobile-card-collapse-button {
+    display: none;
+}
+
+.card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (max-width: 700px) {
+
+    .mobile-collapse-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .mobile-collapse-heading .section-title {
+        flex: 1;
+    }
+
+    .mobile-collapse-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        flex-shrink: 0;
+
+        padding: 7px 10px;
+
+        background: var(--navy);
+        border: 1px solid var(--silver);
+        border-radius: 3px;
+
+        color: white;
+
+        font-family: 'Oswald', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+
+        cursor: pointer;
+    }
+
+    .collapse-arrow {
+        font-size: 9px;
+    }
+
+    .mobile-content-collapsed {
+        display: none !important;
+    }
+
+    .mobile-card-collapse-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 28px;
+        height: 28px;
+
+        padding: 0;
+        flex-shrink: 0;
+
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 3px;
+
+        color: white;
+        font-size: 10px;
+
+        cursor: pointer;
+    }
+
+    .card-header-actions {
+        gap: 7px;
+    }
+
+    .collapsible-card-header {
+        gap: 8px;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -265,269 +362,366 @@
 
 
     <!-- ==================================================
-     THIS WEEK
-=================================================== -->
+         THIS WEEK
+    =================================================== -->
 
-<section class="home-this-week">
+    <section class="home-this-week">
 
-    <h2 class="section-title">
-        This Week
-    </h2>
+        <div class="mobile-collapse-heading">
 
+            <h2 class="section-title">
+                This Week
+            </h2>
 
-    <div class="this-week-layout">
-
-
-        <!-- ==========================================
-             WEEKLY MATCHUPS
-        =========================================== -->
-
-        <div class="card this-week-matchups-card">
-
-            <div class="card-header">
-
-                <h3>
-                    Weekly Matchups
-                </h3>
-
-                <span class="live-indicator">
-                    ● LIVE FROM SLEEPER
+            <button
+                type="button"
+                class="mobile-collapse-button"
+                data-collapse-target="this-week-content"
+                aria-expanded="true"
+            >
+                <span class="collapse-button-text">
+                    Minimize
                 </span>
 
-            </div>
-
-
-            <div
-                id="home-week-number"
-                class="week-number"
-            >
-                Loading Week...
-            </div>
-
-
-            <div
-                id="home-matchups"
-                class="home-matchups"
-            >
-                Loading matchups...
-            </div>
+                <span class="collapse-arrow">
+                    ▲
+                </span>
+            </button>
 
         </div>
 
 
-        <!-- ==========================================
-             LEAGUE PULSE
-        =========================================== -->
+        <div
+            id="this-week-content"
+            class="mobile-collapsible-content"
+        >
 
-        <aside class="card league-pulse-card">
-
-            <div class="card-header">
-
-                <h3>
-                    League Pulse
-                </h3>
-
-                <span class="live-indicator">
-                    ● LIVE FROM SLEEPER
-                </span>
-
-            </div>
+            <div class="this-week-layout">
 
 
-           <div
-    id="home-league-pulse"
-    class="league-pulse-grid"
->
+                <!-- ==========================================
+                     WEEKLY MATCHUPS
+                =========================================== -->
 
-    <!-- WINNING STREAK -->
+                <div class="card this-week-matchups-card">
 
-    <div class="league-pulse-item pulse-winning">
+                    <div class="card-header">
 
-        <span class="league-pulse-label">
-            Winning Streak
-        </span>
+                        <h3>
+                            Weekly Matchups
+                        </h3>
 
-        <strong class="league-pulse-value">
-            —
-        </strong>
+                        <span class="live-indicator">
+                            ● LIVE FROM SLEEPER
+                        </span>
 
-        <span class="league-pulse-detail">
-            Available after Week 3
-        </span>
-
-    </div>
+                    </div>
 
 
-    <!-- RISING TEAM -->
-
-    <div class="league-pulse-item pulse-rising">
-
-        <span class="league-pulse-label">
-            Rising Team
-        </span>
-
-        <strong class="league-pulse-value">
-            —
-        </strong>
-
-        <span class="league-pulse-detail">
-            Available after Week 2
-        </span>
-
-    </div>
+                    <div
+                        id="home-week-number"
+                        class="week-number"
+                    >
+                        Loading Week...
+                    </div>
 
 
-    <!-- LOSING STREAK -->
+                    <div
+                        id="home-matchups"
+                        class="home-matchups"
+                    >
+                        Loading matchups...
+                    </div>
 
-    <div class="league-pulse-item pulse-losing">
-
-        <span class="league-pulse-label">
-            Losing Streak
-        </span>
-
-        <strong class="league-pulse-value">
-            —
-        </strong>
-
-        <span class="league-pulse-detail">
-            Available after Week 3
-        </span>
-
-    </div>
+                </div>
 
 
-    <!-- FALLING TEAM -->
+                <!-- ==========================================
+                     LEAGUE PULSE
+                =========================================== -->
 
-    <div class="league-pulse-item pulse-falling">
+                <aside class="card league-pulse-card">
 
-        <span class="league-pulse-label">
-            Falling Team
-        </span>
+                    <div class="card-header">
 
-        <strong class="league-pulse-value">
-            —
-        </strong>
+                        <h3>
+                            League Pulse
+                        </h3>
 
-        <span class="league-pulse-detail">
-            Available after Week 2
-        </span>
+                        <span class="live-indicator">
+                            ● LIVE FROM SLEEPER
+                        </span>
 
-    </div>
-
-</div>
-
-        </aside>
-
-    </div>
-
-</section>
-
-<!-- ==================================================
-     LEAGUE ACTIVITY
-=================================================== -->
-
-<section class="league-activity-section">
-
-    <h2 class="section-title">
-        League Activity
-    </h2>
+                    </div>
 
 
-    <div class="grid">
+                    <div
+                        id="home-league-pulse"
+                        class="league-pulse-grid"
+                    >
+
+                        <!-- WINNING STREAK -->
+
+                        <div class="league-pulse-item pulse-winning">
+
+                            <span class="league-pulse-label">
+                                Winning Streak
+                            </span>
+
+                            <strong class="league-pulse-value">
+                                —
+                            </strong>
+
+                            <span class="league-pulse-detail">
+                                Available after Week 3
+                            </span>
+
+                        </div>
 
 
-        <!-- ==========================================
-             TRADES
-        =========================================== -->
+                        <!-- RISING TEAM -->
 
-        <div class="card league-activity-card">
+                        <div class="league-pulse-item pulse-rising">
 
-            <div class="card-header">
+                            <span class="league-pulse-label">
+                                Rising Team
+                            </span>
 
-                <h3>
-                    Trades
-                </h3>
+                            <strong class="league-pulse-value">
+                                —
+                            </strong>
 
-                <span class="live-indicator">
-                    ● LIVE FROM SLEEPER
-                </span>
+                            <span class="league-pulse-detail">
+                                Available after Week 2
+                            </span>
 
-            </div>
+                        </div>
 
 
-            <div
-                id="home-trades"
-                class="home-transactions"
-            >
+                        <!-- LOSING STREAK -->
 
-                <p class="placeholder-text">
-                    Loading recent trades...
-                </p>
+                        <div class="league-pulse-item pulse-losing">
+
+                            <span class="league-pulse-label">
+                                Losing Streak
+                            </span>
+
+                            <strong class="league-pulse-value">
+                                —
+                            </strong>
+
+                            <span class="league-pulse-detail">
+                                Available after Week 3
+                            </span>
+
+                        </div>
+
+
+                        <!-- FALLING TEAM -->
+
+                        <div class="league-pulse-item pulse-falling">
+
+                            <span class="league-pulse-label">
+                                Falling Team
+                            </span>
+
+                            <strong class="league-pulse-value">
+                                —
+                            </strong>
+
+                            <span class="league-pulse-detail">
+                                Available after Week 2
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </aside>
 
             </div>
 
         </div>
 
-
-        <!-- ==========================================
-             WAIVER WIRE
-        =========================================== -->
-
-        <div class="card league-activity-card">
-
-            <div class="card-header">
-
-                <h3>
-                    Waiver Wire
-                </h3>
-
-                <span class="live-indicator">
-                    ● LIVE FROM SLEEPER
-                </span>
-
-            </div>
+    </section>
 
 
-            <!-- NEXT WAIVER COUNTDOWN -->
+    <!-- ==================================================
+         LEAGUE ACTIVITY
+    =================================================== -->
 
-            <div class="waiver-countdown">
+    <section class="league-activity-section">
 
-                <span class="waiver-countdown-label">
-                    Next Waivers Clear
-                </span>
+        <div class="mobile-collapse-heading">
 
-                <strong
-                    id="home-waiver-countdown"
-                    class="waiver-countdown-time"
-                >
-                    Calculating...
-                </strong>
+            <h2 class="section-title">
+                League Activity
+            </h2>
 
-                <span class="waiver-countdown-schedule">
-                    Wednesday • 3:00 AM ET
-                </span>
-
-            </div>
-
-
-            <!-- WAIVER / FREE AGENT ACTIVITY -->
-
-            <div
-                id="home-waivers"
-                class="home-transactions"
+            <button
+                type="button"
+                class="mobile-collapse-button"
+                data-collapse-target="league-activity-content"
+                aria-expanded="true"
             >
+                <span class="collapse-button-text">
+                    Minimize
+                </span>
 
-                <p class="placeholder-text">
-                    Loading recent waiver activity...
-                </p>
+                <span class="collapse-arrow">
+                    ▲
+                </span>
+            </button>
+
+        </div>
+
+
+        <div
+            id="league-activity-content"
+            class="mobile-collapsible-content"
+        >
+
+            <div class="grid">
+
+
+                <!-- ==========================================
+                     TRADES
+                =========================================== -->
+
+                <div class="card league-activity-card">
+
+                    <div class="card-header collapsible-card-header">
+
+                        <h3>
+                            Trades
+                        </h3>
+
+
+                        <div class="card-header-actions">
+
+                            <span class="live-indicator">
+                                ● LIVE FROM SLEEPER
+                            </span>
+
+                            <button
+                                type="button"
+                                class="mobile-card-collapse-button"
+                                data-collapse-target="trades-content"
+                                aria-expanded="true"
+                                aria-label="Collapse Trades"
+                            >
+                                ▲
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="trades-content"
+                        class="mobile-collapsible-content"
+                    >
+
+                        <div
+                            id="home-trades"
+                            class="home-transactions"
+                        >
+
+                            <p class="placeholder-text">
+                                Loading recent trades...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==========================================
+                     WAIVER WIRE
+                =========================================== -->
+
+                <div class="card league-activity-card">
+
+                    <div class="card-header collapsible-card-header">
+
+                        <h3>
+                            Waiver Wire
+                        </h3>
+
+
+                        <div class="card-header-actions">
+
+                            <span class="live-indicator">
+                                ● LIVE FROM SLEEPER
+                            </span>
+
+                            <button
+                                type="button"
+                                class="mobile-card-collapse-button"
+                                data-collapse-target="waivers-content"
+                                aria-expanded="true"
+                                aria-label="Collapse Waivers"
+                            >
+                                ▲
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="waivers-content"
+                        class="mobile-collapsible-content"
+                    >
+
+                        <!-- NEXT WAIVER COUNTDOWN -->
+
+                        <div class="waiver-countdown">
+
+                            <span class="waiver-countdown-label">
+                                Next Waivers Clear
+                            </span>
+
+                            <strong
+                                id="home-waiver-countdown"
+                                class="waiver-countdown-time"
+                            >
+                                Calculating...
+                            </strong>
+
+                            <span class="waiver-countdown-schedule">
+                                Wednesday • 3:00 AM ET
+                            </span>
+
+                        </div>
+
+
+                        <!-- WAIVER / FREE AGENT ACTIVITY -->
+
+                        <div
+                            id="home-waivers"
+                            class="home-transactions"
+                        >
+
+                            <p class="placeholder-text">
+                                Loading recent waiver activity...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
-
-</section>
+    </section>
     
 </main>
 
@@ -555,6 +749,117 @@
 
 <script src="league-data.js"></script>
 <script src="script.js"></script>
+
+<script>
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const collapseButtons =
+            document.querySelectorAll(
+                '[data-collapse-target]'
+            );
+
+
+        collapseButtons.forEach(
+            button => {
+
+                button.addEventListener(
+                    'click',
+                    () => {
+
+                        const targetId =
+                            button.getAttribute(
+                                'data-collapse-target'
+                            );
+
+
+                        const target =
+                            document.getElementById(
+                                targetId
+                            );
+
+
+                        if (
+                            !target
+                        ) {
+                            return;
+                        }
+
+
+                        const isCollapsed =
+                            target.classList.toggle(
+                                'mobile-content-collapsed'
+                            );
+
+
+                        button.setAttribute(
+                            'aria-expanded',
+                            String(
+                                !isCollapsed
+                            )
+                        );
+
+
+                        const arrow =
+                            button.querySelector(
+                                '.collapse-arrow'
+                            );
+
+
+                        if (
+                            arrow
+                        ) {
+
+                            arrow.textContent =
+                                isCollapsed
+                                    ? '▼'
+                                    : '▲';
+
+                        }
+
+
+                        const buttonText =
+                            button.querySelector(
+                                '.collapse-button-text'
+                            );
+
+
+                        if (
+                            buttonText
+                        ) {
+
+                            buttonText.textContent =
+                                isCollapsed
+                                    ? 'Open'
+                                    : 'Minimize';
+
+                        }
+
+
+                        if (
+                            button.classList.contains(
+                                'mobile-card-collapse-button'
+                            )
+                        ) {
+
+                            button.textContent =
+                                isCollapsed
+                                    ? '▼'
+                                    : '▲';
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+</script>
+
 
 </body>
 
