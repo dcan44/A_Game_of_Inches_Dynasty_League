@@ -10144,3 +10144,31 @@ td:first-child {
     }
 
 }
+
+/* ======================================================
+   HISTORY — SEASON LEADERS / LOSERS
+   2 CARDS PER ROW ON ALL SCREEN SIZES
+====================================================== */
+
+.history-awards-grid {
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+
+}
+
+
+/*
+   Keep cards compact and readable.
+*/
+
+.history-awards-grid
+.league-record-card {
+
+    min-width: 0;
+
+}
