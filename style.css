@@ -10172,3 +10172,107 @@ td:first-child {
     min-width: 0;
 
 }
+
+/* ======================================================
+   HISTORY — COLLAPSIBLE SECTIONS
+====================================================== */
+
+.history-collapse-section {
+
+    width: 100%;
+
+}
+
+
+.history-collapse-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin:
+        32px
+        24px
+        14px;
+
+}
+
+
+/*
+   The heading's spacing is now handled
+   by the wrapper above.
+*/
+
+.history-collapse-heading
+.history-subtitle {
+
+    flex: 1;
+
+    min-width: 0;
+
+    margin: 0 !important;
+
+}
+
+
+/*
+   Collapse / expand arrow.
+*/
+
+.history-collapse-toggle {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 32px;
+
+    height: 32px;
+
+    padding: 0;
+
+    background:
+        rgba(4, 30, 66, .08);
+
+    border:
+        1px solid
+        rgba(4, 30, 66, .20);
+
+    border-radius: 4px;
+
+    color:
+        var(--navy);
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+}
+
+
+.history-collapse-toggle:hover {
+
+    background:
+        rgba(4, 30, 66, .14);
+
+}
+
+
+/*
+   Hidden state.
+*/
+
+.history-section-collapsed
+.history-collapse-content {
+
+    display: none;
+
+}
