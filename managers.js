@@ -2346,6 +2346,96 @@ function getLeagueOwnerName(
 
 }
 
+/*
+ * ======================================================
+ * MOBILE MANAGER CARD COLLAPSE
+ * ======================================================
+ */
 
+document.addEventListener(
+    'click',
+    event => {
+
+        const button =
+            event.target.closest(
+                '.manager-collapse-button'
+            );
+
+
+        if (
+            !button
+        ) {
+
+            return;
+
+        }
+
+
+        const card =
+            button.closest(
+                '.manager-card'
+            );
+
+
+        if (
+            !card
+        ) {
+
+            return;
+
+        }
+
+
+        const body =
+            card.querySelector(
+                '.manager-card-body'
+            );
+
+
+        if (
+            !body
+        ) {
+
+            return;
+
+        }
+
+
+        const isCollapsed =
+            body.classList.toggle(
+                'mobile-collapsed'
+            );
+
+
+        button.textContent =
+            isCollapsed
+                ? '▼'
+                : '▲';
+
+
+        button.setAttribute(
+            'aria-expanded',
+            String(
+                !isCollapsed
+            )
+        );
+
+
+        const managerName =
+            card.querySelector(
+                '.manager-identity h2'
+            )?.textContent.trim() ||
+            'manager';
+
+
+        button.setAttribute(
+            'aria-label',
+            isCollapsed
+                ? `Expand ${managerName}`
+                : `Collapse ${managerName}`
+        );
+
+    }
+);
 
 loadManagers();
