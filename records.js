@@ -599,78 +599,97 @@ matchupData.forEach(
                         }
 
 
-                        /*
-                         * =====================================
-                         * BIGGEST WIN
-                         * =====================================
-                         */
+/*
+ * =====================================
+ * BIGGEST WIN
+ * =====================================
+ */
 
-                        if (
-                            manager.biggest_win
-                        ) {
+if (
+    manager.biggest_win
+) {
 
-                            const margin =
-                                Number(
-                                    manager
-                                        .biggest_win
-                                        .margin ||
-                                    0
-                                );
-
-
-                            if (
-                                !career.biggest_win ||
-                                margin >
-                                career.biggest_win.margin
-                            ) {
-
-                                career.biggest_win = {
-
-                                    margin:
-                                        margin,
-
-                                    points:
-                                        Number(
-                                            manager
-                                                .biggest_win
-                                                .points ||
-                                            0
-                                        ),
-
-                                    opponent_points:
-                                        Number(
-                                            manager
-                                                .biggest_win
-                                                .opponent_points ||
-                                            0
-                                        ),
-
-                                    opponent:
-                                        manager
-                                            .biggest_win
-                                            .opponent,
-
-                                    week:
-                                        Number(
-                                            manager
-                                                .biggest_win
-                                                .week
-                                        ),
-
-                                    season:
-                                        season
-
-                                };
-
-                            }
-
-                        }
-
-                    }
-                );
-
-            }
+    const margin =
+        Number(
+            manager
+                .biggest_win
+                .margin ||
+            0
         );
+
+
+    const biggestWinWeek =
+        Number(
+            manager
+                .biggest_win
+                .week
+        );
+
+
+    const matchupScore =
+        matchupScoreLookup[
+            `${season}-${biggestWinWeek}-${ownerId}`
+        ];
+
+
+    if (
+        !career.biggest_win ||
+        margin >
+        career.biggest_win.margin
+    ) {
+
+        career.biggest_win = {
+
+            margin:
+                margin,
+
+            points:
+                matchupScore
+                    ? matchupScore.points
+                    : Number(
+                        manager
+                            .biggest_win
+                            .points ||
+                        manager
+                            .biggest_win
+                            .score ||
+                        0
+                      ),
+
+            opponent_points:
+                matchupScore
+                    ? matchupScore.opponent_points
+                    : Number(
+                        manager
+                            .biggest_win
+                            .opponent_points ||
+                        manager
+                            .biggest_win
+                            .opponent_score ||
+                        0
+                      ),
+
+            opponent:
+                matchupScore
+                    ? matchupScore.opponent
+                    : (
+                        manager
+                            .biggest_win
+                            .opponent ||
+                        'Unknown'
+                    ),
+
+            week:
+                biggestWinWeek,
+
+            season:
+                season
+
+        };
+
+    }
+
+}
 
 
         /*
