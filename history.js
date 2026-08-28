@@ -1959,7 +1959,7 @@ const finalStandings =
             </div>
 
 
-                        <!-- ==========================================
+            <!-- ==========================================
                  REGULAR-SEASON STANDINGS
             =========================================== -->
 
@@ -2212,6 +2212,9 @@ const finalStandings =
         `;
 
 
+        initializeHistoryCollapsibles();
+
+
     } catch (
         error
     ) {
@@ -2236,6 +2239,225 @@ const finalStandings =
 
 }
 
+
+
+/*
+ * ======================================================
+ * HISTORY — COLLAPSIBLE SECTIONS
+ * ======================================================
+ */
+
+function initializeHistoryCollapsibles() {
+
+    const collapsibleTitles =
+        new Set([
+            'Season Leaders',
+            'Season Losers',
+            'Regular-Season Standings',
+            'Final Standings'
+        ]);
+
+
+    const headings =
+        Array.from(
+            historySeasonContent.querySelectorAll(
+                '.history-subtitle'
+            )
+        )
+            .filter(
+                heading =>
+                    collapsibleTitles.has(
+                        heading.textContent.trim()
+                    )
+            );
+
+
+    headings.forEach(
+        heading => {
+
+            const section =
+                document.createElement(
+                    'div'
+                );
+
+
+            section.className =
+                'history-collapse-section';
+
+
+            const headingRow =
+                document.createElement(
+                    'div'
+                );
+
+
+            headingRow.className =
+                'history-collapse-heading';
+
+
+            const button =
+                document.createElement(
+                    'button'
+                );
+
+
+            button.type =
+                'button';
+
+
+            button.className =
+                'history-collapse-toggle';
+
+
+            button.textContent =
+                '▲';
+
+
+            button.setAttribute(
+                'aria-expanded',
+                'true'
+            );
+
+
+            button.setAttribute(
+                'aria-label',
+                `Collapse ${heading.textContent.trim()}`
+            );
+
+
+            const content =
+                document.createElement(
+                    'div'
+                );
+
+
+            content.className =
+                'history-collapse-content';
+
+
+            /*
+             * Insert the new section immediately before
+             * the original heading.
+             */
+
+            heading.parentNode.insertBefore(
+                section,
+                heading
+            );
+
+
+            /*
+             * Move the heading into its new heading row.
+             */
+
+            headingRow.appendChild(
+                heading
+            );
+
+
+            headingRow.appendChild(
+                button
+            );
+
+
+            section.appendChild(
+                headingRow
+            );
+
+
+            section.appendChild(
+                content
+            );
+
+
+            /*
+             * Move everything after this section into the
+             * collapsible content area until the next History
+             * subtitle or the Draft Archive link is reached.
+             */
+
+            let next =
+                section.nextSibling;
+
+
+            while (
+                next
+            ) {
+
+                if (
+                    next.nodeType === 1 &&
+                    (
+                        next.matches(
+                            '.history-subtitle'
+                        ) ||
+                        next.matches(
+                            '.history-draft-link'
+                        )
+                    )
+                ) {
+
+                    break;
+
+                }
+
+
+                const current =
+                    next;
+
+
+                next =
+                    next.nextSibling;
+
+
+                content.appendChild(
+                    current
+                );
+
+            }
+
+
+            /*
+             * Toggle this section independently.
+             */
+
+            button.addEventListener(
+                'click',
+                () => {
+
+                    const isCollapsed =
+                        section.classList.toggle(
+                            'history-section-collapsed'
+                        );
+
+
+                    button.textContent =
+                        isCollapsed
+                            ? '▼'
+                            : '▲';
+
+
+                    button.setAttribute(
+                        'aria-expanded',
+                        String(
+                            !isCollapsed
+                        )
+                    );
+
+
+                    button.setAttribute(
+                        'aria-label',
+                        isCollapsed
+                            ? `Expand ${heading.textContent.trim()}`
+                            : `Collapse ${heading.textContent.trim()}`
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
 
 
 /*
