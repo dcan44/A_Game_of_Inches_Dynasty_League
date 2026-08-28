@@ -9502,3 +9502,66 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   FORMER MANAGERS — DESKTOP COLLAPSE
+====================================================== */
+
+/* Show the collapse button for former managers on desktop */
+
+.former-manager-card
+.manager-collapse-button {
+
+    display: inline-flex;
+
+    position: absolute;
+
+    top: 50%;
+    right: 16px;
+
+    transform: translateY(-50%);
+
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    background:
+        rgba(255,255,255,.10);
+
+    border:
+        1px solid
+        rgba(255,255,255,.24);
+
+    border-radius: 4px;
+
+    color: #FFFFFF;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+/* Make room for the button */
+
+.former-manager-card
+.manager-card-top {
+
+    position: relative;
+
+    padding-right: 58px;
+
+}
+
+
+/* Former managers start minimized on desktop too */
+
+.former-manager-card
+.manager-card-body.mobile-collapsed {
+
+    display: none;
+}
