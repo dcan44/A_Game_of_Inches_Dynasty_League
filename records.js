@@ -2041,6 +2041,27 @@ if (
 
         }
 
+                if (
+    formerManagerRecordsBody
+) {
+
+    formerManagerRecordsBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="10"
+                class="records-error"
+            >
+                Unable to load former manager records.
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
 
         if (
             recordsGrid
