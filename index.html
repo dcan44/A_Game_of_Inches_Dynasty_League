@@ -11,17 +11,8 @@
 
 <style>
 /* ======================================================
-   HOME — MOBILE COLLAPSIBLE SECTIONS
+   HOME — MOBILE COLLAPSIBLE CARDS
 ====================================================== */
-
-.mobile-collapse-heading {
-    position: relative;
-}
-
-.mobile-collapse-button,
-.mobile-card-collapse-button {
-    display: none;
-}
 
 .card-header-actions {
     display: flex;
@@ -29,53 +20,25 @@
     gap: 10px;
 }
 
+.mobile-card-collapse-button {
+    display: none;
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
 @media (max-width: 700px) {
-
-    .mobile-collapse-heading {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-    }
-
-    .mobile-collapse-heading .section-title {
-        flex: 1;
-    }
-
-    .mobile-collapse-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        flex-shrink: 0;
-
-        padding: 7px 10px;
-
-        background: var(--navy);
-        border: 1px solid var(--silver);
-        border-radius: 3px;
-
-        color: white;
-
-        font-family: 'Oswald', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: .7px;
-        text-transform: uppercase;
-
-        cursor: pointer;
-    }
-
-    .collapse-arrow {
-        font-size: 9px;
-    }
 
     .mobile-content-collapsed {
         display: none !important;
     }
 
+
     .mobile-card-collapse-button {
         display: inline-flex;
+
         align-items: center;
         justify-content: center;
 
@@ -83,25 +46,45 @@
         height: 28px;
 
         padding: 0;
+
         flex-shrink: 0;
 
-        background: rgba(255,255,255,.10);
-        border: 1px solid rgba(255,255,255,.25);
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .10
+            );
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                .25
+            );
+
         border-radius: 3px;
 
         color: white;
+
         font-size: 10px;
 
         cursor: pointer;
     }
 
+
     .card-header-actions {
         gap: 7px;
     }
 
+
     .collapsible-card-header {
         gap: 8px;
     }
+
 }
 </style>
 
@@ -367,56 +350,52 @@
 
     <section class="home-this-week">
 
-        <div class="mobile-collapse-heading">
-
-            <h2 class="section-title">
-                This Week
-            </h2>
-
-            <button
-                type="button"
-                class="mobile-collapse-button"
-                data-collapse-target="this-week-content"
-                aria-expanded="true"
-            >
-                <span class="collapse-button-text">
-                    Minimize
-                </span>
-
-                <span class="collapse-arrow">
-                    ▲
-                </span>
-            </button>
-
-        </div>
+        <h2 class="section-title">
+            This Week
+        </h2>
 
 
-        <div
-            id="this-week-content"
-            class="mobile-collapsible-content"
-        >
-
-            <div class="this-week-layout">
+        <div class="this-week-layout">
 
 
-                <!-- ==========================================
-                     WEEKLY MATCHUPS
-                =========================================== -->
+            <!-- ==========================================
+                 WEEKLY MATCHUPS
+            =========================================== -->
 
-                <div class="card this-week-matchups-card">
+            <div class="card this-week-matchups-card">
 
-                    <div class="card-header">
+                <div class="card-header collapsible-card-header">
 
-                        <h3>
-                            Weekly Matchups
-                        </h3>
+                    <h3>
+                        Weekly Matchups
+                    </h3>
+
+
+                    <div class="card-header-actions">
 
                         <span class="live-indicator">
                             ● LIVE FROM SLEEPER
                         </span>
 
+                        <button
+                            type="button"
+                            class="mobile-card-collapse-button"
+                            data-collapse-target="weekly-matchups-content"
+                            aria-expanded="true"
+                            aria-label="Collapse Weekly Matchups"
+                        >
+                            ▲
+                        </button>
+
                     </div>
 
+                </div>
+
+
+                <div
+                    id="weekly-matchups-content"
+                    class="mobile-collapsible-content"
+                >
 
                     <div
                         id="home-week-number"
@@ -435,25 +414,47 @@
 
                 </div>
 
+            </div>
 
-                <!-- ==========================================
-                     LEAGUE PULSE
-                =========================================== -->
 
-                <aside class="card league-pulse-card">
+            <!-- ==========================================
+                 LEAGUE PULSE
+            =========================================== -->
 
-                    <div class="card-header">
+            <aside class="card league-pulse-card">
 
-                        <h3>
-                            League Pulse
-                        </h3>
+                <div class="card-header collapsible-card-header">
+
+                    <h3>
+                        League Pulse
+                    </h3>
+
+
+                    <div class="card-header-actions">
 
                         <span class="live-indicator">
                             ● LIVE FROM SLEEPER
                         </span>
 
+                        <button
+                            type="button"
+                            class="mobile-card-collapse-button"
+                            data-collapse-target="league-pulse-content"
+                            aria-expanded="true"
+                            aria-label="Collapse League Pulse"
+                        >
+                            ▲
+                        </button>
+
                     </div>
 
+                </div>
+
+
+                <div
+                    id="league-pulse-content"
+                    class="mobile-collapsible-content"
+                >
 
                     <div
                         id="home-league-pulse"
@@ -537,9 +538,9 @@
 
                     </div>
 
-                </aside>
+                </div>
 
-            </div>
+            </aside>
 
         </div>
 
@@ -552,166 +553,140 @@
 
     <section class="league-activity-section">
 
-        <div class="mobile-collapse-heading">
-
-            <h2 class="section-title">
-                League Activity
-            </h2>
-
-            <button
-                type="button"
-                class="mobile-collapse-button"
-                data-collapse-target="league-activity-content"
-                aria-expanded="true"
-            >
-                <span class="collapse-button-text">
-                    Minimize
-                </span>
-
-                <span class="collapse-arrow">
-                    ▲
-                </span>
-            </button>
-
-        </div>
+        <h2 class="section-title">
+            League Activity
+        </h2>
 
 
-        <div
-            id="league-activity-content"
-            class="mobile-collapsible-content"
-        >
-
-            <div class="grid">
+        <div class="grid">
 
 
-                <!-- ==========================================
-                     TRADES
-                =========================================== -->
+            <!-- ==========================================
+                 TRADES
+            =========================================== -->
 
-                <div class="card league-activity-card">
+            <div class="card league-activity-card">
 
-                    <div class="card-header collapsible-card-header">
+                <div class="card-header collapsible-card-header">
 
-                        <h3>
-                            Trades
-                        </h3>
-
-
-                        <div class="card-header-actions">
-
-                            <span class="live-indicator">
-                                ● LIVE FROM SLEEPER
-                            </span>
-
-                            <button
-                                type="button"
-                                class="mobile-card-collapse-button"
-                                data-collapse-target="trades-content"
-                                aria-expanded="true"
-                                aria-label="Collapse Trades"
-                            >
-                                ▲
-                            </button>
-
-                        </div>
-
-                    </div>
+                    <h3>
+                        Trades
+                    </h3>
 
 
-                    <div
-                        id="trades-content"
-                        class="mobile-collapsible-content"
-                    >
+                    <div class="card-header-actions">
 
-                        <div
-                            id="home-trades"
-                            class="home-transactions"
+                        <span class="live-indicator">
+                            ● LIVE FROM SLEEPER
+                        </span>
+
+                        <button
+                            type="button"
+                            class="mobile-card-collapse-button"
+                            data-collapse-target="trades-content"
+                            aria-expanded="true"
+                            aria-label="Collapse Trades"
                         >
-
-                            <p class="placeholder-text">
-                                Loading recent trades...
-                            </p>
-
-                        </div>
+                            ▲
+                        </button>
 
                     </div>
 
                 </div>
 
 
-                <!-- ==========================================
-                     WAIVER WIRE
-                =========================================== -->
+                <div
+                    id="trades-content"
+                    class="mobile-collapsible-content"
+                >
 
-                <div class="card league-activity-card">
+                    <div
+                        id="home-trades"
+                        class="home-transactions"
+                    >
 
-                    <div class="card-header collapsible-card-header">
+                        <p class="placeholder-text">
+                            Loading recent trades...
+                        </p>
 
-                        <h3>
-                            Waiver Wire
-                        </h3>
+                    </div>
+
+                </div>
+
+            </div>
 
 
-                        <div class="card-header-actions">
+            <!-- ==========================================
+                 WAIVER WIRE
+            =========================================== -->
 
-                            <span class="live-indicator">
-                                ● LIVE FROM SLEEPER
-                            </span>
+            <div class="card league-activity-card">
 
-                            <button
-                                type="button"
-                                class="mobile-card-collapse-button"
-                                data-collapse-target="waivers-content"
-                                aria-expanded="true"
-                                aria-label="Collapse Waivers"
-                            >
-                                ▲
-                            </button>
+                <div class="card-header collapsible-card-header">
 
-                        </div>
+                    <h3>
+                        Waiver Wire
+                    </h3>
+
+
+                    <div class="card-header-actions">
+
+                        <span class="live-indicator">
+                            ● LIVE FROM SLEEPER
+                        </span>
+
+                        <button
+                            type="button"
+                            class="mobile-card-collapse-button"
+                            data-collapse-target="waivers-content"
+                            aria-expanded="true"
+                            aria-label="Collapse Waivers"
+                        >
+                            ▲
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="waivers-content"
+                    class="mobile-collapsible-content"
+                >
+
+                    <!-- NEXT WAIVER COUNTDOWN -->
+
+                    <div class="waiver-countdown">
+
+                        <span class="waiver-countdown-label">
+                            Next Waivers Clear
+                        </span>
+
+                        <strong
+                            id="home-waiver-countdown"
+                            class="waiver-countdown-time"
+                        >
+                            Calculating...
+                        </strong>
+
+                        <span class="waiver-countdown-schedule">
+                            Wednesday • 3:00 AM ET
+                        </span>
 
                     </div>
 
 
+                    <!-- WAIVER / FREE AGENT ACTIVITY -->
+
                     <div
-                        id="waivers-content"
-                        class="mobile-collapsible-content"
+                        id="home-waivers"
+                        class="home-transactions"
                     >
 
-                        <!-- NEXT WAIVER COUNTDOWN -->
-
-                        <div class="waiver-countdown">
-
-                            <span class="waiver-countdown-label">
-                                Next Waivers Clear
-                            </span>
-
-                            <strong
-                                id="home-waiver-countdown"
-                                class="waiver-countdown-time"
-                            >
-                                Calculating...
-                            </strong>
-
-                            <span class="waiver-countdown-schedule">
-                                Wednesday • 3:00 AM ET
-                            </span>
-
-                        </div>
-
-
-                        <!-- WAIVER / FREE AGENT ACTIVITY -->
-
-                        <div
-                            id="home-waivers"
-                            class="home-transactions"
-                        >
-
-                            <p class="placeholder-text">
-                                Loading recent waiver activity...
-                            </p>
-
-                        </div>
+                        <p class="placeholder-text">
+                            Loading recent waiver activity...
+                        </p>
 
                     </div>
 
@@ -751,13 +726,14 @@
 <script src="script.js"></script>
 
 <script>
+
 document.addEventListener(
     'DOMContentLoaded',
     () => {
 
         const collapseButtons =
             document.querySelectorAll(
-                '[data-collapse-target]'
+                '.mobile-card-collapse-button[data-collapse-target]'
             );
 
 
@@ -801,52 +777,40 @@ document.addEventListener(
                         );
 
 
-                        const arrow =
-                            button.querySelector(
-                                '.collapse-arrow'
+                        button.textContent =
+                            isCollapsed
+                                ? '▼'
+                                : '▲';
+
+
+                        const expandedLabel =
+                            button.getAttribute(
+                                'aria-label'
                             );
 
 
                         if (
-                            arrow
+                            expandedLabel
                         ) {
 
-                            arrow.textContent =
+                            const sectionName =
+                                expandedLabel
+                                    .replace(
+                                        'Collapse ',
+                                        ''
+                                    )
+                                    .replace(
+                                        'Expand ',
+                                        ''
+                                    );
+
+
+                            button.setAttribute(
+                                'aria-label',
                                 isCollapsed
-                                    ? '▼'
-                                    : '▲';
-
-                        }
-
-
-                        const buttonText =
-                            button.querySelector(
-                                '.collapse-button-text'
+                                    ? `Expand ${sectionName}`
+                                    : `Collapse ${sectionName}`
                             );
-
-
-                        if (
-                            buttonText
-                        ) {
-
-                            buttonText.textContent =
-                                isCollapsed
-                                    ? 'Open'
-                                    : 'Minimize';
-
-                        }
-
-
-                        if (
-                            button.classList.contains(
-                                'mobile-card-collapse-button'
-                            )
-                        ) {
-
-                            button.textContent =
-                                isCollapsed
-                                    ? '▼'
-                                    : '▲';
 
                         }
 
@@ -858,6 +822,7 @@ document.addEventListener(
 
     }
 );
+
 </script>
 
 
