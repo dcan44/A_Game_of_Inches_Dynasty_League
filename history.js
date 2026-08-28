@@ -3183,6 +3183,56 @@ async function loadHallOfShame() {
 
 }
 
+/*
+ * ======================================================
+ * MOBILE HISTORY — START ON MOST RECENT BANNERS
+ * ======================================================
+ */
+
+function scrollHistoryBannersToNewest() {
+
+    if (
+        window.innerWidth >
+        650
+    ) {
+
+        return;
+
+    }
+
+
+    requestAnimationFrame(
+        () => {
+
+            requestAnimationFrame(
+                () => {
+
+                    if (
+                        historyChampions
+                    ) {
+
+                        historyChampions.scrollLeft =
+                            historyChampions.scrollWidth;
+
+                    }
+
+
+                    if (
+                        hallOfShame
+                    ) {
+
+                        hallOfShame.scrollLeft =
+                            hallOfShame.scrollWidth;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
 
 /*
  * ======================================================
