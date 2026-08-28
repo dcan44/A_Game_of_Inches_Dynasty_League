@@ -9976,3 +9976,40 @@ td:first-child {
     }
 
 }
+
+/* ======================================================
+   HISTORY — MOBILE CHAMPION SPACING MATCH
+====================================================== */
+
+@media (max-width: 650px) {
+
+    /*
+       Match the League Champions spacing
+       to the Hall of Shame row.
+    */
+
+    .history-champions {
+
+        gap: 14px !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+    }
+
+
+    .history-champion-pennant {
+
+        flex: 0 0 165px !important;
+
+        width: 165px !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+    }
+
+}
