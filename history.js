@@ -148,6 +148,14 @@ function loadChampionPennants() {
         }
     );
 
+
+    /*
+     * On mobile, start the horizontal banner row
+     * at the newest championship on the far right.
+     */
+
+    scrollHistoryBannersToNewest();
+
 }
 
 
