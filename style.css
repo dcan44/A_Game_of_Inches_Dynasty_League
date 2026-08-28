@@ -8835,3 +8835,218 @@ font-size: 19px;
     }
 
 }
+
+/* ======================================================
+   HEAD TO HEAD — FINAL SCROLLING TABLE
+====================================================== */
+
+/*
+   The Head-to-Head table is intentionally wider than
+   the available page when necessary.
+
+   This prevents matchup records from being squeezed
+   differently on phones, tablets, laptops, and desktops.
+*/
+
+.head-to-head-scroll {
+
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+/* ======================================================
+   TABLE
+====================================================== */
+
+.head-to-head-table {
+
+    width: max-content !important;
+
+    min-width: 100% !important;
+
+    table-layout: auto !important;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+}
+
+
+/* ======================================================
+   OWNER COLUMN
+====================================================== */
+
+.head-to-head-table .h2h-corner,
+.head-to-head-table .h2h-row-header {
+
+    position: sticky;
+
+    left: 0;
+
+    width: 135px !important;
+    min-width: 135px !important;
+    max-width: 135px !important;
+
+}
+
+
+/* Top-left header */
+
+.head-to-head-table .h2h-corner {
+
+    z-index: 4;
+
+    padding:
+        10px
+        12px !important;
+
+    background:
+        var(--dark-navy);
+
+}
+
+
+/* Manager names down the left */
+
+.head-to-head-table .h2h-row-header {
+
+    z-index: 3;
+
+    padding:
+        10px
+        12px !important;
+
+    background:
+        #F5F6F7;
+
+    white-space: nowrap;
+
+}
+
+
+/* Subtle edge showing that the table scrolls */
+
+.head-to-head-table .h2h-corner,
+.head-to-head-table .h2h-row-header {
+
+    box-shadow:
+        3px
+        0
+        4px
+        rgba(0,0,0,.08);
+
+}
+
+
+/* ======================================================
+   OWNER NAME
+====================================================== */
+
+.head-to-head-table .h2h-owner {
+
+    font-size: 13px !important;
+
+    white-space: nowrap;
+
+}
+
+
+/* ======================================================
+   MATCHUP COLUMNS
+====================================================== */
+
+.head-to-head-table .h2h-manager-header,
+.head-to-head-table td {
+
+    width: 88px !important;
+    min-width: 88px !important;
+
+    padding:
+        10px
+        8px !important;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+/* Column manager names */
+
+.head-to-head-table .h2h-manager-header {
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+}
+
+
+/* ======================================================
+   HEAD-TO-HEAD RECORDS
+====================================================== */
+
+.head-to-head-table td {
+
+    height: 52px;
+
+    font-size: 14px !important;
+
+    font-weight: 600;
+
+    font-variant-numeric:
+        tabular-nums;
+
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 650px) {
+
+    /*
+       Do not shrink the records on mobile.
+       The user scrolls horizontally instead.
+    */
+
+    .head-to-head-table .h2h-corner,
+    .head-to-head-table .h2h-row-header {
+
+        width: 115px !important;
+        min-width: 115px !important;
+        max-width: 115px !important;
+
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+
+    }
+
+
+    .head-to-head-table .h2h-manager-header,
+    .head-to-head-table td {
+
+        width: 82px !important;
+        min-width: 82px !important;
+
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+
+    }
+
+
+    .head-to-head-table td {
+
+        font-size: 14px !important;
+
+    }
+
+}
