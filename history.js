@@ -1988,25 +1988,29 @@ const finalStandings =
 
                             <tr>
 
-                                <th class="history-rank-column">
-                                    Rank
-                                </th>
+                          <th class="history-rank-column">
+    Rank
+</th>
 
-                                <th class="history-owner-column">
-                                    Name
-                                </th>
+<th class="history-owner-column">
+    Name
+</th>
 
-                                <th class="history-team-column">
-                                    Team
-                                </th>
+<th class="history-team-column">
+    Team
+</th>
 
-                                <th>
-                                    Record
-                                </th>
+<th class="history-division-column">
+    Division
+</th>
 
-                                <th>
-                                    PF
-                                </th>
+<th>
+    Record
+</th>
+
+<th>
+    PF
+</th>
 
                             </tr>
 
