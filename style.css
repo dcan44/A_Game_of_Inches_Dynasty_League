@@ -10526,18 +10526,18 @@ td.history-owner-column {
     }
 
 
-    .history-standings-table
-    .history-owner-column {
+.history-standings-table
+.history-owner-column {
 
-        left: 55px;
+    left: 55px;
 
-        width: 110px;
+    width: 95px;
 
-        min-width: 110px;
+    min-width: 95px;
 
-        max-width: 110px;
+    max-width: 95px;
 
-    }
+}
 
 
     .history-standings-table
