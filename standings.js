@@ -718,9 +718,26 @@ row.innerHTML = `
         ${team.team_name}
     </td>
 
-    <td>
-        ${team.division || '—'}
-    </td>
+<td>
+
+    ${
+        team.division
+            ? `
+                <span
+                    class="
+                        standings-division-badge
+                        ${getDivisionPlaqueClass(
+                            team
+                        )}
+                    "
+                >
+                    ${team.division}
+                </span>
+              `
+            : '—'
+    }
+
+</td>
 
     <td>
         ${record}
