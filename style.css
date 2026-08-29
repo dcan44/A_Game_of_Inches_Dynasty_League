@@ -10579,3 +10579,46 @@ td.history-owner-column {
     }
 
 }
+
+/* ======================================================
+   HISTORY — SEASON LEADERS / LOSERS
+   DESKTOP: 4 ACROSS
+   MOBILE: 2 ACROSS
+====================================================== */
+
+.history-awards-grid {
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+
+}
+
+
+.history-awards-grid
+.league-record-card {
+
+    min-width: 0;
+
+}
+
+
+/* ======================================================
+   HISTORY — MOBILE LEADERS / LOSERS
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .history-awards-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr)) !important;
+
+        gap: 10px !important;
+
+    }
+
+}
