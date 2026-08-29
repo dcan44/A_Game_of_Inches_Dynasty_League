@@ -2163,13 +2163,12 @@ const finalStandings =
 
 function initializeHistoryCollapsibles() {
 
-    const collapsibleTitles =
-        new Set([
-            'Season Leaders',
-            'Season Losers',
-            'Regular-Season Standings',
-            'Final Standings'
-        ]);
+const collapsibleTitles =
+    new Set([
+        'Season Leaders',
+        'Season Losers',
+        'Final Standings'
+    ]);
 
 
     const headings =
