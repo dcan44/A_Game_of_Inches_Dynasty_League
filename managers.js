@@ -1041,42 +1041,52 @@ const teams =
                 }
 
 
-                /*
+                               /*
                  * =============================================
-                 * WINNING PERCENTAGE
+                 * PLAYOFF WINNING PERCENTAGE
                  * =============================================
                  */
 
-                let winningPercentage =
+                let playoffWinningPercentage =
                     '—';
 
 
                 if (
-                    career &&
-                    career.regular_games > 0
+                    career
                 ) {
 
-                    const percentage =
-                        (
-                            career.regular_wins +
+                    const playoffGames =
+                        career.playoff_wins +
+                        career.playoff_losses +
+                        career.playoff_ties;
+
+
+                    if (
+                        playoffGames > 0
+                    ) {
+
+                        const percentage =
                             (
-                                career.regular_ties *
-                                0.5
+                                career.playoff_wins +
+                                (
+                                    career.playoff_ties *
+                                    0.5
+                                )
                             )
-                        )
-                        /
-                        career.regular_games;
+                            /
+                            playoffGames;
 
 
-                    winningPercentage =
-                        (
-                            percentage *
-                            100
-                        ).toFixed(1) +
-                        '%';
+                        playoffWinningPercentage =
+                            (
+                                percentage *
+                                100
+                            ).toFixed(1) +
+                            '%';
+
+                    }
 
                 }
-
 
                 /*
                  * =============================================
