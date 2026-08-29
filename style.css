@@ -10276,3 +10276,284 @@ td:first-child {
     display: none;
 
 }
+
+/* ======================================================
+   HISTORY — FINAL STANDINGS TABLE
+   PINNED RANK + OWNER
+====================================================== */
+
+
+/*
+   Keep the table wide enough to scroll
+   naturally on smaller screens.
+*/
+
+.history-standings-table {
+
+    width: 100%;
+
+    min-width: 650px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+}
+
+
+/*
+   ======================================================
+   RANK COLUMN
+   ======================================================
+*/
+
+.history-standings-table
+.history-rank-column {
+
+    position: sticky;
+
+    left: 0;
+
+    width: 70px;
+
+    min-width: 70px;
+
+    max-width: 70px;
+
+    text-align: center;
+
+}
+
+
+.history-standings-table
+th.history-rank-column {
+
+    z-index: 6;
+
+    background:
+        var(--dark-navy);
+
+}
+
+
+.history-standings-table
+td.history-rank-column {
+
+    z-index: 5;
+
+    background:
+        #FFFFFF;
+
+    font-weight: 700;
+
+}
+
+
+/*
+   ======================================================
+   OWNER / NAME COLUMN
+   ======================================================
+*/
+
+.history-standings-table
+.history-owner-column {
+
+    position: sticky;
+
+    left: 70px;
+
+    width: 140px;
+
+    min-width: 140px;
+
+    max-width: 140px;
+
+    text-align: left;
+
+}
+
+
+.history-standings-table
+th.history-owner-column {
+
+    z-index: 6;
+
+    background:
+        var(--dark-navy);
+
+}
+
+
+.history-standings-table
+td.history-owner-column {
+
+    z-index: 5;
+
+    background:
+        #FFFFFF;
+
+    box-shadow:
+        4px 0 5px
+        rgba(0,0,0,.08);
+
+}
+
+
+/*
+   Owner is the main bolded name.
+*/
+
+.history-owner-name {
+
+    display: block;
+
+    color:
+        var(--navy);
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+}
+
+
+/*
+   ======================================================
+   TEAM COLUMN
+   ======================================================
+*/
+
+.history-standings-table
+.history-team-column {
+
+    width: 220px;
+
+    min-width: 220px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+}
+
+
+.history-standings-table
+td.history-team-column {
+
+    color:
+        #3E474D;
+
+    font-size: 11px;
+
+    font-weight: 400;
+
+}
+
+
+/*
+   ======================================================
+   OTHER COLUMNS
+   ======================================================
+*/
+
+.history-standings-table
+th:not(.history-rank-column):not(.history-owner-column):not(.history-team-column),
+.history-standings-table
+td:not(.history-rank-column):not(.history-owner-column):not(.history-team-column) {
+
+    text-align: center;
+
+}
+
+
+/*
+   ======================================================
+   ROW HOVER
+   Keep pinned cells matched to row hover.
+   ======================================================
+*/
+
+.history-standings-table
+tbody tr:hover
+td.history-rank-column,
+
+.history-standings-table
+tbody tr:hover
+td.history-owner-column {
+
+    background:
+        var(--light-gray);
+
+}
+
+
+/*
+   ======================================================
+   MOBILE
+   Same column order and sticky behavior,
+   just slightly narrower pinned columns.
+   ======================================================
+*/
+
+@media (max-width: 650px) {
+
+    .history-standings-table {
+
+        min-width: 590px;
+
+    }
+
+
+    .history-standings-table
+    .history-rank-column {
+
+        width: 55px;
+
+        min-width: 55px;
+
+        max-width: 55px;
+
+    }
+
+
+    .history-standings-table
+    .history-owner-column {
+
+        left: 55px;
+
+        width: 110px;
+
+        min-width: 110px;
+
+        max-width: 110px;
+
+    }
+
+
+    .history-standings-table
+    .history-team-column {
+
+        width: 190px;
+
+        min-width: 190px;
+
+    }
+
+
+    .history-owner-name {
+
+        font-size: 12px;
+
+    }
+
+}
