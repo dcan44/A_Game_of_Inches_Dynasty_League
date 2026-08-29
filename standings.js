@@ -258,6 +258,83 @@ async function loadStandingsPage() {
 
         }
 
+                /*
+         * =====================================================
+         * DIVISION PLAQUE COLOR
+         * =====================================================
+         *
+         * The actual division name continues to come from
+         * Sleeper. We only use the division's position to
+         * determine its plaque color.
+         */
+
+        const divisionNames =
+            Object.keys(
+                teams.reduce(
+                    (
+                        divisions,
+                        team
+                    ) => {
+
+                        if (
+                            team.division
+                        ) {
+
+                            divisions[
+                                team.division
+                            ] = true;
+
+                        }
+
+
+                        return divisions;
+
+                    },
+                    {}
+                )
+            );
+
+
+        function getDivisionPlaqueClass(
+            team
+        ) {
+
+            const divisionIndex =
+                divisionNames.indexOf(
+                    team.division
+                );
+
+
+            if (
+                divisionIndex === 0
+            ) {
+
+                return 'standings-division-1';
+
+            }
+
+
+            if (
+                divisionIndex === 1
+            ) {
+
+                return 'standings-division-2';
+
+            }
+
+
+            if (
+                divisionIndex === 2
+            ) {
+
+                return 'standings-division-3';
+
+            }
+
+
+            return 'standings-division-unknown';
+
+        }
 
         /*
          * =====================================================
