@@ -1959,274 +1959,158 @@ const finalStandings =
             </div>
 
 
-  <!-- ==========================================
-     FINAL STANDINGS
-=========================================== -->
+            <!-- ==========================================
+                 FINAL STANDINGS
+            =========================================== -->
 
-<h3 class="history-subtitle">
-    Final Standings
-</h3>
-
-<div class="history-final-standings-note">
-
-    Final positions 1–6 reflect playoff results.
-    Positions 7–12 are ranked by regular-season record,
-    with Points For as the tiebreaker.
-    Toilet Bowl results do not affect final standings.
-
-</div>
-
-<div class="records-table-card">
-
-    <div class="records-table-scroll">
-
-        <table class="history-standings-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Manager
-                    </th>
-
-                    <th>
-                        Rank
-                    </th>
-
-                    <th>
-                        Record
-                    </th>
-
-                    <th>
-                        PF
-                    </th>
-
-                </tr>
-
-            </thead>
+            <h3 class="history-subtitle">
+                Final Standings
+            </h3>
 
 
-            <tbody>
+            <div class="history-final-standings-note">
 
-                ${finalStandings
-                    .map(
-                        (
-                            team,
-                            index
-                        ) => `
+                Final positions 1–6 reflect playoff results.
+                Positions 7–12 are ranked by regular-season record,
+                with Points For as the tiebreaker.
+                Toilet Bowl results do not affect final standings.
 
-                            <tr
-                                class="${
-                                    index < 6
-                                        ? 'history-final-playoff'
-                                        : 'history-final-nonplayoff'
-                                }"
-                            >
-
-                                <td class="history-manager-cell">
-
-                                    <strong class="history-manager-name">
-                                        ${getLeagueOwnerName(
-                                            team.owner_id,
-                                            team.owner
-                                        )}
-                                    </strong>
-
-                                    <span class="history-manager-team">
-                                        ${team.team_name}
-                                    </span>
-
-                                </td>
+            </div>
 
 
-                                <td class="history-final-rank">
+            <div class="records-table-card">
 
-                                    ${
-                                        index === 0
-                                            ? '🏆 '
-                                            : index === 1
-                                                ? '🥈 '
-                                                : index === 2
-                                                    ? '🥉 '
-                                                    : Number(team.roster_id) ===
-                                                      toiletBowlLoserRosterId
-                                                        ? '💩 '
-                                                        : ''
-                                    }
+                <div class="records-table-scroll">
 
-                                    ${index + 1}
+                    <table class="history-standings-table">
 
-                                </td>
+                        <thead>
 
+                            <tr>
 
-                                <td>
+                                <th class="history-rank-column">
+                                    Rank
+                                </th>
 
-                                    ${formatRecord(
-                                        team.wins,
-                                        team.losses,
-                                        team.ties
-                                    )}
+                                <th class="history-owner-column">
+                                    Name
+                                </th>
 
-                                </td>
+                                <th class="history-team-column">
+                                    Team
+                                </th>
 
+                                <th>
+                                    Record
+                                </th>
 
-                                <td>
-
-                                    ${Number(
-                                        team.points_for ||
-                                        0
-                                    ).toFixed(2)}
-
-                                </td>
+                                <th>
+                                    PF
+                                </th>
 
                             </tr>
 
-                        `
-                    )
-                    .join('')}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-<!-- ==========================================
-     FINAL STANDINGS
-=========================================== -->
-
-<h3 class="history-subtitle">
-    Final Standings
-</h3>
-
-<div class="history-final-standings-note">
-
-    Final positions 1–6 reflect playoff results.
-    Positions 7–12 are ranked by regular-season record,
-    with Points For as the tiebreaker.
-    Toilet Bowl results do not affect final standings.
-
-</div>
-
-<div class="records-table-card">
-
-    <div class="records-table-scroll">
-
-        <table class="history-standings-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Rank
-                    </th>
-
-                    <th>
-                        Team
-                    </th>
-
-                    <th>
-                        Owner
-                    </th>
-
-                    <th>
-                        Record
-                    </th>
-
-                    <th>
-                        PF
-                    </th>
-
-                </tr>
-
-            </thead>
+                        </thead>
 
 
-            <tbody>
+                        <tbody>
 
-                ${finalStandings
-                    .map(
-                        (
-                            team,
-                            index
-                        ) => `
+                            ${finalStandings
+                                .map(
+                                    (
+                                        team,
+                                        index
+                                    ) => `
 
-<tr
-    class="${
-        index < 6
-            ? 'history-final-playoff'
-            : 'history-final-nonplayoff'
-    }"
->
+                                        <tr
+                                            class="${
+                                                index < 6
+                                                    ? 'history-final-playoff'
+                                                    : 'history-final-nonplayoff'
+                                            }"
+                                        >
 
-<td class="history-final-rank">
+                                            <td
+                                                class="
+                                                    history-final-rank
+                                                    history-rank-column
+                                                "
+                                            >
 
-    ${
-        index === 0
-            ? '🏆 '
-            : index === 1
-                ? '🥈 '
-                : index === 2
-                    ? '🥉 '
-                    : Number(team.roster_id) ===
-                      toiletBowlLoserRosterId
-                        ? '💩 '
-                        : ''
-    }
+                                                ${
+                                                    index === 0
+                                                        ? '🏆 '
+                                                        : index === 1
+                                                            ? '🥈 '
+                                                            : index === 2
+                                                                ? '🥉 '
+                                                                : Number(
+                                                                    team.roster_id
+                                                                  ) ===
+                                                                  toiletBowlLoserRosterId
+                                                                    ? '💩 '
+                                                                    : ''
+                                                }
 
-    ${index + 1}
+                                                ${index + 1}
 
-</td>
+                                            </td>
 
-                                <td class="history-team-name">
-                                    ${team.team_name}
-                                </td>
 
-                                <td>
+                                            <td class="history-owner-column">
 
-                                    ${getLeagueOwnerName(
-                                        team.owner_id,
-                                        team.owner
-                                    )}
+                                                <strong class="history-owner-name">
 
-                                </td>
+                                                    ${getLeagueOwnerName(
+                                                        team.owner_id,
+                                                        team.owner
+                                                    )}
 
-                                <td>
+                                                </strong>
 
-                                    ${formatRecord(
-                                        team.wins,
-                                        team.losses,
-                                        team.ties
-                                    )}
+                                            </td>
 
-                                </td>
 
-                                <td>
+                                            <td class="history-team-column">
 
-                                    ${Number(
-                                        team.points_for ||
-                                        0
-                                    ).toFixed(2)}
+                                                ${team.team_name}
 
-                                </td>
+                                            </td>
 
-                            </tr>
 
-                        `
-                    )
-                    .join('')}
+                                            <td>
 
-            </tbody>
+                                                ${formatRecord(
+                                                    team.wins,
+                                                    team.losses,
+                                                    team.ties
+                                                )}
 
-        </table>
+                                            </td>
 
-    </div>
 
-</div>
+                                            <td>
+
+                                                ${Number(
+                                                    team.points_for ||
+                                                    0
+                                                ).toFixed(2)}
+
+                                            </td>
+
+                                        </tr>
+
+                                    `
+                                )
+                                .join('')}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
 
 
             <div class="history-draft-link">
