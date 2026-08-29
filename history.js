@@ -2260,7 +2260,18 @@ const finalStandings =
 
 <td class="history-division-column">
 
-    ${team.division || '—'}
+    <span
+        class="
+            history-division-badge
+            ${getHistoryDivisionClass(
+                team
+            )}
+        "
+    >
+        ${getHistoryDivisionName(
+            team
+        )}
+    </span>
 
 </td>
 
