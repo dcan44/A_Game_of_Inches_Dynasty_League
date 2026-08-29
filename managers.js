@@ -5,11 +5,11 @@ async function loadManagers() {
             'managers-grid'
         );
 
-const formerManagersContainer =
-    document.querySelector(
-        '.former-managers-card'
-    );
-    
+    const formerManagersContainer =
+        document.querySelector(
+            '.former-managers-card'
+        );
+
 
     try {
 
@@ -819,77 +819,77 @@ const formerManagersContainer =
          * =====================================================
          */
 
-const divisionOrder =
-    [
-        'Kermit Frogs',
-        'BMS Mountain G.O.A.T.s',
-        'Mount Doom'
-    ];
+        const divisionOrder =
+            [
+                'Kermit Frogs',
+                'BMS Mountain G.O.A.T.s',
+                'Mount Doom'
+            ];
 
 
-const teams =
-    [
-        ...teamsData.teams
-    ].sort(
-        (a, b) => {
+        const teams =
+            [
+                ...teamsData.teams
+            ].sort(
+                (a, b) => {
 
-            const firstDivision =
-                divisionOrder.indexOf(
-                    a.division
-                );
-
-
-            const secondDivision =
-                divisionOrder.indexOf(
-                    b.division
-                );
+                    const firstDivision =
+                        divisionOrder.indexOf(
+                            a.division
+                        );
 
 
-            const firstDivisionOrder =
-                firstDivision === -1
-                    ? 999
-                    : firstDivision;
+                    const secondDivision =
+                        divisionOrder.indexOf(
+                            b.division
+                        );
 
 
-            const secondDivisionOrder =
-                secondDivision === -1
-                    ? 999
-                    : secondDivision;
+                    const firstDivisionOrder =
+                        firstDivision === -1
+                            ? 999
+                            : firstDivision;
 
 
-            if (
-                firstDivisionOrder !==
-                secondDivisionOrder
-            ) {
-
-                return (
-                    firstDivisionOrder -
-                    secondDivisionOrder
-                );
-
-            }
+                    const secondDivisionOrder =
+                        secondDivision === -1
+                            ? 999
+                            : secondDivision;
 
 
-            const firstOwner =
-                getLeagueOwnerName(
-                    a.owner_id,
-                    a.owner
-                );
+                    if (
+                        firstDivisionOrder !==
+                        secondDivisionOrder
+                    ) {
+
+                        return (
+                            firstDivisionOrder -
+                            secondDivisionOrder
+                        );
+
+                    }
 
 
-            const secondOwner =
-                getLeagueOwnerName(
-                    b.owner_id,
-                    b.owner
-                );
+                    const firstOwner =
+                        getLeagueOwnerName(
+                            a.owner_id,
+                            a.owner
+                        );
 
 
-            return firstOwner.localeCompare(
-                secondOwner
+                    const secondOwner =
+                        getLeagueOwnerName(
+                            b.owner_id,
+                            b.owner
+                        );
+
+
+                    return firstOwner.localeCompare(
+                        secondOwner
+                    );
+
+                }
             );
-
-        }
-    );
 
 
         grid.innerHTML =
@@ -898,7 +898,7 @@ const teams =
 
         /*
          * =====================================================
-         * BUILD EACH MANAGER CARD
+         * BUILD EACH CURRENT MANAGER CARD
          * =====================================================
          */
 
@@ -915,11 +915,6 @@ const teams =
                  * =================================================
                  * REAL OWNER NAME
                  * =================================================
-                 *
-                 * Pull from league-data.js.
-                 *
-                 * If the owner isn't listed there for some reason,
-                 * fall back to their Sleeper username.
                  */
 
                 const ownerName =
@@ -1041,7 +1036,44 @@ const teams =
                 }
 
 
-                               /*
+                /*
+                 * =============================================
+                 * REGULAR-SEASON WINNING PERCENTAGE
+                 * =============================================
+                 */
+
+                let winningPercentage =
+                    '—';
+
+
+                if (
+                    career &&
+                    career.regular_games > 0
+                ) {
+
+                    const percentage =
+                        (
+                            career.regular_wins +
+                            (
+                                career.regular_ties *
+                                0.5
+                            )
+                        )
+                        /
+                        career.regular_games;
+
+
+                    winningPercentage =
+                        (
+                            percentage *
+                            100
+                        ).toFixed(1) +
+                        '%';
+
+                }
+
+
+                /*
                  * =============================================
                  * PLAYOFF WINNING PERCENTAGE
                  * =============================================
@@ -1085,57 +1117,6 @@ const teams =
                             '%';
 
                     }
-
-                }
-
-                /*
-                 * =============================================
-                 * CAREER PPG
-                 * =============================================
-                 */
-
-                let careerPPG =
-                    '—';
-
-
-                if (
-                    career &&
-                    career.regular_games > 0
-                ) {
-
-                    careerPPG =
-                        (
-                            career.points_for /
-                            career.regular_games
-                        ).toFixed(2);
-
-                }
-
-
-                /*
-                 * =============================================
-                 * HIGHEST TEAM SCORE
-                 * =============================================
-                 */
-
-                let highestTeamScore =
-                    '—';
-
-
-                if (
-                    career &&
-                    career.highest_team_score
-                ) {
-
-                    highestTeamScore =
-                        `
-                            ${career.highest_team_score.points.toFixed(2)}
-
-                            <small>
-                                Week ${career.highest_team_score.week},
-                                ${career.highest_team_score.season}
-                            </small>
-                        `;
 
                 }
 
@@ -1322,211 +1303,197 @@ const teams =
 
                 /*
                  * =============================================
-                 * CARD HTML
+                 * CURRENT MANAGER CARD HTML
                  * =============================================
                  */
 
-               card.innerHTML = `
+                card.innerHTML = `
 
-    <div class="manager-card-top">
+                    <div class="manager-card-top">
 
-        ${avatar}
+                        ${avatar}
 
-        <div class="manager-identity">
+                        <div class="manager-identity">
 
-            <h2>
-                ${ownerName}
-            </h2>
+                            <h2>
+                                ${ownerName}
+                            </h2>
 
-            <p class="manager-team-name">
-                ${team.team_name}
-            </p>
+                            <p class="manager-team-name">
+                                ${team.team_name}
+                            </p>
 
-            <small class="manager-sleeper-username">
-                ${team.owner}
-            </small>
+                            <small class="manager-sleeper-username">
+                                ${team.owner}
+                            </small>
 
-        </div>
+                        </div>
 
 
-        <button
-            type="button"
-            class="manager-collapse-button"
-            aria-expanded="true"
-            aria-label="Collapse ${ownerName}"
-        >
-            ▲
-        </button>
+                        <button
+                            type="button"
+                            class="manager-collapse-button"
+                            aria-expanded="true"
+                            aria-label="Collapse ${ownerName}"
+                        >
+                            ▲
+                        </button>
 
-    </div>
+                    </div>
 
 
-    <div class="manager-card-body">
+                    <div class="manager-card-body">
 
-        <div class="manager-division">
+                        <div class="manager-division">
 
-            ${
-                team.division ||
-                'Division'
-            }
+                            ${
+                                team.division ||
+                                'Division'
+                            }
 
-        </div>
+                        </div>
 
 
-        <div class="trophy-case">
+                        <div class="trophy-case">
 
-            <div class="trophy-case-title">
-                Trophy Case
-            </div>
+                            <div class="trophy-case-title">
+                                Trophy Case
+                            </div>
 
-            <div class="trophy-case-grid">
+                            <div class="trophy-case-grid">
 
-                ${trophyHTML}
+                                ${trophyHTML}
 
-            </div>
+                            </div>
 
-        </div>
+                        </div>
 
 
-        <div class="manager-stats">
+                        <div class="manager-stats">
 
 
-            <div class="manager-stat">
+                            <div class="manager-stat">
 
-                <span>
-                    2026 Record
-                </span>
+                                <span>
+                                    2026 Record
+                                </span>
 
-                <strong>
-                    ${currentRecord}
-                </strong>
+                                <strong>
+                                    ${currentRecord}
+                                </strong>
 
-            </div>
+                            </div>
 
 
-            <div class="manager-stat">
+                            <div class="manager-stat">
 
-                <span>
-                    Seasons
-                </span>
+                                <span>
+                                    Seasons
+                                </span>
 
-                <strong>
+                                <strong>
+                                    ${
+                                        career
+                                            ? career.seasons
+                                            : '—'
+                                    }
+                                </strong>
 
-                    ${
-                        career
-                            ? career.seasons
-                            : '—'
-                    }
+                            </div>
 
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Regular Season
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${regularRecord}
+                                </strong>
 
-                <span>
-                    Regular Season
-                </span>
+                            </div>
 
-                <strong>
-                    ${regularRecord}
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Win %
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${winningPercentage}
+                                </strong>
 
-                <span>
-                    Win %
-                </span>
+                            </div>
 
-                <strong>
-                    ${winningPercentage}
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Playoffs
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${playoffRecord}
+                                </strong>
 
-                <span>
-                    Playoffs
-                </span>
+                            </div>
 
-                <strong>
-                    ${playoffRecord}
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Playoff Win %
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${playoffWinningPercentage}
+                                </strong>
 
-                <span>
-                    Career PPG
-                </span>
+                            </div>
 
-                <strong>
-                    ${careerPPG}
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Division Titles
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${managerDivisionTitles.length}
+                                </strong>
 
-                <span>
-                    Championships
-                </span>
+                            </div>
 
-                <strong>
-                    ${championshipYears.length}
-                </strong>
 
-            </div>
+                            <div class="manager-stat">
 
+                                <span>
+                                    Championships
+                                </span>
 
-            <div class="manager-stat">
+                                <strong>
+                                    ${championshipYears.length}
+                                </strong>
 
-                <span>
-                    Division Titles
-                </span>
+                            </div>
 
-                <strong>
-                    ${managerDivisionTitles.length}
-                </strong>
 
-            </div>
+                        </div>
 
+                    </div>
 
-        </div>
+                `;
 
-
-        <div class="manager-records">
-
-            <div>
-
-                <span>
-                    Highest Team Score
-                </span>
-
-                <strong>
-                    ${highestTeamScore}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-`;
 
                 grid.appendChild(
                     card
                 );
+
+            }
+        );
+
 
         /*
          * =====================================================
@@ -1537,7 +1504,6 @@ const teams =
          * who is NOT on a current 2026 roster is considered a
          * former manager.
          */
-
 
         const currentOwnerIds =
             new Set(
@@ -1768,7 +1734,7 @@ const teams =
 
                     /*
                      * =========================================
-                     * WIN PERCENTAGE
+                     * REGULAR-SEASON WINNING PERCENTAGE
                      * =========================================
                      */
 
@@ -1803,51 +1769,39 @@ const teams =
 
                     /*
                      * =========================================
-                     * CAREER PPG
+                     * PLAYOFF WINNING PERCENTAGE
                      * =========================================
                      */
 
-                    let careerPPG =
+                    let playoffWinningPercentage =
                         '—';
 
 
+                    const playoffGames =
+                        career.playoff_wins +
+                        career.playoff_losses +
+                        career.playoff_ties;
+
+
                     if (
-                        career.regular_games > 0
+                        playoffGames > 0
                     ) {
 
-                        careerPPG =
+                        playoffWinningPercentage =
                             (
-                                career.points_for /
-                                career.regular_games
-                            ).toFixed(2);
-
-                    }
-
-
-                    /*
-                     * =========================================
-                     * HIGHEST SCORE
-                     * =========================================
-                     */
-
-                    let highestTeamScore =
-                        '—';
-
-
-                    if (
-                        career.highest_team_score
-                    ) {
-
-                        highestTeamScore = `
-
-                            ${career.highest_team_score.points.toFixed(2)}
-
-                            <small>
-                                Week ${career.highest_team_score.week},
-                                ${career.highest_team_score.season}
-                            </small>
-
-                        `;
+                                (
+                                    career.playoff_wins +
+                                    (
+                                        career.playoff_ties *
+                                        0.5
+                                    )
+                                )
+                                /
+                                playoffGames
+                                *
+                                100
+                            ).toFixed(1) +
+                            '%';
 
                     }
 
@@ -2045,224 +1999,205 @@ const teams =
                         'Former Franchise';
 
 
-/*
- * =========================================
- * CARD
- * =========================================
- */
+                    /*
+                     * =========================================
+                     * FORMER MANAGER CARD
+                     * =========================================
+                     */
 
-const card =
-    document.createElement(
-        'article'
-    );
+                    const card =
+                        document.createElement(
+                            'article'
+                        );
 
 
-card.className =
-    'manager-card former-manager-card';
+                    card.className =
+                        'manager-card former-manager-card';
 
 
-card.innerHTML = `
+                    card.innerHTML = `
 
-    <div class="manager-card-top">
+                        <div class="manager-card-top">
 
-        <div
-            class="
-                manager-avatar
-                manager-avatar-placeholder
-                former-manager-avatar
-            "
-        >
-            ${ownerName.charAt(0)}
-        </div>
+                            <div
+                                class="
+                                    manager-avatar
+                                    manager-avatar-placeholder
+                                    former-manager-avatar
+                                "
+                            >
+                                ${ownerName.charAt(0)}
+                            </div>
 
 
-        <div class="manager-identity">
+                            <div class="manager-identity">
 
-            <h2>
-                ${ownerName}
-            </h2>
+                                <h2>
+                                    ${ownerName}
+                                </h2>
 
-            <p class="manager-team-name">
-                ${lastTeamName}
-            </p>
+                                <p class="manager-team-name">
+                                    ${lastTeamName}
+                                </p>
 
-            <small class="manager-sleeper-username">
-                ${career.owner}
-            </small>
+                                <small class="manager-sleeper-username">
+                                    ${career.owner}
+                                </small>
 
-        </div>
+                            </div>
 
 
-        <button
-            type="button"
-            class="manager-collapse-button"
-            aria-expanded="false"
-            aria-label="Expand ${ownerName}"
-        >
-            ▼
-        </button>
+                            <button
+                                type="button"
+                                class="manager-collapse-button"
+                                aria-expanded="false"
+                                aria-label="Expand ${ownerName}"
+                            >
+                                ▼
+                            </button>
 
-    </div>
+                        </div>
 
 
-    <div class="manager-card-body mobile-collapsed">
+                        <div class="manager-card-body mobile-collapsed">
 
-        <div class="former-manager-tenure">
+                            <div class="trophy-case">
 
-            Last Active:
-            ${
-                career.last_season ||
-                '—'
-            }
+                                <div class="trophy-case-title">
+                                    Trophy Case
+                                </div>
 
-        </div>
+                                <div class="trophy-case-grid">
 
+                                    ${trophyHTML}
 
-        <div class="trophy-case">
+                                </div>
 
-            <div class="trophy-case-title">
-                Trophy Case
-            </div>
+                            </div>
 
-            <div class="trophy-case-grid">
 
-                ${trophyHTML}
+                            <div class="manager-stats">
 
-            </div>
 
-        </div>
+                                <div class="manager-stat">
 
+                                    <span>
+                                        Last Active
+                                    </span>
 
-        <div class="manager-stats">
+                                    <strong>
+                                        ${career.last_season || '—'}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Seasons
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${career.seasons}
-                </strong>
+                                    <span>
+                                        Seasons
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${career.seasons}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Regular Season
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${regularRecord}
-                </strong>
+                                    <span>
+                                        Regular Season
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${regularRecord}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Win %
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${winningPercentage}
-                </strong>
+                                    <span>
+                                        Win %
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${winningPercentage}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Playoffs
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${playoffRecord}
-                </strong>
+                                    <span>
+                                        Playoffs
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${playoffRecord}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Career PPG
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${careerPPG}
-                </strong>
+                                    <span>
+                                        Playoff Win %
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${playoffWinningPercentage}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Championships
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${championshipYears.length}
-                </strong>
+                                    <span>
+                                        Division Titles
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${managerDivisionTitles.length}
+                                    </strong>
 
+                                </div>
 
-            <div class="manager-stat">
 
-                <span>
-                    Division Titles
-                </span>
+                                <div class="manager-stat">
 
-                <strong>
-                    ${managerDivisionTitles.length}
-                </strong>
+                                    <span>
+                                        Championships
+                                    </span>
 
-            </div>
+                                    <strong>
+                                        ${championshipYears.length}
+                                    </strong>
 
+                                </div>
 
-        </div>
 
+                            </div>
 
-        <div class="manager-records">
+                        </div>
 
-            <div>
+                    `;
 
-                <span>
-                    Highest Team Score
-                </span>
 
-                <strong>
-                    ${highestTeamScore}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-`;
-
-
-formerGrid.appendChild(
-    card
-);
+                    formerGrid.appendChild(
+                        card
+                    );
 
                 }
             );
 
         }
-
-                
-            }
-        );
 
 
     } catch (
@@ -2366,6 +2301,8 @@ function getLeagueOwnerName(
 
 }
 
+
+
 /*
  * ======================================================
  * MOBILE MANAGER CARD COLLAPSE
@@ -2457,5 +2394,6 @@ document.addEventListener(
 
     }
 );
+
 
 loadManagers();
