@@ -368,7 +368,7 @@ catch (
         }
 
 
-        /*
+         /*
          * =====================================================
          * ROSTER LOOKUP
          * =====================================================
@@ -386,6 +386,182 @@ catch (
 
             }
         );
+
+
+        /*
+         * =====================================================
+         * DIVISION LOOKUP
+         * =====================================================
+         *
+         * Sleeper stores the historical division number
+         * inside each roster's settings.
+         *
+         * 2025 is handled manually because the league's
+         * division setup for that season needs an override.
+         */
+
+        const divisionByRosterId = {};
+
+
+        sleeperRosters.forEach(
+            roster => {
+
+                const divisionNumber =
+                    Number(
+                        roster.settings
+                            ?.division
+                    );
+
+
+                if (
+                    Number.isFinite(
+                        divisionNumber
+                    ) &&
+                    divisionNumber > 0
+                ) {
+
+                    divisionByRosterId[
+                        Number(
+                            roster.roster_id
+                        )
+                    ] = divisionNumber;
+
+                }
+
+            }
+        );
+
+
+        /*
+         * 2025 manual division override.
+         *
+         * Division 1:
+         * Dan, Nick, Caiden, Zach, Pete, Adam
+         *
+         * Division 2:
+         * Seth, Tyler, Jacob, Cole, RJ, Ryan
+         */
+
+        const division2025ByOwnerId = {
+
+            // DIVISION 1
+
+            "978544154789699584": 1,    // Dan
+            "985056136166473728": 1,    // Nick
+            "980232082209161216": 1,    // Caiden
+            "462468578298294272": 1,    // Zach
+            "980566668231471104": 1,    // Pete
+            "1084347885749174272": 1,   // Adam
+
+
+            // DIVISION 2
+
+            "1060373241799262208": 2,   // Seth
+            "979575504724455424": 2,    // Tyler
+            "979818984721657856": 2,    // Jacob
+            "984489422731194368": 2,    // Cole
+            "978815135223525376": 2,    // RJ
+            "1090303281726914560": 2    // Ryan
+
+        };
+
+
+        function getHistoryDivisionNumber(
+            team
+        ) {
+
+            if (
+                Number(season) === 2025
+            ) {
+
+                return (
+                    division2025ByOwnerId[
+                        String(
+                            team.owner_id
+                        )
+                    ] ||
+                    null
+                );
+
+            }
+
+
+            return (
+                divisionByRosterId[
+                    Number(
+                        team.roster_id
+                    )
+                ] ||
+                null
+            );
+
+        }
+
+
+        function getHistoryDivisionName(
+            team
+        ) {
+
+            const divisionNumber =
+                getHistoryDivisionNumber(
+                    team
+                );
+
+
+            if (
+                !divisionNumber
+            ) {
+
+                return '—';
+
+            }
+
+
+            return `Division ${divisionNumber}`;
+
+        }
+
+
+        function getHistoryDivisionClass(
+            team
+        ) {
+
+            const divisionNumber =
+                getHistoryDivisionNumber(
+                    team
+                );
+
+
+            if (
+                divisionNumber === 1
+            ) {
+
+                return 'history-division-1';
+
+            }
+
+
+            if (
+                divisionNumber === 2
+            ) {
+
+                return 'history-division-2';
+
+            }
+
+
+            if (
+                divisionNumber === 3
+            ) {
+
+                return 'history-division-3';
+
+            }
+
+
+            return 'history-division-unknown';
+
+        }
 
 
         /*
