@@ -10783,3 +10783,111 @@ td.history-division-column {
     }
 
 }
+
+/* ======================================================
+   CURRENT STANDINGS — DIVISION PLAQUES
+====================================================== */
+
+.standings-division-badge {
+
+    display: inline-block;
+
+    min-width: 78px;
+
+    padding:
+        4px
+        8px;
+
+    border-radius:
+        3px;
+
+    color:
+        #FFFFFF;
+
+    font-family:
+        'Oswald',
+        sans-serif;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .5px;
+
+    line-height:
+        1.2;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* DIVISION 1 — BLUE */
+
+.standings-division-badge.standings-division-1 {
+
+    background:
+        #1760A8;
+
+}
+
+
+/* DIVISION 2 — RED */
+
+.standings-division-badge.standings-division-2 {
+
+    background:
+        #B84F62;
+
+}
+
+
+/* DIVISION 3 — PURPLE */
+
+.standings-division-badge.standings-division-3 {
+
+    background:
+        #76539B;
+
+}
+
+
+/* FALLBACK */
+
+.standings-division-badge.standings-division-unknown {
+
+    background:
+        #7A8288;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .standings-division-badge {
+
+        min-width:
+            72px;
+
+        padding:
+            4px
+            6px;
+
+        font-size:
+            9px;
+
+    }
+
+}
