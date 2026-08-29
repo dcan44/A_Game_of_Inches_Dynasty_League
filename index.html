@@ -766,10 +766,14 @@ document.addEventListener(
                         }
 
 
-                        const isCollapsed =
-                            target.classList.toggle(
-                                'mobile-content-collapsed'
-                            );
+target.classList.remove(
+    'mobile-default-collapsed'
+);
+
+const isCollapsed =
+    target.classList.toggle(
+        'mobile-content-collapsed'
+    );
 
 
                         button.setAttribute(
