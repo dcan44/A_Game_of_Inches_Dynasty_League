@@ -10557,3 +10557,25 @@ td.history-owner-column {
     }
 
 }
+
+/* ======================================================
+   HISTORY — MOBILE FINAL STANDINGS COLUMN WIDTH FIX
+====================================================== */
+
+@media (max-width: 650px) {
+
+    .history-standings-table
+    th.history-owner-column,
+    .history-standings-table
+    td.history-owner-column {
+
+        width: 85px !important;
+        min-width: 85px !important;
+        max-width: 85px !important;
+
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+
+    }
+
+}
