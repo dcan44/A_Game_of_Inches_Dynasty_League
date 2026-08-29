@@ -2075,33 +2075,39 @@ const finalStandings =
                                             </td>
 
 
-                                            <td class="history-team-column">
+<td class="history-team-column">
 
-                                                ${team.team_name}
+    ${team.team_name}
 
-                                            </td>
-
-
-                                            <td>
-
-                                                ${formatRecord(
-                                                    team.wins,
-                                                    team.losses,
-                                                    team.ties
-                                                )}
-
-                                            </td>
+</td>
 
 
-                                            <td>
+<td class="history-division-column">
 
-                                                ${Number(
-                                                    team.points_for ||
-                                                    0
-                                                ).toFixed(2)}
+    ${team.division || '—'}
 
-                                            </td>
+</td>
 
+
+<td>
+
+    ${formatRecord(
+        team.wins,
+        team.losses,
+        team.ties
+    )}
+
+</td>
+
+
+<td>
+
+    ${Number(
+        team.points_for ||
+        0
+    ).toFixed(2)}
+
+</td>
                                         </tr>
 
                                     `
