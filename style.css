@@ -10892,3 +10892,136 @@ td.history-division-column {
     }
 
 }
+/* ======================================================
+   HOME — MOBILE CHAMPIONSHIP BANNER SCROLL
+====================================================== */
+
+@media (max-width: 700px) {
+
+    /*
+       One horizontal row.
+       Banners never wrap onto a second line.
+    */
+
+    .champion-banners {
+
+        display: flex !important;
+
+        flex-wrap: nowrap !important;
+
+        justify-content: flex-start !important;
+
+        align-items: flex-start;
+
+        gap: 14px !important;
+
+        width: calc(100% + 40px);
+
+        margin-left: -20px;
+        margin-right: -20px;
+
+        padding:
+            0
+            20px
+            12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: thin;
+
+        scroll-snap-type:
+            x proximity;
+
+    }
+
+
+    /*
+       Each championship banner keeps its
+       current mobile size and cannot shrink.
+    */
+
+    .champion-banners
+    .champion-banner {
+
+        flex:
+            0 0 145px !important;
+
+        width:
+            145px !important;
+
+        min-width:
+            145px !important;
+
+        margin-left:
+            0 !important;
+
+        margin-right:
+            0 !important;
+
+        scroll-snap-align:
+            start;
+
+    }
+
+
+    /*
+       Give the first and newest banners
+       clean spacing from the screen edges.
+    */
+
+    .champion-banners
+    .champion-banner:first-child {
+
+        margin-left:
+            0 !important;
+
+    }
+
+
+    .champion-banners
+    .champion-banner:last-child {
+
+        margin-right:
+            0 !important;
+
+    }
+
+
+    /*
+       Visible scrollbar on browsers that
+       support WebKit scrollbar styling.
+    */
+
+    .champion-banners::-webkit-scrollbar {
+
+        height:
+            6px;
+
+    }
+
+
+    .champion-banners::-webkit-scrollbar-track {
+
+        background:
+            #E7EAEC;
+
+        border-radius:
+            10px;
+
+    }
+
+
+    .champion-banners::-webkit-scrollbar-thumb {
+
+        background:
+            var(--silver);
+
+        border-radius:
+            10px;
+
+    }
+
+}
