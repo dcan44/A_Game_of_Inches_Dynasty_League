@@ -827,6 +827,120 @@ const isCollapsed =
             }
         );
 
+
+        /*
+         * ==================================================
+         * MOBILE CHAMPIONSHIP BANNERS
+         * OPEN ON NEWEST CHAMPION
+         * ==================================================
+         */
+
+        const championBanners =
+            document.getElementById(
+                'home-champion-banners'
+            );
+
+
+        if (
+            championBanners
+        ) {
+
+            /*
+             * Scroll to the far right only on mobile.
+             *
+             * script.js loads the championship banners
+             * asynchronously, so we watch the container
+             * until the actual banners have been added.
+             */
+
+            const scrollToNewestChampion =
+                () => {
+
+                    const isMobile =
+                        window.matchMedia(
+                            '(max-width: 700px)'
+                        ).matches;
+
+
+                    const hasChampionBanner =
+                        championBanners.querySelector(
+                            '.champion-banner'
+                        );
+
+
+                    if (
+                        !isMobile ||
+                        !hasChampionBanner
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    requestAnimationFrame(
+                        () => {
+
+                            requestAnimationFrame(
+                                () => {
+
+                                    championBanners.scrollLeft =
+                                        championBanners.scrollWidth;
+
+                                }
+                            );
+
+                        }
+                    );
+
+
+                    return true;
+
+                };
+
+
+            /*
+             * If the banners already loaded,
+             * scroll immediately.
+             */
+
+            if (
+                !scrollToNewestChampion()
+            ) {
+
+                /*
+                 * Otherwise wait for script.js to
+                 * finish building them.
+                 */
+
+                const championObserver =
+                    new MutationObserver(
+                        () => {
+
+                            if (
+                                scrollToNewestChampion()
+                            ) {
+
+                                championObserver.disconnect();
+
+                            }
+
+                        }
+                    );
+
+
+                championObserver.observe(
+                    championBanners,
+                    {
+                        childList: true,
+                        subtree: true
+                    }
+                );
+
+            }
+
+        }
+
     }
 );
 
