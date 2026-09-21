@@ -11025,3 +11025,122 @@ td.history-division-column {
     }
 
 }
+
+/* ======================================================
+   HOME — MOBILE DIVISION STANDINGS SCROLL
+====================================================== */
+
+@media (max-width: 700px) {
+
+    /*
+       Put all division cards into one horizontal row
+       instead of stacking them vertically.
+    */
+
+    .home-division-grid {
+
+        display: flex !important;
+
+        flex-wrap: nowrap !important;
+
+        align-items: stretch;
+
+        gap: 14px !important;
+
+        width: calc(100% + 40px);
+
+        margin-left: -20px;
+        margin-right: -20px;
+
+        padding:
+            0
+            20px
+            12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: thin;
+
+        scroll-snap-type:
+            x mandatory;
+
+    }
+
+
+    /*
+       Each division gets nearly the full mobile
+       screen width and cannot shrink.
+    */
+
+    .home-division-grid
+    .division-standings-card {
+
+        flex:
+            0 0 calc(100vw - 55px) !important;
+
+        width:
+            calc(100vw - 55px) !important;
+
+        min-width:
+            calc(100vw - 55px) !important;
+
+        max-width:
+            calc(100vw - 55px) !important;
+
+        scroll-snap-align:
+            start;
+
+    }
+
+
+    /*
+       Keep each division table contained
+       inside its card.
+    */
+
+    .home-division-grid
+    .division-table-scroll {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+    }
+
+
+    /*
+       Visible horizontal scrollbar.
+    */
+
+    .home-division-grid::-webkit-scrollbar {
+
+        height: 6px;
+
+    }
+
+
+    .home-division-grid::-webkit-scrollbar-track {
+
+        background:
+            #E7EAEC;
+
+        border-radius:
+            10px;
+
+    }
+
+
+    .home-division-grid::-webkit-scrollbar-thumb {
+
+        background:
+            var(--silver);
+
+        border-radius:
+            10px;
+
+    }
+
+}
