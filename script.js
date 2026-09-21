@@ -1011,15 +1011,27 @@ loadHomeSeason();
  * HOME — WEEKLY MATCHUPS
  * ======================================================
  *
- * Automatically loads the current A Game of Inches league,
- * determines the current fantasy week, and highlights one
- * matchup as the Game of the Week.
+ * REGULAR SEASON
  *
- * GAME OF THE WEEK:
+ * Week 1:
+ * Previous season's Champion vs Runner-Up rematch.
  *
+ * Remaining regular-season weeks:
  * 1. Highest combined wins
  * 2. Highest combined Points For as the tiebreaker
  *
+ * PLAYOFFS
+ *
+ * Playoff Round 1:
+ * Highlight both Wild Card games.
+ *
+ * Playoff Round 2:
+ * Highlight both Semifinal games.
+ *
+ * Playoff Round 3:
+ * Highlight the Championship game.
+ *
+ * Highlighted matchups are always displayed first.
  * ======================================================
  */
 
@@ -1030,22 +1042,17 @@ async function loadHomeMatchups() {
             'home-week-number'
         );
 
-
     const matchupsContainer =
         document.getElementById(
             'home-matchups'
         );
 
-
     if (
         !weekNumber ||
         !matchupsContainer
     ) {
-
         return;
-
     }
-
 
     try {
 
@@ -1057,7 +1064,6 @@ async function loadHomeMatchups() {
 
         const league =
             await getCurrentHomeLeague();
-
 
         const leagueId =
             league.league_id;
@@ -1089,27 +1095,21 @@ async function loadHomeMatchups() {
 
         ]);
 
-
         if (
             !stateResponse.ok ||
             !usersResponse.ok ||
             !rostersResponse.ok
         ) {
-
             throw new Error(
                 'Unable to load matchup data.'
             );
-
         }
-
 
         const nflState =
             await stateResponse.json();
 
-
         const users =
             await usersResponse.json();
-
 
         const rosters =
             await rostersResponse.json();
@@ -1120,8 +1120,7 @@ async function loadHomeMatchups() {
          * DETERMINE CURRENT FANTASY WEEK
          * ==================================================
          *
-         * Sleeper's NFL week can advance during preseason.
-         * Until the regular season begins, we display Week 1.
+         * Before the NFL regular season begins, show Week 1.
          */
 
         let currentWeek =
@@ -1130,26 +1129,47 @@ async function loadHomeMatchups() {
                 1
             );
 
-
         if (
             nflState.season_type !==
             'regular'
         ) {
-
             currentWeek =
                 1;
-
         }
-
 
         if (
-            currentWeek < 1
+            currentWeek <
+            1
         ) {
-
             currentWeek =
                 1;
-
         }
+
+
+        /*
+         * ==================================================
+         * PLAYOFF START WEEK
+         * ==================================================
+         *
+         * Sleeper stores the final regular-season week as
+         * settings.playoff_week_start.
+         *
+         * The playoff bracket begins with that week.
+         *
+         * Our league currently begins its playoffs in Week 15.
+         */
+
+        const playoffStartWeek =
+            Number(
+                league
+                    ?.settings
+                    ?.playoff_week_start ||
+                15
+            );
+
+        const isPlayoffs =
+            currentWeek >=
+            playoffStartWeek;
 
 
         /*
@@ -1163,17 +1183,13 @@ async function loadHomeMatchups() {
                 `https://api.sleeper.app/v1/league/${leagueId}/matchups/${currentWeek}`
             );
 
-
         if (
             !matchupsResponse.ok
         ) {
-
             throw new Error(
                 'Unable to load weekly matchups.'
             );
-
         }
-
 
         const matchups =
             await matchupsResponse.json();
@@ -1187,7 +1203,6 @@ async function loadHomeMatchups() {
 
         const userMap =
             {};
-
 
         users.forEach(
             user => {
@@ -1210,7 +1225,6 @@ async function loadHomeMatchups() {
         const rosterMap =
             {};
 
-
         rosters.forEach(
             roster => {
 
@@ -1219,16 +1233,10 @@ async function loadHomeMatchups() {
                         roster.owner_id
                     ];
 
-
                 const sleeperUsername =
                     user
                         ?.display_name ||
                     'Unknown Manager';
-
-
-                /*
-                 * Real owner name from league-data.js.
-                 */
 
                 const ownerName =
                     window.LEAGUE_DATA &&
@@ -1240,55 +1248,34 @@ async function loadHomeMatchups() {
                           )
                         : sleeperUsername;
 
-
-                /*
-                 * Sleeper avatar.
-                 */
-
                 let avatarUrl =
                     null;
-
 
                 if (
                     user?.avatar
                 ) {
-
                     avatarUrl =
                         `https://sleepercdn.com/avatars/${user.avatar}`;
-
                 }
-
 
                 if (
                     user
                         ?.metadata
                         ?.avatar
                 ) {
-
                     avatarUrl =
                         user.metadata.avatar;
-
                 }
-
-
-                /*
-                 * Current standings information.
-                 *
-                 * This is what we use to choose the
-                 * Game of the Week.
-                 */
 
                 const settings =
                     roster.settings ||
                     {};
-
 
                 const wins =
                     Number(
                         settings.wins ||
                         0
                     );
-
 
                 const pointsFor =
                     Number(
@@ -1302,7 +1289,6 @@ async function loadHomeMatchups() {
                         ) /
                         100
                     );
-
 
                 rosterMap[
                     roster.roster_id
@@ -1352,7 +1338,6 @@ async function loadHomeMatchups() {
         const matchupGroups =
             {};
 
-
         matchups.forEach(
             matchup => {
 
@@ -1360,25 +1345,19 @@ async function loadHomeMatchups() {
                     matchup.matchup_id ===
                     null
                 ) {
-
                     return;
-
                 }
-
 
                 if (
                     !matchupGroups[
                         matchup.matchup_id
                     ]
                 ) {
-
                     matchupGroups[
                         matchup.matchup_id
                     ] =
                         [];
-
                 }
-
 
                 matchupGroups[
                     matchup.matchup_id
@@ -1389,12 +1368,7 @@ async function loadHomeMatchups() {
             }
         );
 
-
-        /*
-         * Only keep complete two-team matchup groups.
-         */
-
-        const validMatchups =
+        let validMatchups =
             Object.values(
                 matchupGroups
             )
@@ -1407,104 +1381,641 @@ async function loadHomeMatchups() {
 
         /*
          * ==================================================
-         * GAME OF THE WEEK
+         * HIGHLIGHTED MATCHUPS
          * ==================================================
          *
-         * Rank each matchup by:
+         * Map:
          *
-         * 1. Combined wins
-         * 2. Combined PF
-         *
-         * The matchup with the strongest combined standing
-         * becomes Game of the Week.
+         * matchup_id -> label
          */
 
-        let gameOfWeekIndex =
-            -1;
+        const highlightedMatchups =
+            new Map();
 
 
-        let bestCombinedWins =
-            -1;
+        /*
+         * ==================================================
+         * HELPER — NORMAL GAME OF THE WEEK
+         * ==================================================
+         */
 
+        function selectCalculatedGameOfWeek() {
 
-        let bestCombinedPF =
-            -1;
+            let bestMatchup =
+                null;
 
+            let bestCombinedWins =
+                -1;
 
-        validMatchups.forEach(
-            (
-                matchup,
-                index
-            ) => {
+            let bestCombinedPF =
+                -1;
 
-                const firstTeam =
-                    rosterMap[
-                        matchup[0].roster_id
-                    ];
+            validMatchups.forEach(
+                matchup => {
 
+                    const firstTeam =
+                        rosterMap[
+                            matchup[0].roster_id
+                        ];
 
-                const secondTeam =
-                    rosterMap[
-                        matchup[1].roster_id
-                    ];
+                    const secondTeam =
+                        rosterMap[
+                            matchup[1].roster_id
+                        ];
 
+                    if (
+                        !firstTeam ||
+                        !secondTeam
+                    ) {
+                        return;
+                    }
 
-                if (
-                    !firstTeam ||
-                    !secondTeam
-                ) {
+                    const combinedWins =
+                        firstTeam.wins +
+                        secondTeam.wins;
 
-                    return;
+                    const combinedPF =
+                        firstTeam.points_for +
+                        secondTeam.points_for;
 
-                }
+                    if (
+                        combinedWins >
+                        bestCombinedWins
+                    ) {
 
+                        bestCombinedWins =
+                            combinedWins;
 
-                const combinedWins =
-                    firstTeam.wins +
-                    secondTeam.wins;
+                        bestCombinedPF =
+                            combinedPF;
 
+                        bestMatchup =
+                            matchup;
 
-                const combinedPF =
-                    firstTeam.points_for +
-                    secondTeam.points_for;
+                        return;
+                    }
 
+                    if (
+                        combinedWins ===
+                            bestCombinedWins &&
+                        combinedPF >
+                            bestCombinedPF
+                    ) {
 
-                if (
-                    combinedWins >
-                    bestCombinedWins
-                ) {
+                        bestCombinedPF =
+                            combinedPF;
 
-                    bestCombinedWins =
-                        combinedWins;
-
-                    bestCombinedPF =
-                        combinedPF;
-
-                    gameOfWeekIndex =
-                        index;
-
-                    return;
-
-                }
-
-
-                if (
-                    combinedWins ===
-                        bestCombinedWins &&
-                    combinedPF >
-                        bestCombinedPF
-                ) {
-
-                    bestCombinedPF =
-                        combinedPF;
-
-                    gameOfWeekIndex =
-                        index;
+                        bestMatchup =
+                            matchup;
+                    }
 
                 }
+            );
 
+            if (
+                bestMatchup
+            ) {
+
+                highlightedMatchups.set(
+                    String(
+                        bestMatchup[0]
+                            .matchup_id
+                    ),
+                    '★ Game of the Week ★'
+                );
             }
-        );
+
+        }
+
+
+        /*
+         * ==================================================
+         * WEEK 1 — CHAMPIONSHIP REMATCH
+         * ==================================================
+         *
+         * Follow previous_league_id.
+         *
+         * Read the previous season championship game.
+         *
+         * Convert the Champion and Runner-Up roster IDs into
+         * owner IDs.
+         *
+         * Then locate those same owners in the current league.
+         */
+
+        async function selectWeekOneRematch() {
+
+            const previousLeagueId =
+                String(
+                    league.previous_league_id ||
+                    ''
+                );
+
+            if (
+                !previousLeagueId ||
+                previousLeagueId ===
+                    '0'
+            ) {
+                return false;
+            }
+
+            try {
+
+                const [
+                    previousBracketResponse,
+                    previousRostersResponse
+                ] = await Promise.all([
+
+                    fetch(
+                        `https://api.sleeper.app/v1/league/${previousLeagueId}/winners_bracket`
+                    ),
+
+                    fetch(
+                        `https://api.sleeper.app/v1/league/${previousLeagueId}/rosters`
+                    )
+
+                ]);
+
+                if (
+                    !previousBracketResponse.ok ||
+                    !previousRostersResponse.ok
+                ) {
+                    return false;
+                }
+
+                const previousBracket =
+                    await previousBracketResponse.json();
+
+                const previousRosters =
+                    await previousRostersResponse.json();
+
+                const championshipGame =
+                    previousBracket.find(
+                        game =>
+                            Number(
+                                game.p
+                            ) ===
+                            1
+                    );
+
+                if (
+                    !championshipGame ||
+                    !championshipGame.w ||
+                    !championshipGame.l
+                ) {
+                    return false;
+                }
+
+                const championRoster =
+                    previousRosters.find(
+                        roster =>
+                            Number(
+                                roster.roster_id
+                            ) ===
+                            Number(
+                                championshipGame.w
+                            )
+                    );
+
+                const runnerUpRoster =
+                    previousRosters.find(
+                        roster =>
+                            Number(
+                                roster.roster_id
+                            ) ===
+                            Number(
+                                championshipGame.l
+                            )
+                    );
+
+                if (
+                    !championRoster?.owner_id ||
+                    !runnerUpRoster?.owner_id
+                ) {
+                    return false;
+                }
+
+                const currentChampionRoster =
+                    rosters.find(
+                        roster =>
+                            String(
+                                roster.owner_id
+                            ) ===
+                            String(
+                                championRoster.owner_id
+                            )
+                    );
+
+                const currentRunnerUpRoster =
+                    rosters.find(
+                        roster =>
+                            String(
+                                roster.owner_id
+                            ) ===
+                            String(
+                                runnerUpRoster.owner_id
+                            )
+                    );
+
+                if (
+                    !currentChampionRoster ||
+                    !currentRunnerUpRoster
+                ) {
+                    return false;
+                }
+
+                const rematch =
+                    validMatchups.find(
+                        matchup => {
+
+                            const rosterIds =
+                                matchup.map(
+                                    team =>
+                                        Number(
+                                            team.roster_id
+                                        )
+                                );
+
+                            return (
+                                rosterIds.includes(
+                                    Number(
+                                        currentChampionRoster
+                                            .roster_id
+                                    )
+                                ) &&
+                                rosterIds.includes(
+                                    Number(
+                                        currentRunnerUpRoster
+                                            .roster_id
+                                    )
+                                )
+                            );
+
+                        }
+                    );
+
+                if (
+                    !rematch
+                ) {
+                    return false;
+                }
+
+                highlightedMatchups.set(
+                    String(
+                        rematch[0]
+                            .matchup_id
+                    ),
+                    '★ Game of the Week ★'
+                );
+
+                return true;
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    'Unable to determine Week 1 championship rematch:',
+                    error
+                );
+
+                return false;
+            }
+
+        }
+
+
+        /*
+         * ==================================================
+         * PLAYOFF HIGHLIGHTING
+         * ==================================================
+         *
+         * Uses Sleeper's winners bracket.
+         *
+         * Round 1 = Wild Card
+         * Round 2 = Semifinal
+         * Round 3 = Championship
+         */
+
+        async function selectPlayoffGames() {
+
+            try {
+
+                const bracketResponse =
+                    await fetch(
+                        `https://api.sleeper.app/v1/league/${leagueId}/winners_bracket`
+                    );
+
+                if (
+                    !bracketResponse.ok
+                ) {
+                    return;
+                }
+
+                const bracket =
+                    await bracketResponse.json();
+
+                const playoffRound =
+                    (
+                        currentWeek -
+                        playoffStartWeek
+                    ) +
+                    1;
+
+                let playoffLabel =
+                    '';
+
+                if (
+                    playoffRound ===
+                    1
+                ) {
+                    playoffLabel =
+                        'Wild Card';
+                }
+
+                else if (
+                    playoffRound ===
+                    2
+                ) {
+                    playoffLabel =
+                        'Semifinal';
+                }
+
+                else if (
+                    playoffRound ===
+                    3
+                ) {
+                    playoffLabel =
+                        '★ Championship ★';
+                }
+
+                if (
+                    !playoffLabel
+                ) {
+                    return;
+                }
+
+
+                /*
+                 * Championship is identified directly by
+                 * Sleeper placement p === 1.
+                 */
+
+                if (
+                    playoffRound ===
+                    3
+                ) {
+
+                    const championshipGame =
+                        bracket.find(
+                            game =>
+                                Number(
+                                    game.p
+                                ) ===
+                                1
+                        );
+
+                    if (
+                        !championshipGame
+                    ) {
+                        return;
+                    }
+
+                    const championshipRosterIds =
+                        [
+                            championshipGame.t1,
+                            championshipGame.t2
+                        ]
+                            .map(
+                                Number
+                            )
+                            .filter(
+                                Number.isFinite
+                            );
+
+                    validMatchups.forEach(
+                        matchup => {
+
+                            const rosterIds =
+                                matchup.map(
+                                    team =>
+                                        Number(
+                                            team.roster_id
+                                        )
+                                );
+
+                            if (
+                                championshipRosterIds
+                                    .length ===
+                                    2 &&
+                                championshipRosterIds
+                                    .every(
+                                        rosterId =>
+                                            rosterIds.includes(
+                                                rosterId
+                                            )
+                                    )
+                            ) {
+
+                                highlightedMatchups.set(
+                                    String(
+                                        matchup[0]
+                                            .matchup_id
+                                    ),
+                                    playoffLabel
+                                );
+                            }
+
+                        }
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Wild Card / Semifinal:
+                 *
+                 * Match current weekly roster pairings against
+                 * the appropriate winners-bracket round.
+                 */
+
+                const roundGames =
+                    bracket.filter(
+                        game =>
+                            Number(
+                                game.r
+                            ) ===
+                            playoffRound
+                    );
+
+                validMatchups.forEach(
+                    matchup => {
+
+                        const currentRosterIds =
+                            matchup.map(
+                                team =>
+                                    Number(
+                                        team.roster_id
+                                    )
+                            );
+
+                        const bracketMatch =
+                            roundGames.find(
+                                game => {
+
+                                    const bracketRosterIds =
+                                        [
+                                            game.t1,
+                                            game.t2
+                                        ]
+                                            .map(
+                                                Number
+                                            )
+                                            .filter(
+                                                Number.isFinite
+                                            );
+
+                                    return (
+                                        bracketRosterIds
+                                            .length ===
+                                            2 &&
+                                        bracketRosterIds
+                                            .every(
+                                                rosterId =>
+                                                    currentRosterIds.includes(
+                                                        rosterId
+                                                    )
+                                            )
+                                    );
+
+                                }
+                            );
+
+                        if (
+                            bracketMatch
+                        ) {
+
+                            highlightedMatchups.set(
+                                String(
+                                    matchup[0]
+                                        .matchup_id
+                                ),
+                                playoffLabel
+                            );
+                        }
+
+                    }
+                );
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    'Unable to determine playoff highlights:',
+                    error
+                );
+            }
+
+        }
+
+
+        /*
+         * ==================================================
+         * CHOOSE HIGHLIGHTS
+         * ==================================================
+         */
+
+        if (
+            isPlayoffs
+        ) {
+
+            await selectPlayoffGames();
+
+        }
+
+        else if (
+            currentWeek ===
+            1
+        ) {
+
+            const foundRematch =
+                await selectWeekOneRematch();
+
+            if (
+                !foundRematch
+            ) {
+                selectCalculatedGameOfWeek();
+            }
+
+        }
+
+        else {
+
+            selectCalculatedGameOfWeek();
+
+        }
+
+
+        /*
+         * ==================================================
+         * HIGHLIGHTED GAMES FIRST
+         * ==================================================
+         */
+
+        validMatchups =
+            validMatchups
+                .map(
+                    (
+                        matchup,
+                        originalIndex
+                    ) => {
+
+                        const matchupId =
+                            String(
+                                matchup[0]
+                                    .matchup_id
+                            );
+
+                        return {
+                            matchup,
+                            originalIndex,
+                            highlighted:
+                                highlightedMatchups.has(
+                                    matchupId
+                                )
+                        };
+
+                    }
+                )
+                .sort(
+                    (
+                        a,
+                        b
+                    ) => {
+
+                        if (
+                            a.highlighted !==
+                            b.highlighted
+                        ) {
+                            return (
+                                a.highlighted
+                                    ? -1
+                                    : 1
+                            );
+                        }
+
+                        return (
+                            a.originalIndex -
+                            b.originalIndex
+                        );
+                    }
+                )
+                .map(
+                    item =>
+                        item.matchup
+                );
 
 
         /*
@@ -1526,30 +2037,23 @@ async function loadHomeMatchups() {
         const matchupCards =
             validMatchups
                 .map(
-                    (
-                        matchup,
-                        index
-                    ) => {
+                    matchup => {
 
                         const first =
                             matchup[0];
 
-
                         const second =
                             matchup[1];
-
 
                         const firstTeam =
                             rosterMap[
                                 first.roster_id
                             ];
 
-
                         const secondTeam =
                             rosterMap[
                                 second.roster_id
                             ];
-
 
                         const firstPoints =
                             Number(
@@ -1557,30 +2061,38 @@ async function loadHomeMatchups() {
                                 0
                             );
 
-
                         const secondPoints =
                             Number(
                                 second.points ||
                                 0
                             );
 
+                        const matchupId =
+                            String(
+                                first.matchup_id
+                            );
 
-                        const isGameOfWeek =
-                            index ===
-                            gameOfWeekIndex;
+                        const highlightLabel =
+                            highlightedMatchups.get(
+                                matchupId
+                            ) ||
+                            '';
 
+                        const isHighlighted =
+                            Boolean(
+                                highlightLabel
+                            );
 
-                        const gameOfWeekBanner =
-                            isGameOfWeek
+                        const highlightBanner =
+                            isHighlighted
                                 ? `
 
                                     <div class="game-of-week-label">
-                                        ★ Game of the Week ★
+                                        ${highlightLabel}
                                     </div>
 
                                   `
                                 : '';
-
 
                         return `
 
@@ -1588,14 +2100,14 @@ async function loadHomeMatchups() {
                                 class="
                                     home-matchup-card
                                     ${
-                                        isGameOfWeek
+                                        isHighlighted
                                             ? 'game-of-week'
                                             : ''
                                     }
                                 "
                             >
 
-                                ${gameOfWeekBanner}
+                                ${highlightBanner}
 
 
                                 <div class="
@@ -1632,23 +2144,19 @@ async function loadHomeMatchups() {
                                     <div class="home-matchup-info">
 
                                         <span class="home-matchup-team-line">
-
                                             ${
                                                 firstTeam
                                                     ?.team_name ||
                                                 'Unknown Team'
                                             }
-
                                         </span>
 
                                         <span class="home-matchup-owner-line">
-
                                             ${
                                                 firstTeam
                                                     ?.owner ||
                                                 'Unknown Manager'
                                             }
-
                                         </span>
 
                                     </div>
@@ -1679,23 +2187,19 @@ async function loadHomeMatchups() {
                                     <div class="home-matchup-info">
 
                                         <span class="home-matchup-team-line">
-
                                             ${
                                                 secondTeam
                                                     ?.team_name ||
                                                 'Unknown Team'
                                             }
-
                                         </span>
 
                                         <span class="home-matchup-owner-line">
-
                                             ${
                                                 secondTeam
                                                     ?.owner ||
                                                 'Unknown Manager'
                                             }
-
                                         </span>
 
                                     </div>
@@ -1751,15 +2255,12 @@ async function loadHomeMatchups() {
             matchupsContainer.innerHTML = `
 
                 <div class="matchup-placeholder">
-
                     Matchups are not available yet.
-
                 </div>
 
             `;
 
         }
-
 
     } catch (
         error
@@ -1770,17 +2271,13 @@ async function loadHomeMatchups() {
             error
         );
 
-
         weekNumber.textContent =
             'This Week';
-
 
         matchupsContainer.innerHTML = `
 
             <div class="matchup-placeholder">
-
                 Unable to load weekly matchups.
-
             </div>
 
         `;
@@ -1791,7 +2288,6 @@ async function loadHomeMatchups() {
 
 
 loadHomeMatchups();
-
 /*
  * ======================================================
  * HOME — TRADES / WAIVER WIRE
