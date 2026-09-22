@@ -4057,3 +4057,1048 @@ async function loadHomeChampions() {
 
 
 loadHomeChampions();
+
+/*
+ * ======================================================
+ * HOME — LEAGUE PULSE
+ * ======================================================
+ *
+ * Rising Team:
+ * Largest score increase from the previous completed week.
+ *
+ * Falling Team:
+ * Largest score decrease from the previous completed week.
+ *
+ * Winning Streak:
+ * Longest consecutive winning streak.
+ *
+ * Losing Streak:
+ * Longest consecutive losing streak.
+ *
+ * Only completed weeks are included.
+ * ======================================================
+ */
+
+async function loadHomeLeaguePulse() {
+
+    const pulseContainer =
+        document.getElementById(
+            'home-league-pulse'
+        );
+
+    if (
+        !pulseContainer
+    ) {
+        return;
+    }
+
+
+    /*
+     * ==================================================
+     * HELPER — UPDATE A PULSE CARD
+     * ==================================================
+     */
+
+    function updatePulseCard(
+        selector,
+        value,
+        detail
+    ) {
+
+        const card =
+            document.querySelector(
+                selector
+            );
+
+        if (
+            !card
+        ) {
+            return;
+        }
+
+        const valueElement =
+            card.querySelector(
+                '.league-pulse-value'
+            );
+
+        const detailElement =
+            card.querySelector(
+                '.league-pulse-detail'
+            );
+
+        if (
+            valueElement
+        ) {
+            valueElement.textContent =
+                value;
+        }
+
+        if (
+            detailElement
+        ) {
+            detailElement.textContent =
+                detail;
+        }
+
+    }
+
+
+    /*
+     * ==================================================
+     * INITIAL PLACEHOLDERS
+     * ==================================================
+     */
+
+    updatePulseCard(
+        '.pulse-rising',
+        '—',
+        'Calculating...'
+    );
+
+    updatePulseCard(
+        '.pulse-falling',
+        '—',
+        'Calculating...'
+    );
+
+    updatePulseCard(
+        '.pulse-winning',
+        '—',
+        'Calculating...'
+    );
+
+    updatePulseCard(
+        '.pulse-losing',
+        '—',
+        'Calculating...'
+    );
+
+
+    try {
+
+        /*
+         * ==================================================
+         * CURRENT LEAGUE
+         * ==================================================
+         */
+
+        const league =
+            await getCurrentHomeLeague();
+
+        const leagueId =
+            league.league_id;
+
+
+        /*
+         * ==================================================
+         * LOAD NFL STATE, USERS, AND ROSTERS
+         * ==================================================
+         */
+
+        const [
+            stateResponse,
+            usersResponse,
+            rostersResponse
+        ] = await Promise.all([
+
+            fetch(
+                'https://api.sleeper.app/v1/state/nfl'
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/users`
+            ),
+
+            fetch(
+                `https://api.sleeper.app/v1/league/${leagueId}/rosters`
+            )
+
+        ]);
+
+
+        if (
+            !stateResponse.ok ||
+            !usersResponse.ok ||
+            !rostersResponse.ok
+        ) {
+
+            throw new Error(
+                'Unable to load League Pulse data.'
+            );
+
+        }
+
+
+        const nflState =
+            await stateResponse.json();
+
+        const users =
+            await usersResponse.json();
+
+        const rosters =
+            await rostersResponse.json();
+
+
+        /*
+         * ==================================================
+         * DETERMINE COMPLETED WEEKS
+         * ==================================================
+         *
+         * We use the weeks before the current Sleeper
+         * fantasy week to avoid including active games.
+         */
+
+        let currentWeek =
+            Number(
+                nflState.week ||
+                1
+            );
+
+        if (
+            nflState.season_type !==
+            'regular'
+        ) {
+
+            return;
+
+        }
+
+        const latestPossibleCompletedWeek =
+            currentWeek -
+            1;
+
+
+        if (
+            latestPossibleCompletedWeek <
+            1
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * ==================================================
+         * USER LOOKUP
+         * ==================================================
+         */
+
+        const userMap =
+            {};
+
+        users.forEach(
+            user => {
+
+                userMap[
+                    user.user_id
+                ] =
+                    user;
+
+            }
+        );
+
+
+        /*
+         * ==================================================
+         * ROSTER / MANAGER LOOKUP
+         * ==================================================
+         */
+
+        const rosterMap =
+            {};
+
+        rosters.forEach(
+            roster => {
+
+                const user =
+                    userMap[
+                        roster.owner_id
+                    ];
+
+                const sleeperUsername =
+                    user
+                        ?.display_name ||
+                    'Unknown Manager';
+
+                const ownerName =
+                    window.LEAGUE_DATA &&
+                    typeof window.LEAGUE_DATA.getOwnerName ===
+                        'function'
+                        ? window.LEAGUE_DATA.getOwnerName(
+                            roster.owner_id,
+                            sleeperUsername
+                        )
+                        : sleeperUsername;
+
+                const teamName =
+                    user
+                        ?.metadata
+                        ?.team_name
+                        ?.trim() ||
+                    sleeperUsername ||
+                    `Team ${roster.roster_id}`;
+
+                rosterMap[
+                    String(
+                        roster.roster_id
+                    )
+                ] = {
+
+                    roster_id:
+                        roster.roster_id,
+
+                    owner_id:
+                        roster.owner_id,
+
+                    owner:
+                        ownerName,
+
+                    team_name:
+                        teamName
+
+                };
+
+            }
+        );
+
+
+        /*
+         * ==================================================
+         * LOAD WEEKLY MATCHUP DATA
+         * ==================================================
+         */
+
+        const weeklyRecords =
+            {};
+
+
+        for (
+            let week = 1;
+            week <= latestPossibleCompletedWeek;
+            week++
+        ) {
+
+            const response =
+                await fetch(
+                    `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                continue;
+
+            }
+
+
+            const matchups =
+                await response.json();
+
+
+            /*
+             * Group the two teams in each matchup.
+             */
+
+            const matchupGroups =
+                {};
+
+            matchups.forEach(
+                matchup => {
+
+                    if (
+                        matchup.matchup_id ===
+                        null ||
+                        matchup.matchup_id ===
+                        undefined
+                    ) {
+
+                        return;
+
+                    }
+
+                    const matchupId =
+                        String(
+                            matchup.matchup_id
+                        );
+
+                    if (
+                        !matchupGroups[
+                            matchupId
+                        ]
+                    ) {
+
+                        matchupGroups[
+                            matchupId
+                        ] =
+                            [];
+
+                    }
+
+                    matchupGroups[
+                        matchupId
+                    ].push(
+                        matchup
+                    );
+
+                }
+            );
+
+
+            /*
+             * Store only completed two-team matchups.
+             */
+
+            const weekResults =
+                {};
+
+
+            Object.values(
+                matchupGroups
+            )
+                .filter(
+                    matchup =>
+                        matchup.length ===
+                        2
+                )
+                .forEach(
+                    matchup => {
+
+                        const firstTeam =
+                            matchup[0];
+
+                        const secondTeam =
+                            matchup[1];
+
+
+                        const firstPoints =
+                            Number(
+                                firstTeam.points
+                            );
+
+                        const secondPoints =
+                            Number(
+                                secondTeam.points
+                            );
+
+
+                        if (
+                            !Number.isFinite(
+                                firstPoints
+                            ) ||
+                            !Number.isFinite(
+                                secondPoints
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const firstRosterId =
+                            String(
+                                firstTeam.roster_id
+                            );
+
+                        const secondRosterId =
+                            String(
+                                secondTeam.roster_id
+                            );
+
+
+                        /*
+                         * Do not include teams that do not
+                         * exist in the current roster lookup.
+                         */
+
+                        if (
+                            !rosterMap[
+                                firstRosterId
+                            ] ||
+                            !rosterMap[
+                                secondRosterId
+                            ]
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        let firstResult =
+                            'tie';
+
+                        let secondResult =
+                            'tie';
+
+
+                        if (
+                            firstPoints >
+                            secondPoints
+                        ) {
+
+                            firstResult =
+                                'win';
+
+                            secondResult =
+                                'loss';
+
+                        }
+
+                        else if (
+                            firstPoints <
+                            secondPoints
+                        ) {
+
+                            firstResult =
+                                'loss';
+
+                            secondResult =
+                                'win';
+
+                        }
+
+
+                        weekResults[
+                            firstRosterId
+                        ] = {
+
+                            points:
+                                firstPoints,
+
+                            result:
+                                firstResult
+
+                        };
+
+
+                        weekResults[
+                            secondRosterId
+                        ] = {
+
+                            points:
+                                secondPoints,
+
+                            result:
+                                secondResult
+
+                        };
+
+                    }
+                );
+
+
+            if (
+                Object.keys(
+                    weekResults
+                ).length >
+                0
+            ) {
+
+                weeklyRecords[
+                    week
+                ] =
+                    weekResults;
+
+            }
+
+        }
+
+
+        const availableWeeks =
+            Object.keys(
+                weeklyRecords
+            )
+                .map(
+                    Number
+                )
+                .sort(
+                    (a, b) =>
+                        a - b
+                );
+
+
+        /*
+         * ==================================================
+         * RISING / FALLING TEAM
+         * ==================================================
+         *
+         * Compare the two most recent completed weeks.
+         */
+
+        if (
+            availableWeeks.length >=
+            2
+        ) {
+
+            const latestWeek =
+                availableWeeks[
+                    availableWeeks.length -
+                    1
+                ];
+
+            const previousWeek =
+                availableWeeks[
+                    availableWeeks.length -
+                    2
+                ];
+
+            const latestResults =
+                weeklyRecords[
+                    latestWeek
+                ];
+
+            const previousResults =
+                weeklyRecords[
+                    previousWeek
+                ];
+
+
+            const scoreChanges =
+                [];
+
+
+            Object.keys(
+                latestResults
+            )
+                .forEach(
+                    rosterId => {
+
+                        if (
+                            !previousResults[
+                                rosterId
+                            ]
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const latestPoints =
+                            latestResults[
+                                rosterId
+                            ].points;
+
+                        const previousPoints =
+                            previousResults[
+                                rosterId
+                            ].points;
+
+
+                        const change =
+                            latestPoints -
+                            previousPoints;
+
+
+                        const team =
+                            rosterMap[
+                                rosterId
+                            ];
+
+
+                        if (
+                            !team
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        scoreChanges.push(
+                            {
+
+                                rosterId:
+                                    rosterId,
+
+                                owner:
+                                    team.owner,
+
+                                teamName:
+                                    team.team_name,
+
+                                change:
+                                    change
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            if (
+                scoreChanges.length >
+                0
+            ) {
+
+                const biggestIncrease =
+                    Math.max(
+                        ...scoreChanges.map(
+                            item =>
+                                item.change
+                        )
+                    );
+
+                const biggestDecrease =
+                    Math.min(
+                        ...scoreChanges.map(
+                            item =>
+                                item.change
+                        )
+                    );
+
+
+                const risingTeams =
+                    scoreChanges.filter(
+                        item =>
+                            item.change ===
+                            biggestIncrease
+                    );
+
+
+                const fallingTeams =
+                    scoreChanges.filter(
+                        item =>
+                            item.change ===
+                            biggestDecrease
+                    );
+
+
+                const risingNames =
+                    risingTeams
+                        .map(
+                            item =>
+                                item.owner
+                        )
+                        .join(
+                            ', '
+                        );
+
+                const fallingNames =
+                    fallingTeams
+                        .map(
+                            item =>
+                                item.owner
+                        )
+                        .join(
+                            ', '
+                        );
+
+
+                updatePulseCard(
+                    '.pulse-rising',
+                    risingNames ||
+                        '—',
+                    `+${biggestIncrease.toFixed(2)} points • Weeks ${previousWeek}–${latestWeek}`
+                );
+
+
+                updatePulseCard(
+                    '.pulse-falling',
+                    fallingNames ||
+                        '—',
+                    `${biggestDecrease.toFixed(2)} points • Weeks ${previousWeek}–${latestWeek}`
+                );
+
+            }
+
+        }
+
+        else {
+
+            updatePulseCard(
+                '.pulse-rising',
+                '—',
+                'Available after Week 2'
+            );
+
+            updatePulseCard(
+                '.pulse-falling',
+                '—',
+                'Available after Week 2'
+            );
+
+        }
+
+
+        /*
+         * ==================================================
+         * WINNING / LOSING STREAKS
+         * ==================================================
+         *
+         * Calculate the longest consecutive win/loss streak
+         * across the completed weeks.
+         */
+
+        if (
+            availableWeeks.length >=
+            3
+        ) {
+
+            const streakData =
+                {};
+
+
+            Object.keys(
+                rosterMap
+            )
+                .forEach(
+                    rosterId => {
+
+                        let currentWinStreak =
+                            0;
+
+                        let currentLossStreak =
+                            0;
+
+                        let longestWinStreak =
+                            0;
+
+                        let longestLossStreak =
+                            0;
+
+
+                        availableWeeks.forEach(
+                            week => {
+
+                                const result =
+                                    weeklyRecords[
+                                        week
+                                    ][
+                                        rosterId
+                                    ];
+
+
+                                if (
+                                    !result
+                                ) {
+
+                                    currentWinStreak =
+                                        0;
+
+                                    currentLossStreak =
+                                        0;
+
+                                    return;
+
+                                }
+
+
+                                if (
+                                    result.result ===
+                                    'win'
+                                ) {
+
+                                    currentWinStreak++;
+
+                                    currentLossStreak =
+                                        0;
+
+                                }
+
+                                else if (
+                                    result.result ===
+                                    'loss'
+                                ) {
+
+                                    currentLossStreak++;
+
+                                    currentWinStreak =
+                                        0;
+
+                                }
+
+                                else {
+
+                                    currentWinStreak =
+                                        0;
+
+                                    currentLossStreak =
+                                        0;
+
+                                }
+
+
+                                longestWinStreak =
+                                    Math.max(
+                                        longestWinStreak,
+                                        currentWinStreak
+                                    );
+
+
+                                longestLossStreak =
+                                    Math.max(
+                                        longestLossStreak,
+                                        currentLossStreak
+                                    );
+
+                            }
+                        );
+
+
+                        streakData[
+                            rosterId
+                        ] = {
+
+                            longestWinStreak:
+                                longestWinStreak,
+
+                            longestLossStreak:
+                                longestLossStreak
+
+                        };
+
+                    }
+                );
+
+
+            const longestWinningStreak =
+                Math.max(
+                    ...Object.values(
+                        streakData
+                    ).map(
+                        item =>
+                            item.longestWinStreak
+                    )
+                );
+
+
+            const longestLosingStreak =
+                Math.max(
+                    ...Object.values(
+                        streakData
+                    ).map(
+                        item =>
+                            item.longestLossStreak
+                    )
+                );
+
+
+            const winningNames =
+                Object.keys(
+                    streakData
+                )
+                    .filter(
+                        rosterId =>
+                            streakData[
+                                rosterId
+                            ].longestWinStreak ===
+                            longestWinningStreak
+                    )
+                    .map(
+                        rosterId =>
+                            rosterMap[
+                                rosterId
+                            ].owner
+                    )
+                    .join(
+                        ', '
+                    );
+
+
+            const losingNames =
+                Object.keys(
+                    streakData
+                )
+                    .filter(
+                        rosterId =>
+                            streakData[
+                                rosterId
+                            ].longestLossStreak ===
+                            longestLosingStreak
+                    )
+                    .map(
+                        rosterId =>
+                            rosterMap[
+                                rosterId
+                            ].owner
+                    )
+                    .join(
+                        ', '
+                    );
+
+
+            updatePulseCard(
+                '.pulse-winning',
+                winningNames ||
+                    '—',
+                `${longestWinningStreak} consecutive win${longestWinningStreak === 1 ? '' : 's'}`
+            );
+
+
+            updatePulseCard(
+                '.pulse-losing',
+                losingNames ||
+                    '—',
+                `${longestLosingStreak} consecutive loss${longestLosingStreak === 1 ? '' : 'es'}`
+            );
+
+        }
+
+        else {
+
+            updatePulseCard(
+                '.pulse-winning',
+                '—',
+                'Available after Week 3'
+            );
+
+            updatePulseCard(
+                '.pulse-losing',
+                '—',
+                'Available after Week 3'
+            );
+
+        }
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            'Error loading League Pulse:',
+            error
+        );
+
+
+        updatePulseCard(
+            '.pulse-rising',
+            '—',
+            'Unable to load data'
+        );
+
+        updatePulseCard(
+            '.pulse-falling',
+            '—',
+            'Unable to load data'
+        );
+
+        updatePulseCard(
+            '.pulse-winning',
+            '—',
+            'Unable to load data'
+        );
+
+        updatePulseCard(
+            '.pulse-losing',
+            '—',
+            'Unable to load data'
+        );
+
+    }
+
+}
+
+
+/*
+ * ======================================================
+ * LOAD LEAGUE PULSE
+ * ======================================================
+ */
+
+loadHomeLeaguePulse();
